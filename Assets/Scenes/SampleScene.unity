@@ -137,6 +137,8 @@ GameObject:
   - component: {fileID: 14530135}
   - component: {fileID: 14530134}
   - component: {fileID: 14530133}
+  - component: {fileID: 14530136}
+  - component: {fileID: 14530137}
   m_Layer: 0
   m_Name: Game Map
   m_TagString: Untagged
@@ -310,6 +312,30 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4bb8b0f160af804449a35b467c35722d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &14530136
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 14530129}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27d6c9946ee83464abf3a13e3cf8f871, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &14530137
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 14530129}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e6922b705ec791478b3aa9975b24bef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &258878210
@@ -710,8 +736,8 @@ PrefabInstance:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
+  - {fileID: 1501893559}
   - {fileID: 963194228}
   - {fileID: 705507995}
   - {fileID: 258878212}
-  - {fileID: 1501893559}
   - {fileID: 479814842}

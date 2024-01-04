@@ -3,54 +3,43 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-[RequireComponent(typeof(Tilemap))]
+[RequireComponent(typeof(MapVisuals))]
+[RequireComponent(typeof(HexMap))]
 [RequireComponent(typeof(MapGenerationParameters))]
-[RequireComponent(typeof(TileLibrary))]
 public class MapGeneration : MonoBehaviour
 {
-    Tilemap _tilemap;
-    TileLibrary _tiles;
-
+    MapVisuals _mapVisuals;
     HexMap _hexMap;
 
     MapGenerationParameters _parameters;
 
     void Start()
     {
-        _tilemap = GetComponent<Tilemap>();
-        _tiles = GetComponent<TileLibrary>();   
+         _mapVisuals = GetComponent<MapVisuals>();   
+        _hexMap = GetComponent<HexMap>();
         _parameters = GetComponent<MapGenerationParameters>();
 
-        InitializeTilemap();
-        SetTileSprites();
+        InitializeMapVisuals();
+        UpdateMapVisuals();
     }
 
     // Initialize _tilemap with width and height from map generation parameters
-    void InitializeTilemap()
+    void InitializeMapVisuals()
     {
-        _tilemap.origin = Vector3Int.zero;
-        _tilemap.size = new Vector3Int(_parameters.mapHeight, _parameters.mapWidth, 1);
-        _tilemap.ResizeBounds();
-
-        for (int row = 0; row < _parameters.mapHeight; ++row)
-        {
-            for(int col = 0; col < _parameters.mapWidth; ++col)
-            {
-                _tilemap.SetTile(new Vector3Int(row, col, 0), _tiles.defaultTile);
-            }
-        }
+        _mapVisuals.InitializeVisuals(_parameters.mapHeight, _parameters.mapWidth);
     }
 
-    // Sets sprites of all tiles in _tilemap based on the terrain of the HexTiles
-    // in _hexMap
-    void SetTileSprites()
+    // Randomly generate the game map based on map generation parameters
+    void GenerateMap()
     {
-        for (int row = 0; row < _parameters.mapHeight; ++row)
-        {
-            for (int col = 0; col < _parameters.mapWidth; ++col)
-            {
-                _tilemap.SetTile(new Vector3Int(row, col, 0), _tiles.landTile);
-            }
-        }
+
     }
+
+    // Updates map visuals based off terrain of tiles in _hexMap
+    void UpdateMapVisuals()
+    {
+        _mapVisuals.UpdateVisuals(_hexMap);
+    }
+
+    
 }
