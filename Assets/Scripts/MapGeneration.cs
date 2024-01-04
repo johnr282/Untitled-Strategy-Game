@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
+[RequireComponent(typeof(Tilemap))]
 [RequireComponent(typeof(MapGenerationParameters))]
+[RequireComponent(typeof(TileLibrary))]
 public class MapGeneration : MonoBehaviour
 {
-    [SerializeField] Tilemap _tilemap;
-    [SerializeField] TileBase _defaultTile;
+    Tilemap _tilemap;
+    TileLibrary _tiles;
 
     HexMap _hexMap;
 
@@ -15,7 +17,10 @@ public class MapGeneration : MonoBehaviour
 
     void Start()
     {
+        _tilemap = GetComponent<Tilemap>();
+        _tiles = GetComponent<TileLibrary>();   
         _parameters = GetComponent<MapGenerationParameters>();
+
         InitializeTilemap();
     }
 
@@ -26,7 +31,7 @@ public class MapGeneration : MonoBehaviour
         {
             for(int col = 0; col < _parameters.mapHeight; ++col)
             {
-                _tilemap.SetTile(new Vector3Int(row, col, 0), _defaultTile);
+                _tilemap.SetTile(new Vector3Int(row, col, 0), _tiles.defaultTile);
             }
         }
     }

@@ -134,8 +134,11 @@ GameObject:
   - component: {fileID: 14530130}
   - component: {fileID: 14530132}
   - component: {fileID: 14530131}
+  - component: {fileID: 14530135}
+  - component: {fileID: 14530134}
+  - component: {fileID: 14530133}
   m_Layer: 0
-  m_Name: Tilemap
+  m_Name: Game Map
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -267,6 +270,48 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!114 &14530133
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 14530129}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad3b8027ae0cfe34c974dea48a0d885d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  defaultTile: {fileID: 11400000, guid: 312c97bafd1feba45afdd0e33fc418c9, type: 2}
+  landTile: {fileID: 11400000, guid: f5a483efe4dde5d459919e7ff2330d7d, type: 2}
+  seaTile: {fileID: 11400000, guid: 954afb2643d8ec543a3aa4cf1191201a, type: 2}
+--- !u!114 &14530134
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 14530129}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6709859b5392c6146b673fb716f37899, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mapWidth: 10
+  mapHeight: 10
+  numContinents: 0
+--- !u!114 &14530135
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 14530129}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bb8b0f160af804449a35b467c35722d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &258878210
 GameObject:
   m_ObjectHideFlags: 0
@@ -604,68 +649,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 46.881, y: -89.558, z: 0.323}
---- !u!1 &1096102358
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1096102361}
-  - component: {fileID: 1096102360}
-  - component: {fileID: 1096102359}
-  m_Layer: 0
-  m_Name: Map Generator
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1096102359
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1096102358}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6709859b5392c6146b673fb716f37899, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mapWidth: 5
-  mapHeight: 5
-  numContinents: 0
---- !u!114 &1096102360
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1096102358}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4bb8b0f160af804449a35b467c35722d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _tilemap: {fileID: 14530132}
-  _defaultTile: {fileID: 11400000, guid: 312c97bafd1feba45afdd0e33fc418c9, type: 2}
---- !u!4 &1096102361
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1096102358}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.7026052, y: -4.551404, z: 0.31981462}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1501893559
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -732,4 +715,3 @@ SceneRoots:
   - {fileID: 258878212}
   - {fileID: 1501893559}
   - {fileID: 479814842}
-  - {fileID: 1096102361}
