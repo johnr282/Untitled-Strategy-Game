@@ -22,14 +22,19 @@ public class MapGeneration : MonoBehaviour
         _parameters = GetComponent<MapGenerationParameters>();
 
         InitializeTilemap();
+        SetTileSprites();
     }
 
     // Initialize _tilemap with width and height from map generation parameters
     void InitializeTilemap()
     {
-        for(int row = 0; row < _parameters.mapWidth; ++row)
+        _tilemap.origin = Vector3Int.zero;
+        _tilemap.size = new Vector3Int(_parameters.mapHeight, _parameters.mapWidth, 1);
+        _tilemap.ResizeBounds();
+
+        for (int row = 0; row < _parameters.mapHeight; ++row)
         {
-            for(int col = 0; col < _parameters.mapHeight; ++col)
+            for(int col = 0; col < _parameters.mapWidth; ++col)
             {
                 _tilemap.SetTile(new Vector3Int(row, col, 0), _tiles.defaultTile);
             }
@@ -40,8 +45,12 @@ public class MapGeneration : MonoBehaviour
     // in _hexMap
     void SetTileSprites()
     {
-        // 
-        TileBase[] tiles = _tilemap.GetTilesBlock(_tilemap.cellBounds);
-        
+        for (int row = 0; row < _parameters.mapHeight; ++row)
+        {
+            for (int col = 0; col < _parameters.mapWidth; ++col)
+            {
+                _tilemap.SetTile(new Vector3Int(row, col, 0), _tiles.landTile);
+            }
+        }
     }
 }

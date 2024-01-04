@@ -297,8 +297,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6709859b5392c6146b673fb716f37899, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mapWidth: 10
   mapHeight: 10
+  mapWidth: 12
   numContinents: 0
 --- !u!114 &14530135
 MonoBehaviour:

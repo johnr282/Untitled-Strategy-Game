@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MapGenerationParameters : MonoBehaviour
 {
-    public int mapWidth;
     public int mapHeight;
+    public int mapWidth;
     public int numContinents;
 }
