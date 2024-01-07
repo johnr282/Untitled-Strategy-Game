@@ -20,46 +20,50 @@ public class MapVisuals : MonoBehaviour
     // Initializes tilemap with given height and width
     public void InitializeVisuals(int height, int width)
     {
+        // Pointed-top hexagons are indexed (col, row) instead of (row, col)
         _tilemap.origin = Vector3Int.zero;
-        _tilemap.size = new Vector3Int(height, width, 1);
+        _tilemap.size = new Vector3Int(width, height, 1);
         _tilemap.ResizeBounds();
 
-        // Initializes all tiles to the default tile
+        // Initializes all tiles to the default tile; again because tilemap is 
+        // rotated, there are actually width rows and height cols
         for (int row = 0; row < height; row++)
         {
             for (int col = 0; col < width; col++)
             {
-                _tilemap.SetTile(new Vector3Int(row, col, 0), _tileLibrary.defaultTile);
+                _tilemap.SetTile(new Vector3Int(col, row, 0), _tileLibrary.defaultTile);
             }
         }
     }
 
-    // Updates all tiles in _tilemap based on terrain of HexTiles in given HexMap
-    public void UpdateVisuals(GameMap hexMap)
+    // Updates all tiles in _tilemap based on terrain of HexTiles in given GameMap
+    public void UpdateVisuals(GameMap gameMap)
     {
-        int height = _tilemap.cellBounds.size.y;
+        // Tilemap is rotated, so height and width are reversed of what they 
+        // should be
         int width = _tilemap.cellBounds.size.x;
+        int height = _tilemap.cellBounds.size.y;
 
         for (int row = 0; row < height; row++)
         {
             for (int col = 0; col < width; col++)
             {
-                Vector3Int coordinate = new Vector3Int(row, col, 0);
-                GameTile hexTile;
+                Vector3Int coordinate = new Vector3Int(col, row, 0);
+                GameTile gameTile;
 
-                if(hexMap.FindTile(coordinate, out hexTile))
-                    UpdateTile(coordinate, hexTile);
+                if(gameMap.FindTile(coordinate, out gameTile))
+                    UpdateTile(coordinate, gameTile);
                 else
-                    Debug.LogWarning("Tile at " + coordinate.ToString() + " not found in hexMap");
+                    Debug.LogWarning("Tile at " + coordinate.ToString() + " not found in gameMap");
             }
         }
     }
 
     // Sets tile in tilemap at given coordinate to TileBase object corresponding to
-    // terrain of given HexTile
-    public void UpdateTile(Vector3Int coordinate, GameTile hexTile)
+    // terrain of given GameTile
+    public void UpdateTile(Vector3Int coordinate, GameTile gameTile)
     {
-        Terrain terrain = hexTile.GetTerrain();
+        Terrain terrain = gameTile.GetTerrain();
         TileBase correspondingTile = _tileLibrary.GetCorrespondingTile(terrain);
         _tilemap.SetTile(coordinate, correspondingTile);
     }

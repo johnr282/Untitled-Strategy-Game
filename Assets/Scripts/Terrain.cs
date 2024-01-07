@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public class Terrain : MonoBehaviour
+public class Terrain
 {
     public enum TerrainType
     {
@@ -12,6 +12,12 @@ public class Terrain : MonoBehaviour
     }
 
     [SerializeField] TerrainType _terrainType;
+
+    // Constructor
+    public Terrain(TerrainType terrainType)
+    {
+        _terrainType = terrainType;
+    }
 
     public TerrainType GetTerrainType()
     {

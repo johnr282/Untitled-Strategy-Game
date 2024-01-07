@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class GameMap : MonoBehaviour
 {
+    // Keys are coordinates of tiles in the map, value is the tile itself
+    // Unity indexes pointed-top hexagons (col, row), so coordinates are (col, row)
     Dictionary<Vector3Int, GameTile> _hexMap = new Dictionary<Vector3Int, GameTile>();
 
     // Returns true if HexTile exists at given coordinate and gets HexTile 
