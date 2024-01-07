@@ -25,9 +25,9 @@ public class MapVisuals : MonoBehaviour
         _tilemap.ResizeBounds();
 
         // Initializes all tiles to the default tile
-        for (int row = 0; row < height; ++row)
+        for (int row = 0; row < height; row++)
         {
-            for (int col = 0; col < width; ++col)
+            for (int col = 0; col < width; col++)
             {
                 _tilemap.SetTile(new Vector3Int(row, col, 0), _tileLibrary.defaultTile);
             }
@@ -40,9 +40,9 @@ public class MapVisuals : MonoBehaviour
         int height = _tilemap.cellBounds.size.y;
         int width = _tilemap.cellBounds.size.x;
 
-        for (int row = 0; row < height; ++row)
+        for (int row = 0; row < height; row++)
         {
-            for (int col = 0; col < width; ++col)
+            for (int col = 0; col < width; col++)
             {
                 Vector3Int coordinate = new Vector3Int(row, col, 0);
                 HexTile hexTile;
@@ -50,7 +50,7 @@ public class MapVisuals : MonoBehaviour
                 if(hexMap.FindTile(coordinate, out hexTile))
                     UpdateTile(coordinate, hexTile);
                 else
-                    Debug.LogError("Tile at " + coordinate.ToString() + " not found in hexMap");
+                    Debug.LogWarning("Tile at " + coordinate.ToString() + " not found in hexMap");
             }
         }
     }

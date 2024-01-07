@@ -7,4 +7,6 @@ public class MapGenerationParameters : MonoBehaviour
     public int mapHeight;
     public int mapWidth;
     public int numContinents;
+    public int minContinentRadius;
+    public int maxContinentRadius;
 }
