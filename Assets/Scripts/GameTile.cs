@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HexTile
+public class GameTile
 {
     // Location of tile in tilemap
     Vector3Int _coordinate;

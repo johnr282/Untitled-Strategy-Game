@@ -4,18 +4,18 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 
 [RequireComponent(typeof(MapVisuals))]
-[RequireComponent(typeof(HexMap))]
+[RequireComponent(typeof(GameMap))]
 [RequireComponent(typeof(MapGenerationParameters))]
 public class MapGeneration : MonoBehaviour
 {
     MapVisuals _mapVisuals;
-    HexMap _gameMap;
+    GameMap _gameMap;
     MapGenerationParameters _parameters;
 
     void Start()
     {
          _mapVisuals = GetComponent<MapVisuals>();   
-        _gameMap = GetComponent<HexMap>();
+        _gameMap = GetComponent<GameMap>();
         _parameters = GetComponent<MapGenerationParameters>();
 
         // Initialize _tilemap with width and height from map generation parameters

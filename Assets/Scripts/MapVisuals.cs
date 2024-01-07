@@ -35,7 +35,7 @@ public class MapVisuals : MonoBehaviour
     }
 
     // Updates all tiles in _tilemap based on terrain of HexTiles in given HexMap
-    public void UpdateVisuals(HexMap hexMap)
+    public void UpdateVisuals(GameMap hexMap)
     {
         int height = _tilemap.cellBounds.size.y;
         int width = _tilemap.cellBounds.size.x;
@@ -45,7 +45,7 @@ public class MapVisuals : MonoBehaviour
             for (int col = 0; col < width; col++)
             {
                 Vector3Int coordinate = new Vector3Int(row, col, 0);
-                HexTile hexTile;
+                GameTile hexTile;
 
                 if(hexMap.FindTile(coordinate, out hexTile))
                     UpdateTile(coordinate, hexTile);
@@ -57,7 +57,7 @@ public class MapVisuals : MonoBehaviour
 
     // Sets tile in tilemap at given coordinate to TileBase object corresponding to
     // terrain of given HexTile
-    public void UpdateTile(Vector3Int coordinate, HexTile hexTile)
+    public void UpdateTile(Vector3Int coordinate, GameTile hexTile)
     {
         Terrain terrain = hexTile.GetTerrain();
         TileBase correspondingTile = _tileLibrary.GetCorrespondingTile(terrain);
