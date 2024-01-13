@@ -166,6 +166,9 @@ public class MapGeneration : MonoBehaviour
                     chosenGridCoordinates,
                     gridWidth);
 
+                Debug.Log("Tentative point: " + points[chosenIndex].ToString() +
+                    ", adjacent cells chosen: " + numAdjacentCellsChosen.ToString());
+
                 if(numAdjacentCellsChosen == 0)
                     pointSelected = true;
 
@@ -242,23 +245,22 @@ public class MapGeneration : MonoBehaviour
     {
         Vector2Int[] adjacentCoords = new Vector2Int[8];
 
-        Vector2Int southCell = coordinate + Vector2Int.down;
-        Vector2Int southWestCell = coordinate + new Vector2Int(-1, -1);
-        Vector2Int westCell = coordinate + Vector2Int.left;
-        Vector2Int northWestCell = coordinate + new Vector2Int(-1, 1);
-        Vector2Int northCell = coordinate + Vector2Int.up;
-        Vector2Int northEastCell = coordinate + new Vector2Int(1, 1);
-        Vector2Int eastCell = coordinate + Vector2Int.right;
-        Vector2Int southEastCell = coordinate + new Vector2Int(1, -1);
+        Vector2Int[] offsets = new Vector2Int[8]
+        {
+            Vector2Int.down,
+            new Vector2Int(-1, -1),
+            Vector2Int.left,
+            new Vector2Int(-1, 1),
+            Vector2Int.up,
+            new Vector2Int(1, 1),
+            Vector2Int.right,
+            new Vector2Int(1, -1)
+        };
 
-        adjacentCoords[0] = southCell;
-        adjacentCoords[1] = southWestCell;
-        adjacentCoords[2] = westCell;
-        adjacentCoords[3] = northWestCell;
-        adjacentCoords[4] = northCell;
-        adjacentCoords[5] = northEastCell;
-        adjacentCoords[6] = eastCell;
-        adjacentCoords[7] = southEastCell;
+        for(int i = 0; i < 8; i++)
+        {
+            adjacentCoords[i] = coordinate + offsets[i];
+        }
 
         return adjacentCoords;
     }
