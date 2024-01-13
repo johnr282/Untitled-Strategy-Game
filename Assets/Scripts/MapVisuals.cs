@@ -46,8 +46,6 @@ public class MapVisuals : MonoBehaviour
     // Updates all tiles in _tilemap based on terrain of HexTiles in given GameMap
     public void UpdateVisuals(GameMap gameMap)
     {
-        // Tilemap is rotated, so height and width are reversed of what they 
-        // should be
         int width = _tilemap.cellBounds.size.x;
         int height = _tilemap.cellBounds.size.y;
 
@@ -55,11 +53,11 @@ public class MapVisuals : MonoBehaviour
         {
             for (int col = 0; col < width; col++)
             {
-                Vector2Int coordinate = new Vector2Int(col, row);
+                HexCoordinateOffset coordinate = new HexCoordinateOffset(col, row);
                 GameTile gameTile;
 
                 if(gameMap.FindTile(coordinate, out gameTile))
-                    UpdateTile(new Vector3Int(coordinate.x, coordinate.y, 0), gameTile);
+                    UpdateTile(coordinate.ConvertToVector3Int(), gameTile);
                 else
                     Debug.LogWarning("Tile at " + coordinate.ToString() + " not found in gameMap");
             }

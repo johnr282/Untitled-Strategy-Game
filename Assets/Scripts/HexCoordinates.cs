@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using UnityEngine;
 
 // ------------------------------------------------------------------
@@ -9,36 +10,55 @@ using UnityEngine;
 
 public class HexCoordinateOffset
 {
-    public readonly int row;
     public readonly int col;
+    public readonly int row;
 
     // Constructor
-    public HexCoordinateOffset(int rowIn, 
-        int colIn)
+    public HexCoordinateOffset(int colIn, 
+        int rowIn)
     {
-        row = rowIn;
         col = colIn;
+        row = rowIn;
     }
 
     // Addition operator overload
     public static HexCoordinateOffset operator +(HexCoordinateOffset lhs,
         HexCoordinateOffset rhs)
     {
-        return new HexCoordinateOffset(lhs.row + rhs.row, 
-            lhs.col + rhs.col);
+        return new HexCoordinateOffset(lhs.col + rhs.col, 
+            lhs.row + rhs.row);
     }
 
     // Subtraction operator overload
     public static HexCoordinateOffset operator -(HexCoordinateOffset lhs,
         HexCoordinateOffset rhs)
     {
-        return new HexCoordinateOffset(lhs.row - rhs.row, 
-            lhs.col - rhs.col);
+        return new HexCoordinateOffset(lhs.col - rhs.col, 
+            lhs.row - rhs.row);
     }
 
     public override string ToString()
     {
-        return "row: " + row.ToString() + ", col: " + col.ToString();
+        return "col: " + col.ToString() + ", row: " + row.ToString();
+    }
+
+    public override int GetHashCode()
+    {
+        return col.GetHashCode() ^ row.GetHashCode();
+    }
+
+    public override bool Equals(object obj)
+    {
+        if ((obj == null) || 
+            !this.GetType().Equals(obj.GetType()))
+        {
+            return false;
+        }
+        else
+        {
+            HexCoordinateOffset hex = (HexCoordinateOffset)obj;
+            return (col == hex.col) && (row == hex.row);
+        }
     }
 
     // Converts this coordinate to a Vector2Int of the form (col, row)

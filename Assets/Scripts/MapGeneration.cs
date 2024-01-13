@@ -62,7 +62,7 @@ public class MapGeneration : MonoBehaviour
         {
             for(int col = 0;  col < _parameters.MapWidth(); col++)
             {
-                Vector2Int coordinate = new Vector2Int(col, row);
+                HexCoordinateOffset coordinate = new HexCoordinateOffset(col, row);
                 Terrain seaTerrain = new Terrain(Terrain.TerrainType.sea);
                 GameTile newTile = new GameTile(coordinate, seaTerrain);
                 _gameMap.AddTile(coordinate, newTile);
@@ -73,29 +73,29 @@ public class MapGeneration : MonoBehaviour
     // Generate continents without considering terrain
     void GenerateContinents()
     {
-        List<Vector2Int> centralCoordinates  = ChooseContinentCentralTiles();
+        List<HexCoordinateOffset> centralCoordinates  = ChooseContinentCentralTiles();
 
-        foreach(Vector2Int centralCoordinate in centralCoordinates)
+        foreach(HexCoordinateOffset centralCoordinate in centralCoordinates)
         {
             _gameMap.ChangeTerrain(centralCoordinate, Terrain.TerrainType.land);
         }
     }
 
     // Choose central tiles for each continent and return list of these coordinates
-    List<Vector2Int> ChooseContinentCentralTiles()
+    List<HexCoordinateOffset> ChooseContinentCentralTiles()
     {
         // Divide map into grid of square cells of size cellSize x cellSize and randomly 
         // choose a point in each cell
         int cellSize = Mathf.FloorToInt(
             _parameters.AverageContinentDiameter() * 
             _parameters.ContinentDiameterToGridCellSizeRatio());
-        List<Vector2Int> cellPoints = ChoosePointInEachCell(cellSize, 
+        List<HexCoordinateOffset> cellPoints = ChoosePointInEachCell(cellSize, 
             out int gridWidth, 
             out int gridHeight);
 
         // Pick numContinents points out of the randomly chosen points to be the central 
         // tiles for each continent
-        List<Vector2Int> centralCoordinates = SelectCentralTilesFromList(cellPoints, 
+        List<HexCoordinateOffset> centralCoordinates = SelectCentralTilesFromList(cellPoints, 
             gridWidth, 
             gridHeight, 
             _parameters.NumContinents());
@@ -104,12 +104,12 @@ public class MapGeneration : MonoBehaviour
 
     // Divides map into square cells of given size and randomly chooses a point in each
     // cell; returns the list of points; calculates width and height of grid
-    List<Vector2Int> ChoosePointInEachCell(int cellSize, 
+    List<HexCoordinateOffset> ChoosePointInEachCell(int cellSize, 
         out int gridWidth, 
         out int gridHeight)
     {
         // Iterate through the square cells and pick a random point in each one
-        List<Vector2Int> cellPoints = new();
+        List<HexCoordinateOffset> cellPoints = new();
 
         gridWidth = 0;
         gridHeight = 0;
@@ -132,7 +132,7 @@ public class MapGeneration : MonoBehaviour
 
                 int randRow = Random.Range(row, exclusiveUpperRowBound);
                 int randCol = Random.Range(col, exclusiveUpperColBound);
-                cellPoints.Add(new Vector2Int(randCol, randRow));
+                cellPoints.Add(new HexCoordinateOffset(randCol, randRow));
             }
         }
 
@@ -142,12 +142,12 @@ public class MapGeneration : MonoBehaviour
     // Randomly chooses n points out of given list; returns array of chosen points;
     // points are less likely to be chosen if tiles in adjacent grid cells have
     // already been chosen
-    List<Vector2Int> SelectCentralTilesFromList(List<Vector2Int> points, 
+    List<HexCoordinateOffset> SelectCentralTilesFromList(List<HexCoordinateOffset> points, 
         int gridWidth, 
         int gridHeight, 
         int n)
     {
-        List<Vector2Int> chosenPoints = new();
+        List<HexCoordinateOffset> chosenPoints = new();
         HashSet<Vector2Int> chosenGridCoordinates = new();
 
         for(int i = 0; i < n; i++)
@@ -197,8 +197,8 @@ public class MapGeneration : MonoBehaviour
     // Returns true if given point is less than
     // _parameters.MinDistanceBetweenCentralContinentTiles away from an already
     // chosen point
-    bool TooCloseToChosenPoint(Vector2Int point, 
-        List<Vector2Int> chosenPoints)
+    bool TooCloseToChosenPoint(HexCoordinateOffset point, 
+        List<HexCoordinateOffset> chosenPoints)
     {
         return false;
     }
