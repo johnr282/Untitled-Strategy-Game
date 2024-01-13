@@ -55,11 +55,11 @@ public class MapVisuals : MonoBehaviour
         {
             for (int col = 0; col < width; col++)
             {
-                Vector3Int coordinate = new Vector3Int(col, row, 0);
+                Vector2Int coordinate = new Vector2Int(col, row);
                 GameTile gameTile;
 
                 if(gameMap.FindTile(coordinate, out gameTile))
-                    UpdateTile(coordinate, gameTile);
+                    UpdateTile(new Vector3Int(coordinate.x, coordinate.y, 0), gameTile);
                 else
                     Debug.LogWarning("Tile at " + coordinate.ToString() + " not found in gameMap");
             }

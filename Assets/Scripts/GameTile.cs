@@ -11,14 +11,14 @@ public class GameTile
 {
     // Location of tile in tilemap
     // Unity indexes pointed-top hexagons (col, row), so coordinates are (col, row, 0)
-    Vector3Int _coordinate;
+    Vector2Int _coordinate;
 
     Terrain _terrain;
 
     int _continentID;
 
     // Constructor
-    public GameTile(Vector3Int coordinate, 
+    public GameTile(Vector2Int coordinate, 
         Terrain terrain)
     {
         _coordinate = coordinate;
