@@ -18,7 +18,8 @@ public class MapVisuals : MonoBehaviour
     }
 
     // Initializes tilemap with given height and width
-    public void InitializeVisuals(int height, int width)
+    public void InitializeVisuals(int height, 
+        int width)
     {
         // Pointed-top hexagons are indexed (col, row) instead of (row, col)
         _tilemap.origin = Vector3Int.zero;

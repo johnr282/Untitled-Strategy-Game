@@ -301,7 +301,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _widthToHeightRatio: 0.5
   _numContinents: 8
-  _averageContinentDiameter: 6
+  _averageContinentDiameter: 3
   _continentDiameterToGridCellSizeRatio: 1.5
 --- !u!114 &14530135
 MonoBehaviour:
@@ -564,7 +564,7 @@ Transform:
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
   m_LocalRotation: {x: 0.28054667, y: -0.6470352, z: 0.2820313, w: 0.65045935}
-  m_LocalPosition: {x: 37.01, y: 34.1, z: 30.89}
+  m_LocalPosition: {x: 21.7, y: 16.7, z: 14.6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

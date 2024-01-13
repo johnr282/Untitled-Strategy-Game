@@ -10,20 +10,23 @@ public class GameMap : MonoBehaviour
 
     // Returns true if HexTile exists at given coordinate and gets HexTile 
     // at that location; returns false otherwise
-    public bool FindTile(Vector3Int coordinate, out GameTile tile)
+    public bool FindTile(Vector3Int coordinate, 
+        out GameTile tile)
     {
         return _gameMap.TryGetValue(coordinate, out tile);
     }
 
     // Adds given HexTile at given coordinate to map
-    public void AddTile(Vector3Int coordinate, GameTile tile)
+    public void AddTile(Vector3Int coordinate, 
+        GameTile tile)
     {
         _gameMap.Add(coordinate, tile);
     }
 
     // Changes terrain of GameTile at given coordinate to given TerrainType; 
     // returns false if no tile exists at given coordinate, returns true otherwise
-    public bool ChangeTerrain(Vector3Int coordinate, Terrain.TerrainType newTerrainType)
+    public bool ChangeTerrain(Vector3Int coordinate, 
+        Terrain.TerrainType newTerrainType)
     {
         if (!FindTile(coordinate, out GameTile tile))
             return false;

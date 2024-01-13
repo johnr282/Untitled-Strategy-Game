@@ -80,30 +80,43 @@ public class MapGeneration : MonoBehaviour
     // Choose central tiles for each continent and return list of these coordinates
     Vector3Int[] ChooseContinentCentralTiles()
     {
-        // Divide map into square cells of size cellSize x cellSize and randomly 
+        // Divide map into grid of square cells of size cellSize x cellSize and randomly 
         // choose a point in each cell
         int cellSize = Mathf.FloorToInt(
             _parameters.AverageContinentDiameter() * 
             _parameters.ContinentDiameterToGridCellSizeRatio());
-        List<Vector3Int> cellPoints = ChoosePointInEachCell(cellSize);
+        List<Vector3Int> cellPoints = ChoosePointInEachCell(cellSize, 
+            out int gridWidth, 
+            out int gridHeight);
 
         // Pick numContinents points out of the randomly chosen points to be the central 
         // tiles for each continent
-        Vector3Int[] centralCoordinates = ChooseNFromList(cellPoints, _parameters.NumContinents());
+        Vector3Int[] centralCoordinates = SelectCentralTilesFromList(cellPoints, 
+            gridWidth, 
+            gridHeight, 
+            _parameters.NumContinents());
         return centralCoordinates;
     }
 
     // Divides map into square cells of given size and randomly chooses a point in each
-    // cell; returns the list of points
-    List<Vector3Int> ChoosePointInEachCell(int cellSize)
+    // cell; returns the list of points; calculates width and height of grid
+    List<Vector3Int> ChoosePointInEachCell(int cellSize, 
+        out int gridWidth, 
+        out int gridHeight)
     {
         // Iterate through the square cells and pick a random point in each one
         List<Vector3Int> cellPoints = new List<Vector3Int>();
 
+        gridWidth = 0;
+        gridHeight = 0;
+
         for (int row = 0; row < _parameters.MapHeight(); row += cellSize)
         {
+            gridHeight++;
             for (int col = 0; col < _parameters.MapWidth(); col += cellSize)
             {
+                gridWidth++;
+
                 // If cell doesn't fit evenly into map, decrease size of cell so it fits
                 int exclusiveUpperRowBound = row + cellSize;
                 if (exclusiveUpperRowBound >= _parameters.MapHeight())
@@ -122,18 +135,118 @@ public class MapGeneration : MonoBehaviour
         return cellPoints;
     }
 
-    // Randomly chooses n points out of given list; returns array of chosen points
-    Vector3Int[] ChooseNFromList(List<Vector3Int> list, int n)
+    // Randomly chooses n points out of given list; returns array of chosen points;
+    // points are less likely to be chosen if tiles in adjacent grid cells have
+    // already been chosen
+    Vector3Int[] SelectCentralTilesFromList(List<Vector3Int> points, 
+        int gridWidth, 
+        int gridHeight, 
+        int n)
     {
         Vector3Int[] chosenPoints = new Vector3Int[n];
+        HashSet<Vector2Int> chosenGridCoordinates = new HashSet<Vector2Int>();
 
         for(int i = 0; i < n; i++)
         {
-            int randIndex = Random.Range(0, list.Count);
-            chosenPoints[i] = list[randIndex];
-            list.RemoveAt(randIndex);
+            // An index needs to randomly chosen numAdjacentCellsChosen times in a row
+            // to be selected; this makes it much less likely that a cell adjacent to
+            // several chosen cells will be chosen, which will ensure that the
+            // continents aren't all clustered together
+            int chosenIndex = Random.Range(0, points.Count); // dummy value to prevent compiler error
+            bool pointSelected = false;
+
+            while (!pointSelected)
+            {
+                chosenIndex = Random.Range(0, points.Count);
+                int numAdjacentCellsChosen = AdjacentCellsChosen(chosenIndex,
+                    chosenGridCoordinates,
+                    gridWidth);
+
+                if(numAdjacentCellsChosen == 0)
+                    pointSelected = true;
+
+                for (int j = 0; j < numAdjacentCellsChosen; j++)
+                {
+                    int confirmIndex = Random.Range(0, points.Count);
+                    if (chosenIndex == confirmIndex)
+                    {
+                        pointSelected = true;
+                        continue;
+                    }  
+                    else
+                    {
+                        pointSelected = false;
+                        break;
+                    }
+                }
+            }
+
+            chosenPoints[i] = points[chosenIndex];
+            points.RemoveAt(chosenIndex);
+            chosenGridCoordinates.Add(IndexToCoordinate(chosenIndex, 
+                gridWidth));
         }
 
         return chosenPoints;
+    }
+
+    // Converts given index of row-major array to corresponding 2D grid
+    // coordinate; needs the number of columns in grid
+    Vector2Int IndexToCoordinate(int index, 
+        int columnsInGrid)
+    {
+        int gridRow = index / columnsInGrid;
+        int gridCol = index % columnsInGrid;
+        return new Vector2Int(gridRow, gridCol);
+    }
+
+    // Returns number of points in grid cells adjacent to given index that have
+    // already been chosen
+    int AdjacentCellsChosen(int cellIndex, 
+        HashSet<Vector2Int> chosenGridCoordinates, 
+        int gridWidth)
+    {
+        Vector2Int coordinate = IndexToCoordinate(cellIndex, gridWidth);
+
+        // Calculates coordinates of all adjacent (including diagonal) grid cells
+        // and adds them to array
+        Vector2Int[] adjacentCoords = CalculateAdjacentCoordinates(coordinate);
+
+        // Counts how many adjacent coordinates are in chosenGridCoordinates
+        int numAdjacentCellsChosen = 0;
+        foreach(Vector2Int coord in adjacentCoords)
+        {
+            if(chosenGridCoordinates.Contains(coord))
+                numAdjacentCellsChosen++;
+        }
+
+        return numAdjacentCellsChosen;
+    }
+
+    // Given a 2D coordinate, return an array of the 8 adjacent coordinates 
+    // (including diagonal)
+    Vector2Int[] CalculateAdjacentCoordinates(Vector2Int coordinate)
+    {
+        Vector2Int[] adjacentCoords = new Vector2Int[8];
+
+        Vector2Int southCell = coordinate + Vector2Int.down;
+        Vector2Int southWestCell = coordinate + new Vector2Int(-1, -1);
+        Vector2Int westCell = coordinate + Vector2Int.left;
+        Vector2Int northWestCell = coordinate + new Vector2Int(-1, 1);
+        Vector2Int northCell = coordinate + Vector2Int.up;
+        Vector2Int northEastCell = coordinate + new Vector2Int(1, 1);
+        Vector2Int eastCell = coordinate + Vector2Int.right;
+        Vector2Int southEastCell = coordinate + new Vector2Int(1, -1);
+
+        adjacentCoords[0] = southCell;
+        adjacentCoords[1] = southWestCell;
+        adjacentCoords[2] = westCell;
+        adjacentCoords[3] = northWestCell;
+        adjacentCoords[4] = northCell;
+        adjacentCoords[5] = northEastCell;
+        adjacentCoords[6] = eastCell;
+        adjacentCoords[7] = southEastCell;
+
+        return adjacentCoords;
     }
 }

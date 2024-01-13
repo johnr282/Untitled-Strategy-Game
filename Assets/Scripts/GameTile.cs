@@ -13,7 +13,8 @@ public class GameTile
     int _continentID;
 
     // Constructor
-    public GameTile(Vector3Int coordinate, Terrain terrain)
+    public GameTile(Vector3Int coordinate, 
+        Terrain terrain)
     {
         _coordinate = coordinate;
         _terrain = terrain;
