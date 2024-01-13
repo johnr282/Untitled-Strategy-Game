@@ -32,7 +32,9 @@ public class MapGeneration : MonoBehaviour
     // and bounds on continent size
     void CalculateMapDimensions()
     {
-        int mapWidth = _parameters.AverageContinentDiameter() * _parameters.NumContinents();
+        int mapWidth = Mathf.FloorToInt(_parameters.AverageContinentDiameter() * 
+            _parameters.ContinentDiameterToGridCellSizeRatio() * 
+            _parameters.NumContinents());
         _parameters.SetMapWidth(mapWidth);
 
         int mapHeight = Mathf.FloorToInt(mapWidth * _parameters.WidthToHeightRatio());
@@ -80,7 +82,9 @@ public class MapGeneration : MonoBehaviour
     {
         // Divide map into square cells of size cellSize x cellSize and randomly 
         // choose a point in each cell
-        int cellSize = _parameters.AverageContinentDiameter();
+        int cellSize = Mathf.FloorToInt(
+            _parameters.AverageContinentDiameter() * 
+            _parameters.ContinentDiameterToGridCellSizeRatio());
         List<Vector3Int> cellPoints = ChoosePointInEachCell(cellSize);
 
         // Pick numContinents points out of the randomly chosen points to be the central 

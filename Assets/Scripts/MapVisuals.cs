@@ -25,15 +25,16 @@ public class MapVisuals : MonoBehaviour
         _tilemap.size = new Vector3Int(width, height, 1);
         _tilemap.ResizeBounds();
 
+        Debug.Log("Tilemap bounds: " + _tilemap.cellBounds.ToString());
+
         // Initializes all tiles to the default tile; again because tilemap is 
         // rotated, there are actually width rows and height cols
-        for (int row = 0; row < height; row++)
-        {
-            for (int col = 0; col < width; col++)
-            {
-                _tilemap.SetTile(new Vector3Int(col, row, 0), _tileLibrary.defaultTile);
-            }
-        }
+        _tilemap.BoxFill(_tilemap.origin, _tileLibrary.defaultTile, _tilemap.origin.x, _tilemap.origin.y, width, height);
+
+        // Fixes bug where bottom few rows of tiles weren't rendered for certain
+        // map dimensions until I clicked on the tilemap in the editor
+        _tilemap.gameObject.SetActive(false);
+        _tilemap.gameObject.SetActive(true);
     }
 
     // Updates all tiles in _tilemap based on terrain of HexTiles in given GameMap
