@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
+// ------------------------------------------------------------------
+// Component for storing tile assets
+// ------------------------------------------------------------------
+
 public class TileLibrary : MonoBehaviour
 {
     public TileBase defaultTile;

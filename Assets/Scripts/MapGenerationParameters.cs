@@ -2,14 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// ------------------------------------------------------------------
+// Component for storing map generation parameters
+// ------------------------------------------------------------------
+
 public class MapGenerationParameters : MonoBehaviour
 {
     [SerializeField] float _widthToHeightRatio;
     [SerializeField] int _numContinents;
     [SerializeField] int _averageContinentDiameter;
 
-    // The higher this parameter, the farther the continents will be spread apart
+    // The higher these parameters, the farther the continents will be spread apart
     [SerializeField] float _continentDiameterToGridCellSizeRatio;
+    [SerializeField] int _minDistanceBetweenCentralContinentTiles;
 
     // _mapHeight and _mapWidth are calculated based on numContinents, 
     // minContinentRadius, and maxContinent radius, so they aren't serialized
@@ -23,6 +28,8 @@ public class MapGenerationParameters : MonoBehaviour
     public int AverageContinentDiameter() {  return _averageContinentDiameter; }
 
     public float ContinentDiameterToGridCellSizeRatio() { return _continentDiameterToGridCellSizeRatio; }
+
+    public int MinDistanceBetweenCentralContinentTiles() {  return _minDistanceBetweenCentralContinentTiles; }
 
 
 

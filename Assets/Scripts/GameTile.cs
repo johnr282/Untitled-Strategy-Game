@@ -2,6 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// ------------------------------------------------------------------
+// Class representing a single hexagonal tile in the game map; not
+// used for visual rendering
+// ------------------------------------------------------------------
+
 public class GameTile
 {
     // Location of tile in tilemap

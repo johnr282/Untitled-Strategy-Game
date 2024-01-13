@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
+// ------------------------------------------------------------------
+// Class for handling different terrain types of game tiles
+// ------------------------------------------------------------------
+
 public class Terrain
 {
     public enum TerrainType

@@ -4,6 +4,11 @@ using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
+// ------------------------------------------------------------------
+// Component for handling the Unity Tilemap system used to render the
+// game map and hexagonal grid 
+// ------------------------------------------------------------------
+
 [RequireComponent(typeof(Tilemap))]
 [RequireComponent(typeof(TileLibrary))]
 public class MapVisuals : MonoBehaviour

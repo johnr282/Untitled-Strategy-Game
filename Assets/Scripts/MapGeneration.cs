@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
+// ------------------------------------------------------------------
+// Component for handling procedural map generation
+// ------------------------------------------------------------------
+
 [RequireComponent(typeof(MapVisuals))]
 [RequireComponent(typeof(GameMap))]
 [RequireComponent(typeof(MapGenerationParameters))]
@@ -69,7 +73,7 @@ public class MapGeneration : MonoBehaviour
     // Generate continents without considering terrain
     void GenerateContinents()
     {
-        Vector3Int[] centralCoordinates  = ChooseContinentCentralTiles();
+        List<Vector3Int> centralCoordinates  = ChooseContinentCentralTiles();
 
         foreach(Vector3Int centralCoordinate in centralCoordinates)
         {
@@ -78,7 +82,7 @@ public class MapGeneration : MonoBehaviour
     }
 
     // Choose central tiles for each continent and return list of these coordinates
-    Vector3Int[] ChooseContinentCentralTiles()
+    List<Vector3Int> ChooseContinentCentralTiles()
     {
         // Divide map into grid of square cells of size cellSize x cellSize and randomly 
         // choose a point in each cell
@@ -91,7 +95,7 @@ public class MapGeneration : MonoBehaviour
 
         // Pick numContinents points out of the randomly chosen points to be the central 
         // tiles for each continent
-        Vector3Int[] centralCoordinates = SelectCentralTilesFromList(cellPoints, 
+        List<Vector3Int> centralCoordinates = SelectCentralTilesFromList(cellPoints, 
             gridWidth, 
             gridHeight, 
             _parameters.NumContinents());
@@ -105,7 +109,7 @@ public class MapGeneration : MonoBehaviour
         out int gridHeight)
     {
         // Iterate through the square cells and pick a random point in each one
-        List<Vector3Int> cellPoints = new List<Vector3Int>();
+        List<Vector3Int> cellPoints = new();
 
         gridWidth = 0;
         gridHeight = 0;
@@ -138,13 +142,13 @@ public class MapGeneration : MonoBehaviour
     // Randomly chooses n points out of given list; returns array of chosen points;
     // points are less likely to be chosen if tiles in adjacent grid cells have
     // already been chosen
-    Vector3Int[] SelectCentralTilesFromList(List<Vector3Int> points, 
+    List<Vector3Int> SelectCentralTilesFromList(List<Vector3Int> points, 
         int gridWidth, 
         int gridHeight, 
         int n)
     {
-        Vector3Int[] chosenPoints = new Vector3Int[n];
-        HashSet<Vector2Int> chosenGridCoordinates = new HashSet<Vector2Int>();
+        List<Vector3Int> chosenPoints = new();
+        HashSet<Vector2Int> chosenGridCoordinates = new();
 
         for(int i = 0; i < n; i++)
         {
@@ -181,7 +185,7 @@ public class MapGeneration : MonoBehaviour
                 }
             }
 
-            chosenPoints[i] = points[chosenIndex];
+            chosenPoints.Add(points[chosenIndex]);
             points.RemoveAt(chosenIndex);
             chosenGridCoordinates.Add(IndexToCoordinate(chosenIndex, 
                 gridWidth));
@@ -190,14 +194,13 @@ public class MapGeneration : MonoBehaviour
         return chosenPoints;
     }
 
-    // Converts given index of row-major array to corresponding 2D grid
-    // coordinate; needs the number of columns in grid
-    Vector2Int IndexToCoordinate(int index, 
-        int columnsInGrid)
+    // Returns true if given point is less than
+    // _parameters.MinDistanceBetweenCentralContinentTiles away from an already
+    // chosen point
+    bool TooCloseToChosenPoint(Vector3Int point, 
+        List<Vector3Int> chosenPoints)
     {
-        int gridRow = index / columnsInGrid;
-        int gridCol = index % columnsInGrid;
-        return new Vector2Int(gridRow, gridCol);
+        return false;
     }
 
     // Returns number of points in grid cells adjacent to given index that have
@@ -221,6 +224,16 @@ public class MapGeneration : MonoBehaviour
         }
 
         return numAdjacentCellsChosen;
+    }
+
+    // Converts given index of row-major array to corresponding 2D grid
+    // coordinate; needs the number of columns in grid
+    Vector2Int IndexToCoordinate(int index,
+        int columnsInGrid)
+    {
+        int gridRow = index / columnsInGrid;
+        int gridCol = index % columnsInGrid;
+        return new Vector2Int(gridRow, gridCol);
     }
 
     // Given a 2D coordinate, return an array of the 8 adjacent coordinates 

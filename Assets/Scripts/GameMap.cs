@@ -2,6 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// ------------------------------------------------------------------
+// Component representing the entire game map composed of a grid of 
+// GameTiles; not used for visual rendering
+// ------------------------------------------------------------------
+
 public class GameMap : MonoBehaviour
 {
     // Keys are coordinates of tiles in the map, value is the tile itself
