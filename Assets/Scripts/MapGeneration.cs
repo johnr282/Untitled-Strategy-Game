@@ -166,8 +166,8 @@ public class MapGeneration : MonoBehaviour
                     chosenGridCoordinates,
                     gridWidth);
 
-                Debug.Log("Tentative point: " + points[chosenIndex].ToString() +
-                    ", adjacent cells chosen: " + numAdjacentCellsChosen.ToString());
+                //Debug.Log("Tentative point: " + points[chosenIndex].ToString() +
+                //    ", adjacent cells chosen: " + numAdjacentCellsChosen.ToString());
 
                 if(numAdjacentCellsChosen == 0)
                     pointSelected = true;

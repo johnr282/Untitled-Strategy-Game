@@ -73,6 +73,11 @@ public static class UnityUtilities
     // Returns world position of mouse cursor
     public static Vector3 MouseWorldPosition(Camera camera)
     {
+        Vector3 mousePosScreen = Input.mousePosition;
+        // Ensure that Z coordinate of mousePosScreen positive so movement
+        // is detected in 3D
+        mousePosScreen.z = camera.nearClipPlane;
+        Debug.Log("Mouse position on screen: " + mousePosScreen.ToString());
         Vector3 pos = camera.ScreenToWorldPoint(Input.mousePosition);
 
         // Need to get rid of camera position's affect on pos

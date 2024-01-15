@@ -139,6 +139,7 @@ GameObject:
   - component: {fileID: 14530133}
   - component: {fileID: 14530136}
   - component: {fileID: 14530137}
+  - component: {fileID: 14530138}
   m_Layer: 0
   m_Name: Game Map
   m_TagString: Untagged
@@ -303,6 +304,7 @@ MonoBehaviour:
   _numContinents: 8
   _averageContinentDiameter: 3
   _continentDiameterToGridCellSizeRatio: 1.5
+  _minDistanceBetweenCentralContinentTiles: 0
 --- !u!114 &14530135
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -327,6 +329,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27d6c9946ee83464abf3a13e3cf8f871, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _tileSaturationFactor: 0.75
 --- !u!114 &14530137
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -337,6 +340,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0e6922b705ec791478b3aa9975b24bef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &14530138
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 14530129}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91a9954c1d1205e48995087b05ebdd27, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &705507993
@@ -563,13 +578,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.28054667, y: -0.6470352, z: 0.2820313, w: 0.65045935}
-  m_LocalPosition: {x: 21.7, y: 16.7, z: 14.6}
+  m_LocalRotation: {x: 0.31300452, y: -0.6319724, z: 0.3146609, w: 0.635317}
+  m_LocalPosition: {x: 19.75, y: 16.7, z: 14.6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 46.881, y: -89.558, z: 0.323}
+  m_LocalEulerAnglesHint: {x: 52.696, y: -89.501, z: 0.397}
 --- !u!1001 &1501893559
 PrefabInstance:
   m_ObjectHideFlags: 0

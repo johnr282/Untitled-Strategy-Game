@@ -16,6 +16,10 @@ public class MapVisuals : MonoBehaviour
     Tilemap _tilemap;
     TileLibrary _tileLibrary;
 
+    Vector3Int _currentlyHighlightedTile = new Vector3Int(-1, -1, -1);
+
+    [SerializeField] float _tileSaturationFactor;
+
     void Awake()
     {
         _tilemap = GetComponent<Tilemap>();
@@ -71,5 +75,41 @@ public class MapVisuals : MonoBehaviour
         Terrain terrain = gameTile.GetTerrain();
         TileBase correspondingTile = _tileLibrary.GetCorrespondingTile(terrain);
         _tilemap.SetTile(coordinate, correspondingTile);
+    }
+
+    // Highlights tile at given world position; does nothing if no tile exists
+    public void HighlightTile(Vector3 tileWorldPos)
+    {
+        Vector3Int tilePos = _tilemap.WorldToCell(tileWorldPos);
+        if (!_tilemap.HasTile(tilePos) ||
+            _currentlyHighlightedTile == tilePos)
+            return;
+
+        // New tile needs to be highlighted
+        AdjustTileSaturation(tilePos, _tileSaturationFactor);
+
+        // Previous tile needs to be un-highlighted
+        AdjustTileSaturation(_currentlyHighlightedTile, 
+            1 / _tileSaturationFactor);
+
+        _currentlyHighlightedTile = tilePos;
+    }
+
+    // Multiplies saturation value of tile's color at tilePos by saturation 
+    // factor
+    void AdjustTileSaturation(Vector3Int tilePos, 
+        float saturationFactor)
+    {
+        Color currTileColor = _tilemap.GetColor(tilePos);
+        Color.RGBToHSV(currTileColor, 
+            out float H, 
+            out float S, 
+            out float V);
+        S *= saturationFactor;
+        Color newTileColor = Color.HSVToRGB(H, S, V);
+
+        // Allow tile to change color
+        _tilemap.SetTileFlags(tilePos, TileFlags.None);
+        _tilemap.SetColor(tilePos, newTileColor);
     }
 }
