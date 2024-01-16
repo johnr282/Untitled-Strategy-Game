@@ -93,6 +93,7 @@ public class MapVisuals : MonoBehaviour
             1 / _tileSaturationFactor);
 
         _currentlyHighlightedTile = tilePos;
+        EventBus.Publish(new NewTileSelectedEvent(tilePos));
     }
 
     // Multiplies saturation value of tile's color at tilePos by saturation 
