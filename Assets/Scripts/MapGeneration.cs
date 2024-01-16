@@ -24,7 +24,7 @@ public class MapGeneration : MonoBehaviour
 
         CalculateMapDimensions();
         // Initialize _tilemap with width and height from map generation parameters
-        _mapVisuals.InitializeVisuals(_parameters.MapHeight(), _parameters.MapWidth());
+        _mapVisuals.InitializeVisuals(_parameters.MapHeight, _parameters.MapWidth);
 
         GenerateMap();
 
@@ -36,13 +36,13 @@ public class MapGeneration : MonoBehaviour
     // and bounds on continent size
     void CalculateMapDimensions()
     {
-        int mapWidth = Mathf.FloorToInt(_parameters.AverageContinentDiameter() * 
-            _parameters.ContinentDiameterToGridCellSizeRatio() * 
-            _parameters.NumContinents());
-        _parameters.SetMapWidth(mapWidth);
+        int mapWidth = Mathf.FloorToInt(_parameters.AverageContinentDiameter * 
+            _parameters.ContinentDiameterToGridCellSizeRatio * 
+            _parameters.NumContinents);
+        _parameters.MapWidth = mapWidth;
 
-        int mapHeight = Mathf.FloorToInt(mapWidth * _parameters.WidthToHeightRatio());
-        _parameters.SetMapHeight(mapHeight);
+        int mapHeight = Mathf.FloorToInt(mapWidth * _parameters.WidthToHeightRatio);
+        _parameters.MapHeight = mapHeight;
 
         Debug.Log("Map width: " + mapWidth.ToString());
         Debug.Log("Map height: " + mapHeight.ToString());
@@ -58,9 +58,9 @@ public class MapGeneration : MonoBehaviour
     // Initialize every tile in _gameMap to sea
     void InitializeEveryTileToSea()
     {
-        for(int row = 0; row < _parameters.MapHeight(); row++)
+        for(int row = 0; row < _parameters.MapHeight; row++)
         {
-            for(int col = 0;  col < _parameters.MapWidth(); col++)
+            for(int col = 0;  col < _parameters.MapWidth; col++)
             {
                 HexCoordinateOffset coordinate = new HexCoordinateOffset(col, row);
                 Terrain seaTerrain = new Terrain(Terrain.TerrainType.sea);
@@ -87,8 +87,8 @@ public class MapGeneration : MonoBehaviour
         // Divide map into grid of square cells of size cellSize x cellSize and randomly 
         // choose a point in each cell
         int cellSize = Mathf.FloorToInt(
-            _parameters.AverageContinentDiameter() * 
-            _parameters.ContinentDiameterToGridCellSizeRatio());
+            _parameters.AverageContinentDiameter * 
+            _parameters.ContinentDiameterToGridCellSizeRatio);
         List<HexCoordinateOffset> cellPoints = ChoosePointInEachCell(cellSize, 
             out int gridWidth, 
             out int gridHeight);
@@ -98,7 +98,7 @@ public class MapGeneration : MonoBehaviour
         List<HexCoordinateOffset> centralCoordinates = SelectCentralTilesFromList(cellPoints, 
             gridWidth, 
             gridHeight, 
-            _parameters.NumContinents());
+            _parameters.NumContinents);
         return centralCoordinates;
     }
 
@@ -114,21 +114,21 @@ public class MapGeneration : MonoBehaviour
         gridWidth = 0;
         gridHeight = 0;
 
-        for (int row = 0; row < _parameters.MapHeight(); row += cellSize)
+        for (int row = 0; row < _parameters.MapHeight; row += cellSize)
         {
             gridHeight++;
-            for (int col = 0; col < _parameters.MapWidth(); col += cellSize)
+            for (int col = 0; col < _parameters.MapWidth; col += cellSize)
             {
                 gridWidth++;
 
                 // If cell doesn't fit evenly into map, decrease size of cell so it fits
                 int exclusiveUpperRowBound = row + cellSize;
-                if (exclusiveUpperRowBound >= _parameters.MapHeight())
-                    exclusiveUpperRowBound = _parameters.MapHeight();
+                if (exclusiveUpperRowBound >= _parameters.MapHeight)
+                    exclusiveUpperRowBound = _parameters.MapHeight;
 
                 int exclusiveUpperColBound = col + cellSize;
-                if (exclusiveUpperColBound >= _parameters.MapWidth())
-                    exclusiveUpperColBound = _parameters.MapWidth();
+                if (exclusiveUpperColBound >= _parameters.MapWidth)
+                    exclusiveUpperColBound = _parameters.MapWidth;
 
                 int randRow = Random.Range(row, exclusiveUpperRowBound);
                 int randCol = Random.Range(col, exclusiveUpperColBound);

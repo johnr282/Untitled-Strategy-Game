@@ -10,7 +10,6 @@ using UnityEngine;
 public class GameMap : MonoBehaviour
 {
     // Keys are coordinates of tiles in the map, value is the tile itself
-    // Unity indexes pointed-top hexagons (col, row), so coordinates are (col, row)
     Dictionary<HexCoordinateOffset, GameTile> _gameMap = new Dictionary<HexCoordinateOffset, GameTile>();
 
     // Returns true if HexTile exists at given coordinate and gets HexTile 
@@ -36,7 +35,7 @@ public class GameMap : MonoBehaviour
         if (!FindTile(coordinate, out GameTile tile))
             return false;
 
-        tile.SetTerrain(new Terrain(newTerrainType));
+        tile.TileTerrain = new Terrain(newTerrainType);
         _gameMap[coordinate] = tile;
         return true;
     }

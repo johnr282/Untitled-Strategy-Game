@@ -72,7 +72,7 @@ public class MapVisuals : MonoBehaviour
     // terrain of given GameTile
     public void UpdateTile(Vector3Int coordinate, GameTile gameTile)
     {
-        Terrain terrain = gameTile.GetTerrain();
+        Terrain terrain = gameTile.TileTerrain;
         TileBase correspondingTile = _tileLibrary.GetCorrespondingTile(terrain);
         _tilemap.SetTile(coordinate, correspondingTile);
     }

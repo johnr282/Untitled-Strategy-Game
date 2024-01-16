@@ -15,23 +15,18 @@ public class Terrain
         land
     }
 
-    [SerializeField] TerrainType _terrainType;
+    public TerrainType Type { get; }
 
     // Constructor
     public Terrain(TerrainType terrainType)
     {
-        _terrainType = terrainType;
-    }
-
-    public TerrainType GetTerrainType()
-    {
-        return _terrainType;
+        Type = terrainType;
     }
 
     // Returns true if units are able to travel on this terrain
     public bool IsTraversable()
     {
-        if (_terrainType == TerrainType.sea)
+        if (Type == TerrainType.sea)
             return false;
         else
             return true;

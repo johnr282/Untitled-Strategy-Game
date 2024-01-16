@@ -16,9 +16,7 @@ public class TileLibrary : MonoBehaviour
     // Returns corresponding Tile object for given terrain
     public TileBase GetCorrespondingTile(Terrain terrain)
     {
-        Terrain.TerrainType type = terrain.GetTerrainType();
-
-        switch (type)
+        switch (terrain.Type)
         {
             case Terrain.TerrainType.sea:
                 return seaTile;
@@ -30,5 +28,4 @@ public class TileLibrary : MonoBehaviour
                 return defaultTile;
         }
     }
-
 }

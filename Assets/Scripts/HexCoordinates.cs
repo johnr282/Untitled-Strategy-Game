@@ -10,41 +10,41 @@ using UnityEngine;
 
 public class HexCoordinateOffset
 {
-    public readonly int col;
-    public readonly int row;
+    public int Col { get; }
+    public int Row { get; }
 
     // Constructor
     public HexCoordinateOffset(int colIn, 
         int rowIn)
     {
-        col = colIn;
-        row = rowIn;
+        Col = colIn;
+        Row = rowIn;
     }
 
     // Addition operator overload
     public static HexCoordinateOffset operator +(HexCoordinateOffset lhs,
         HexCoordinateOffset rhs)
     {
-        return new HexCoordinateOffset(lhs.col + rhs.col, 
-            lhs.row + rhs.row);
+        return new HexCoordinateOffset(lhs.Col + rhs.Col, 
+            lhs.Row + rhs.Row);
     }
 
     // Subtraction operator overload
     public static HexCoordinateOffset operator -(HexCoordinateOffset lhs,
         HexCoordinateOffset rhs)
     {
-        return new HexCoordinateOffset(lhs.col - rhs.col, 
-            lhs.row - rhs.row);
+        return new HexCoordinateOffset(lhs.Col - rhs.Col, 
+            lhs.Row - rhs.Row);
     }
 
     public override string ToString()
     {
-        return "col: " + col.ToString() + ", row: " + row.ToString();
+        return "Col: " + Col.ToString() + ", Row: " + Row.ToString();
     }
 
     public override int GetHashCode()
     {
-        return col.GetHashCode() ^ row.GetHashCode();
+        return Col.GetHashCode() ^ Row.GetHashCode();
     }
 
     public override bool Equals(object obj)
@@ -57,20 +57,20 @@ public class HexCoordinateOffset
         else
         {
             HexCoordinateOffset hex = (HexCoordinateOffset)obj;
-            return (col == hex.col) && (row == hex.row);
+            return (Col == hex.Col) && (Row == hex.Row);
         }
     }
 
-    // Converts this coordinate to a Vector2Int of the form (col, row)
+    // Converts this coordinate to a Vector2Int of the form (Col, Row)
     public Vector2Int ConvertToVector2Int()
     {
-        return new Vector2Int(col, row);
+        return new Vector2Int(Col, Row);
     }
 
-    // Converts this coordinate to a Vector3Int of the form (col, row, 0)
+    // Converts this coordinate to a Vector3Int of the form (Col, Row, 0)
     public Vector3Int ConvertToVector3Int()
     {
-        return new Vector3Int(col, row, 0);
+        return new Vector3Int(Col, Row, 0);
     }
 
     // Returns an array of the 6 adjacent hex coordinates to this hex
@@ -82,7 +82,7 @@ public class HexCoordinateOffset
 
         // Offsets are different for odd and even rows
         HexCoordinateOffset[] offsets = new HexCoordinateOffset[6];
-        bool evenRow = (row % 2) == 0;
+        bool evenRow = (Row % 2) == 0;
 
         if (evenRow)
         {
@@ -121,35 +121,35 @@ public class HexCoordinateOffset
 
 public class HexCoordinateAxial
 {
-    public readonly int q;
-    public readonly int r;
+    public int X { get; }
+    public int Y { get; }
 
     // Constructor
-    public HexCoordinateAxial(int qIn, 
-        int rIn)
+    public HexCoordinateAxial(int xIn, 
+        int yIn)
     {
-        q = qIn;
-        r = rIn;
+        X = xIn;
+        Y = yIn;
     }
 
     // Addition operator overload
     public static HexCoordinateAxial operator +(HexCoordinateAxial lhs,
         HexCoordinateAxial rhs)
     {
-        return new HexCoordinateAxial(lhs.q + rhs.q, 
-            lhs.r + rhs.r);
+        return new HexCoordinateAxial(lhs.X + rhs.X, 
+            lhs.Y + rhs.Y);
     }
 
     // Subtraction operator overload
     public static HexCoordinateAxial operator -(HexCoordinateAxial lhs,
         HexCoordinateAxial rhs)
     {
-        return new HexCoordinateAxial(lhs.q - rhs.q, 
-            lhs.r - rhs.r);
+        return new HexCoordinateAxial(lhs.X - rhs.X, 
+            lhs.Y - rhs.Y);
     }
 
     public override string ToString()
     {
-        return "q: " + q.ToString() + ", r: " + r.ToString();
+        return "X: " + X.ToString() + ", Y: " + Y.ToString();
     }
 }
