@@ -28,7 +28,7 @@ public class MapGeneration : MonoBehaviour
     // Randomly generate the game map based on map generation parameters
     void GenerateMap()
     {
-        InitializeRandomGeneration();
+        SeedRandomGeneration();
         CalculateMapDimensions();
         _mapVisuals.InitializeVisuals(_parameters.MapHeight, _parameters.MapWidth);
         InitializeEveryTileToSea();
@@ -38,7 +38,7 @@ public class MapGeneration : MonoBehaviour
     }
 
     // Initializes random generation with a seed
-    void InitializeRandomGeneration()
+    void SeedRandomGeneration()
     {
         // If _parameters.RandomlyGenerateSeed is false, simply use the 
         // serialized seed
@@ -101,38 +101,40 @@ public class MapGeneration : MonoBehaviour
 
         Debug.Log("Cell size: " + cellSize.ToString());
 
-        List<HexCoordinateOffset> cellPoints = ChoosePointInEachCell(cellSize, 
-            out int gridWidth, 
-            out int gridHeight);
+        ChoosePointInEachCell(cellSize, 
+            out List<HexCoordinateOffset> randomPoints,
+            out Dictionary<HexCoordinateOffset, Vector2Int> correspondingGridCells);
 
         // Pick numContinents points out of the randomly chosen points to be the central 
         // tiles for each continent
-        List<HexCoordinateOffset> centralCoordinates = SelectCentralTilesFromList(cellPoints, 
-            gridWidth, 
-            gridHeight, 
-            _parameters.NumContinents);
+        List<HexCoordinateOffset> centralCoordinates = SelectCentralTilesFromList(
+            _parameters.NumContinents,
+            randomPoints,
+            correspondingGridCells);
         return centralCoordinates;
     }
 
     // Divides map into square cells of given size and randomly chooses a point in each
-    // cell; returns the list of points; calculates width and height of grid
-    List<HexCoordinateOffset> ChoosePointInEachCell(int cellSize, 
-        out int gridWidth, 
-        out int gridHeight)
+    // cell; generates the list of points and creates a dictionary mapping each randomly
+    // chosen point to the coordinate of the grid cell it was chosen from
+    void ChoosePointInEachCell(int cellSize, 
+        out List<HexCoordinateOffset> randomPoints, 
+        out Dictionary<HexCoordinateOffset, Vector2Int> correspondingGridCells)
     {
-        // Iterate through the square cells and pick a random point in each one
-        List<HexCoordinateOffset> cellPoints = new();
+        randomPoints = new();
+        correspondingGridCells = new();
 
-        gridWidth = 0;
-        gridHeight = 0;
+        // Keeps track of the coordinate of the current grid cell
+        int gridRow = 0;
+        int gridCol = 0;
 
+        // Iterate through the square cells and pick a random point in each on
         for (int row = 0; row < _parameters.MapHeight; row += cellSize)
         {
-            gridHeight++;
+            // Reset gridCol when moving to new row
+            gridCol = 0;
             for (int col = 0; col < _parameters.MapWidth; col += cellSize)
             {
-                gridWidth++;
-
                 // If cell doesn't fit evenly into map, decrease size of cell so it fits
                 int exclusiveUpperRowBound = row + cellSize;
                 if (exclusiveUpperRowBound >= _parameters.MapHeight)
@@ -144,20 +146,22 @@ public class MapGeneration : MonoBehaviour
 
                 int randRow = Random.Range(row, exclusiveUpperRowBound);
                 int randCol = Random.Range(col, exclusiveUpperColBound);
-                cellPoints.Add(new HexCoordinateOffset(randCol, randRow));
-            }
-        }
+                HexCoordinateOffset randPoint = new HexCoordinateOffset(randCol, randRow);
+                randomPoints.Add(randPoint);
+                correspondingGridCells[randPoint] = new Vector2Int(gridCol, gridRow);
 
-        return cellPoints;
+                gridCol++;
+            }
+            gridRow++;
+        }
     }
 
     // Randomly chooses n points out of given list; returns array of chosen points;
     // points are less likely to be chosen if tiles in adjacent grid cells have
     // already been chosen
-    List<HexCoordinateOffset> SelectCentralTilesFromList(List<HexCoordinateOffset> points, 
-        int gridWidth, 
-        int gridHeight, 
-        int n)
+    List<HexCoordinateOffset> SelectCentralTilesFromList(int n,
+        List<HexCoordinateOffset> randomPoints,
+        Dictionary<HexCoordinateOffset, Vector2Int> correspondingGridCells)
     {
         List<HexCoordinateOffset> chosenPoints = new();
         HashSet<Vector2Int> chosenGridCoordinates = new();
@@ -168,17 +172,19 @@ public class MapGeneration : MonoBehaviour
             // to be selected; this makes it much less likely that a cell adjacent to
             // several chosen cells will be chosen, which will ensure that the
             // continents aren't all clustered together
-            int chosenIndex = Random.Range(0, points.Count); // dummy value to prevent compiler error
+            int chosenIndex = Random.Range(0, randomPoints.Count); // dummy value to prevent compiler error
             bool pointSelected = false;
 
             while (!pointSelected)
             {
-                chosenIndex = Random.Range(0, points.Count);
-                int numAdjacentCellsChosen = AdjacentCellsChosen(chosenIndex,
-                    chosenGridCoordinates,
-                    gridWidth);
+                chosenIndex = Random.Range(0, randomPoints.Count);
+                HexCoordinateOffset possiblePoint = randomPoints[chosenIndex];
+                Vector2Int correspondingGridCell = correspondingGridCells[possiblePoint];
 
-                Debug.Log("Tentative point: " + points[chosenIndex].ToString() +
+                int numAdjacentCellsChosen = AdjacentCellsChosen(correspondingGridCell, 
+                    chosenGridCoordinates);
+
+                Debug.Log("Tentative point: " + possiblePoint.ToString() +
                     ", adjacent cells chosen: " + numAdjacentCellsChosen.ToString());
 
                 if (numAdjacentCellsChosen == 0)
@@ -186,7 +192,7 @@ public class MapGeneration : MonoBehaviour
 
                 for (int j = 0; j < numAdjacentCellsChosen; j++)
                 {
-                    int confirmIndex = Random.Range(0, points.Count);
+                    int confirmIndex = Random.Range(0, randomPoints.Count);
                     if (chosenIndex == confirmIndex)
                     {
                         Debug.Log("Index chosen again");
@@ -201,15 +207,16 @@ public class MapGeneration : MonoBehaviour
                 }
             }
 
-            Debug.Log("Point chosen: " + points[chosenIndex] +
-                ", adjacent cells chosen: " + AdjacentCellsChosen(chosenIndex,
-                chosenGridCoordinates,
-                gridWidth).ToString());
+            HexCoordinateOffset chosenPoint = randomPoints[chosenIndex];
+            Vector2Int chosenGridCoordinate = correspondingGridCells[chosenPoint];
 
-            chosenPoints.Add(points[chosenIndex]);
-            points.RemoveAt(chosenIndex);
-            chosenGridCoordinates.Add(IndexToCoordinate(chosenIndex, 
-                gridWidth));
+            Debug.Log("Point chosen: " + chosenPoint.ToString() +
+                ", adjacent cells chosen: " + AdjacentCellsChosen(chosenGridCoordinate,
+                chosenGridCoordinates).ToString());
+
+            chosenPoints.Add(chosenPoint);
+            randomPoints.RemoveAt(chosenIndex);
+            chosenGridCoordinates.Add(chosenGridCoordinate);
         }
 
         return chosenPoints;
@@ -224,17 +231,14 @@ public class MapGeneration : MonoBehaviour
         return false;
     }
 
-    // Returns number of points in grid cells adjacent to given index that have
-    // already been chosen
-    int AdjacentCellsChosen(int cellIndex, 
-        HashSet<Vector2Int> chosenGridCoordinates, 
-        int gridWidth)
+    // Returns number of points in grid cells adjacent to given grid cell that 
+    // have already been chosen
+    int AdjacentCellsChosen(Vector2Int gridCellCoordinate, 
+        HashSet<Vector2Int> chosenGridCoordinates)
     {
-        Vector2Int coordinate = IndexToCoordinate(cellIndex, gridWidth);
-
         // Calculates coordinates of all adjacent (including diagonal) grid cells
         // and adds them to array
-        Vector2Int[] adjacentCoords = CalculateAdjacentCoordinates(coordinate);
+        Vector2Int[] adjacentCoords = CalculateAdjacentCoordinates(gridCellCoordinate);
 
         // Counts how many adjacent coordinates are in chosenGridCoordinates
         int numAdjacentCellsChosen = 0;
@@ -252,9 +256,9 @@ public class MapGeneration : MonoBehaviour
     Vector2Int IndexToCoordinate(int index,
         int columnsInGrid)
     {
-        int gridRow = index / columnsInGrid;
         int gridCol = index % columnsInGrid;
-        return new Vector2Int(gridRow, gridCol);
+        int gridRow = index / columnsInGrid;
+        return new Vector2Int(gridCol, gridRow);
     }
 
     // Given a 2D coordinate, return an array of the 8 adjacent coordinates 

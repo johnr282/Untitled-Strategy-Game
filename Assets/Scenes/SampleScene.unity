@@ -301,7 +301,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _seed: 0
-  _randomlyGenerateSeed: 0
+  _randomlyGenerateSeed: 1
   _widthToHeightRatio: 0.5
   _numContinents: 8
   _averageContinentDiameter: 3
