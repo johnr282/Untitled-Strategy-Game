@@ -30,11 +30,11 @@ public class MapGeneration : MonoBehaviour
     {
         SeedRandomGeneration();
         CalculateMapDimensions();
-        _mapVisuals.InitializeVisuals(_parameters.MapHeight, _parameters.MapWidth);
         InitializeEveryTileToSea();
         GenerateContinents();
-        // Updates map visuals based off terrain of tiles in _hexMap
-        _mapVisuals.UpdateVisuals(_gameMap);
+        _mapVisuals.GenerateVisuals(_gameMap, 
+            _parameters.MapHeight,
+            _parameters.MapWidth);
     }
 
     // Initializes random generation with a seed
@@ -45,6 +45,7 @@ public class MapGeneration : MonoBehaviour
         if (_parameters.RandomlyGenerateSeed)
             _parameters.Seed = Random.Range(int.MinValue, int.MaxValue);
 
+        Debug.Log("Seed: " + _parameters.Seed.ToString());
         Random.InitState(_parameters.Seed);
     }
 
@@ -99,7 +100,7 @@ public class MapGeneration : MonoBehaviour
             _parameters.AverageContinentDiameter * 
             _parameters.ContinentDiameterToGridCellSizeRatio);
 
-        Debug.Log("Cell size: " + cellSize.ToString());
+        //Debug.Log("Cell size: " + cellSize.ToString());
 
         ChoosePointInEachCell(cellSize, 
             out List<HexCoordinateOffset> randomPoints,
@@ -184,8 +185,8 @@ public class MapGeneration : MonoBehaviour
                 int numAdjacentCellsChosen = AdjacentCellsChosen(correspondingGridCell, 
                     chosenGridCoordinates);
 
-                Debug.Log("Tentative point: " + possiblePoint.ToString() +
-                    ", adjacent cells chosen: " + numAdjacentCellsChosen.ToString());
+                //Debug.Log("Tentative point: " + possiblePoint.ToString() +
+                //    ", adjacent cells chosen: " + numAdjacentCellsChosen.ToString());
 
                 if (numAdjacentCellsChosen == 0)
                     pointSelected = true;
@@ -195,7 +196,7 @@ public class MapGeneration : MonoBehaviour
                     int confirmIndex = Random.Range(0, randomPoints.Count);
                     if (chosenIndex == confirmIndex)
                     {
-                        Debug.Log("Index chosen again");
+                        //Debug.Log("Index chosen again");
                         pointSelected = true;
                         continue;
                     }  
@@ -210,9 +211,9 @@ public class MapGeneration : MonoBehaviour
             HexCoordinateOffset chosenPoint = randomPoints[chosenIndex];
             Vector2Int chosenGridCoordinate = correspondingGridCells[chosenPoint];
 
-            Debug.Log("Point chosen: " + chosenPoint.ToString() +
-                ", adjacent cells chosen: " + AdjacentCellsChosen(chosenGridCoordinate,
-                chosenGridCoordinates).ToString());
+            //Debug.Log("Point chosen: " + chosenPoint.ToString() +
+            //    ", adjacent cells chosen: " + AdjacentCellsChosen(chosenGridCoordinate,
+            //    chosenGridCoordinates).ToString());
 
             chosenPoints.Add(chosenPoint);
             randomPoints.RemoveAt(chosenIndex);

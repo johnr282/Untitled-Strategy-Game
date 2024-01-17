@@ -26,8 +26,17 @@ public class MapVisuals : MonoBehaviour
         _tileLibrary = GetComponent<TileLibrary>();
     }
 
+    // Generates tilemap using given height and width and game map
+    public void GenerateVisuals(GameMap gameMap, 
+        int height, 
+        int width)
+    {
+        InitializeVisuals(height, width);
+        UpdateVisuals(gameMap);
+    }
+
     // Initializes tilemap with given height and width
-    public void InitializeVisuals(int height, 
+    void InitializeVisuals(int height, 
         int width)
     {
         // Pointed-top hexagons are indexed (col, row) instead of (row, col)
@@ -48,7 +57,7 @@ public class MapVisuals : MonoBehaviour
     }
 
     // Updates all tiles in _tilemap based on terrain of HexTiles in given GameMap
-    public void UpdateVisuals(GameMap gameMap)
+    void UpdateVisuals(GameMap gameMap)
     {
         int width = _tilemap.cellBounds.size.x;
         int height = _tilemap.cellBounds.size.y;
@@ -70,7 +79,7 @@ public class MapVisuals : MonoBehaviour
 
     // Sets tile in tilemap at given coordinate to TileBase object corresponding to
     // terrain of given GameTile
-    public void UpdateTile(Vector3Int coordinate, GameTile gameTile)
+    void UpdateTile(Vector3Int coordinate, GameTile gameTile)
     {
         Terrain terrain = gameTile.TileTerrain;
         TileBase correspondingTile = _tileLibrary.GetCorrespondingTile(terrain);
