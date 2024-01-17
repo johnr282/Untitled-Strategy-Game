@@ -252,15 +252,7 @@ public class MapGeneration : MonoBehaviour
         return numAdjacentCellsChosen;
     }
 
-    // Converts given index of row-major array to corresponding 2D grid
-    // coordinate; needs the number of columns in grid
-    Vector2Int IndexToCoordinate(int index,
-        int columnsInGrid)
-    {
-        int gridCol = index % columnsInGrid;
-        int gridRow = index / columnsInGrid;
-        return new Vector2Int(gridCol, gridRow);
-    }
+    
 
     // Given a 2D coordinate, return an array of the 8 adjacent coordinates 
     // (including diagonal)

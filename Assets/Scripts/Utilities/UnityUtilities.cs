@@ -70,25 +70,17 @@ public static class UnityUtilities
         return angle + 2 * Mathf.PI;
     }
 
-    // Returns world position of mouse cursor
+    // Returns world position of mouse cursor; only works in 2D
     public static Vector3 MouseWorldPosition(Camera camera)
     {
         Vector3 mousePosScreen = Input.mousePosition;
         // Ensure that Z coordinate of mousePosScreen positive so movement
         // is detected in 3D
         mousePosScreen.z = camera.nearClipPlane;
-        Debug.Log("Mouse position on screen: " + mousePosScreen.ToString());
         Vector3 pos = camera.ScreenToWorldPoint(Input.mousePosition);
 
         // Need to get rid of camera position's affect on pos
         return pos - camera.transform.position;
-    }
-
-    // Returns true if a tile exists in given tilemap at given position
-    public static bool TileExists(Tilemap tilemap, 
-        Vector3Int tilePosition)
-    {
-        return tilemap.GetTile(tilePosition) != null;
     }
 
     // Return child GameObject of given parent GameObject with given
@@ -114,5 +106,15 @@ public static class UnityUtilities
     public static Vector3 RightVectorRelativeToRotation(Transform transform)
     {
         return transform.rotation * Vector3.right;
+    }
+
+    // Converts given index of row-major array to corresponding 2D grid
+    // coordinate; needs the number of columns in grid
+    public static Vector2Int IndexToCoordinate(int index,
+        int columnsInGrid)
+    {
+        int gridCol = index % columnsInGrid;
+        int gridRow = index / columnsInGrid;
+        return new Vector2Int(gridCol, gridRow);
     }
 }
