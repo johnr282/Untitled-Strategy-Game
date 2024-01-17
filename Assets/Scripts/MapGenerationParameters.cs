@@ -3,11 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // ------------------------------------------------------------------
-// Component for storing map generation parameters
+// Component for storing and accessing map generation parameters
 // ------------------------------------------------------------------
 
 public class MapGenerationParameters : MonoBehaviour
 {
+    [SerializeField] int _seed;
+    public int Seed 
+    { 
+        get => _seed; 
+        set { _seed = value; } 
+    }
+
+    [SerializeField] bool _randomlyGenerateSeed;
+    public bool RandomlyGenerateSeed { get => _randomlyGenerateSeed; }
+
     [SerializeField] float _widthToHeightRatio;
     public float WidthToHeightRatio { get => _widthToHeightRatio; }
 

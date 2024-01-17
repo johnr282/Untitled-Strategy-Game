@@ -22,22 +22,38 @@ public class MapGeneration : MonoBehaviour
         _gameMap = GetComponent<GameMap>();
         _parameters = GetComponent<MapGenerationParameters>();
 
-        CalculateMapDimensions();
-        // Initialize _tilemap with width and height from map generation parameters
-        _mapVisuals.InitializeVisuals(_parameters.MapHeight, _parameters.MapWidth);
-
         GenerateMap();
+    }
 
+    // Randomly generate the game map based on map generation parameters
+    void GenerateMap()
+    {
+        InitializeRandomGeneration();
+        CalculateMapDimensions();
+        _mapVisuals.InitializeVisuals(_parameters.MapHeight, _parameters.MapWidth);
+        InitializeEveryTileToSea();
+        GenerateContinents();
         // Updates map visuals based off terrain of tiles in _hexMap
         _mapVisuals.UpdateVisuals(_gameMap);
+    }
+
+    // Initializes random generation with a seed
+    void InitializeRandomGeneration()
+    {
+        // If _parameters.RandomlyGenerateSeed is false, simply use the 
+        // serialized seed
+        if (_parameters.RandomlyGenerateSeed)
+            _parameters.Seed = Random.Range(int.MinValue, int.MaxValue);
+
+        Random.InitState(_parameters.Seed);
     }
 
     // Calculates the height and width of the map based on number of continents
     // and bounds on continent size
     void CalculateMapDimensions()
     {
-        int mapWidth = Mathf.FloorToInt(_parameters.AverageContinentDiameter * 
-            _parameters.ContinentDiameterToGridCellSizeRatio * 
+        int mapWidth = Mathf.FloorToInt(_parameters.AverageContinentDiameter *
+            _parameters.ContinentDiameterToGridCellSizeRatio *
             _parameters.NumContinents);
         _parameters.MapWidth = mapWidth;
 
@@ -47,13 +63,6 @@ public class MapGeneration : MonoBehaviour
         Debug.Log("Map width: " + mapWidth.ToString());
         Debug.Log("Map height: " + mapHeight.ToString());
     }
-
-    // Randomly generate the game map based on map generation parameters
-    void GenerateMap()
-    {
-        InitializeEveryTileToSea();
-        GenerateContinents();
-    }   
 
     // Initialize every tile in _gameMap to sea
     void InitializeEveryTileToSea()
@@ -89,6 +98,9 @@ public class MapGeneration : MonoBehaviour
         int cellSize = Mathf.FloorToInt(
             _parameters.AverageContinentDiameter * 
             _parameters.ContinentDiameterToGridCellSizeRatio);
+
+        Debug.Log("Cell size: " + cellSize.ToString());
+
         List<HexCoordinateOffset> cellPoints = ChoosePointInEachCell(cellSize, 
             out int gridWidth, 
             out int gridHeight);
@@ -166,10 +178,10 @@ public class MapGeneration : MonoBehaviour
                     chosenGridCoordinates,
                     gridWidth);
 
-                //Debug.Log("Tentative point: " + points[chosenIndex].ToString() +
-                //    ", adjacent cells chosen: " + numAdjacentCellsChosen.ToString());
+                Debug.Log("Tentative point: " + points[chosenIndex].ToString() +
+                    ", adjacent cells chosen: " + numAdjacentCellsChosen.ToString());
 
-                if(numAdjacentCellsChosen == 0)
+                if (numAdjacentCellsChosen == 0)
                     pointSelected = true;
 
                 for (int j = 0; j < numAdjacentCellsChosen; j++)
@@ -177,6 +189,7 @@ public class MapGeneration : MonoBehaviour
                     int confirmIndex = Random.Range(0, points.Count);
                     if (chosenIndex == confirmIndex)
                     {
+                        Debug.Log("Index chosen again");
                         pointSelected = true;
                         continue;
                     }  
@@ -187,6 +200,11 @@ public class MapGeneration : MonoBehaviour
                     }
                 }
             }
+
+            Debug.Log("Point chosen: " + points[chosenIndex] +
+                ", adjacent cells chosen: " + AdjacentCellsChosen(chosenIndex,
+                chosenGridCoordinates,
+                gridWidth).ToString());
 
             chosenPoints.Add(points[chosenIndex]);
             points.RemoveAt(chosenIndex);

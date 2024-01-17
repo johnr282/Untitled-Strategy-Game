@@ -300,6 +300,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6709859b5392c6146b673fb716f37899, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _seed: 0
+  _randomlyGenerateSeed: 0
   _widthToHeightRatio: 0.5
   _numContinents: 8
   _averageContinentDiameter: 3
@@ -329,7 +331,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27d6c9946ee83464abf3a13e3cf8f871, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _tileSaturationFactor: 0.75
+  _tileSaturationFactor: 1.5
 --- !u!114 &14530137
 MonoBehaviour:
   m_ObjectHideFlags: 0
