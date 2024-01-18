@@ -17,6 +17,7 @@ public class MapVisuals : MonoBehaviour
     TileLibrary _tileLibrary;
 
     Vector3Int _currentlyHighlightedTile = new Vector3Int(-1, -1, -1);
+    Vector3Int _currentlySelectedTile = new Vector3Int(-1, -1, -1);
 
     [SerializeField] float _tileSaturationFactor;
 
@@ -27,8 +28,8 @@ public class MapVisuals : MonoBehaviour
     }
 
     // Generates tilemap using given height and width and game map
-    public void GenerateVisuals(GameMap gameMap, 
-        int height, 
+    public void GenerateVisuals(GameMap gameMap,
+        int height,
         int width)
     {
         InitializeVisuals(height, width);
@@ -36,7 +37,7 @@ public class MapVisuals : MonoBehaviour
     }
 
     // Initializes tilemap with given height and width
-    void InitializeVisuals(int height, 
+    void InitializeVisuals(int height,
         int width)
     {
         // Pointed-top hexagons are indexed (col, row) instead of (row, col)
@@ -48,7 +49,12 @@ public class MapVisuals : MonoBehaviour
 
         // Initializes all tiles to the default tile; again because tilemap is 
         // rotated, there are actually width rows and height cols
-        _tilemap.BoxFill(_tilemap.origin, _tileLibrary.defaultTile, _tilemap.origin.x, _tilemap.origin.y, width, height);
+        _tilemap.BoxFill(_tilemap.origin, 
+            _tileLibrary.defaultTile, 
+            _tilemap.origin.x, 
+            _tilemap.origin.y, 
+            width, 
+            height);
 
         // Fixes bug where bottom few rows of tiles weren't rendered for certain
         // map dimensions until I clicked on the tilemap in the editor
@@ -69,7 +75,7 @@ public class MapVisuals : MonoBehaviour
                 HexCoordinateOffset coordinate = new HexCoordinateOffset(col, row);
                 GameTile gameTile;
 
-                if(gameMap.FindTile(coordinate, out gameTile))
+                if (gameMap.FindTile(coordinate, out gameTile))
                     UpdateTile(coordinate.ConvertToVector3Int(), gameTile);
                 else
                     Debug.LogWarning("Tile at " + coordinate.ToString() + " not found in gameMap");
@@ -98,11 +104,38 @@ public class MapVisuals : MonoBehaviour
         AdjustTileSaturation(tilePos, _tileSaturationFactor);
 
         // Previous tile needs to be un-highlighted
-        AdjustTileSaturation(_currentlyHighlightedTile, 
+        AdjustTileSaturation(_currentlyHighlightedTile,
             1 / _tileSaturationFactor);
 
         _currentlyHighlightedTile = tilePos;
-        EventBus.Publish(new NewTileSelectedEvent(tilePos));
+        EventBus.Publish(new NewTileHighlightedEvent(tilePos));
+
+        // Debugging purposes only
+        HexCoordinateOffset highlightedHexCoord = new HexCoordinateOffset(
+            tilePos.x, tilePos.y);
+        HexCoordinateOffset selectedHexCoord = new HexCoordinateOffset(
+            _currentlySelectedTile.x, _currentlySelectedTile.y);
+        Debug.Log("Distance to selected tile: " + 
+            HexUtilities.DistanceBetween(selectedHexCoord, highlightedHexCoord).ToString());
+    }
+
+    // Selects tile at given world position; does nothing if no tile exists
+    public void SelectTile(Vector3 tileWorldPos)
+    {
+        Vector3Int tilePos = _tilemap.WorldToCell(tileWorldPos);
+        if (!_tilemap.HasTile(tilePos) ||
+            _currentlySelectedTile == tilePos)
+            return;
+
+        // New selected tile needs to be highlighted
+        AdjustTileSaturation(tilePos, _tileSaturationFactor);
+
+        // Previously selected tile needs to be un-highlighted
+        AdjustTileSaturation(_currentlySelectedTile, 
+            1 / _tileSaturationFactor);
+
+        _currentlySelectedTile = tilePos;
+        EventBus.Publish(new TileSelectedEvent(tilePos));
     }
 
     // Multiplies saturation value of tile's color at tilePos by saturation 

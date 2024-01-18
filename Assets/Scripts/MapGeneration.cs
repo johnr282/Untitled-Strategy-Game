@@ -252,8 +252,6 @@ public class MapGeneration : MonoBehaviour
         return numAdjacentCellsChosen;
     }
 
-    
-
     // Given a 2D coordinate, return an array of the 8 adjacent coordinates 
     // (including diagonal)
     Vector2Int[] CalculateAdjacentCoordinates(Vector2Int coordinate)

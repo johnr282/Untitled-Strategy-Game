@@ -17,20 +17,30 @@ public class TileSelection : MonoBehaviour
 
     void Awake()
     {
-        _tilemapPlane = new Plane(Vector3.up, Vector3.zero);
         _mapVisuals = GetComponent<MapVisuals>();
+        _tilemapPlane = new Plane(Vector3.up, Vector3.zero);
     }
 
     void Update()
     {
         HighlightCurrentTile();
+        CheckForSelection();
     }
 
     // Highlights whichever tile the mouse is hovering over
     void HighlightCurrentTile()
     {
-        Vector3 mousePositionOnTilemap = MousePositionOnTilemap();
-        _mapVisuals.HighlightTile(mousePositionOnTilemap);
+        _mapVisuals.HighlightTile(MousePositionOnTilemap());
+    }
+
+    // Checks if player selected a tile
+    void CheckForSelection()
+    {
+        int leftMouseButton = 0;
+        bool tileSelected = Input.GetMouseButtonDown(leftMouseButton);
+
+        if (tileSelected)
+            _mapVisuals.SelectTile(MousePositionOnTilemap());
     }
 
     // Returns the point on the tilemap that the mouse is hovering over

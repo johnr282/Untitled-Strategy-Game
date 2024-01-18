@@ -6,12 +6,22 @@ using UnityEngine;
 // Contains Event definitions used with EventBus system
 // ------------------------------------------------------------------
 
-public class NewTileSelectedEvent
+public class NewTileHighlightedEvent
 {
-    public Vector3Int coordinate { get; }
+    public Vector3Int Coordinate { get; }
 
-    public NewTileSelectedEvent(Vector3Int coordinateIn)
+    public NewTileHighlightedEvent(Vector3Int coordinateIn)
     {
-        coordinate = coordinateIn;
+        Coordinate = coordinateIn;
+    }
+}
+
+public class TileSelectedEvent
+{ 
+    public Vector3Int Coordinate { get; }
+
+    public TileSelectedEvent(Vector3Int coordinateIn)
+    {
+        Coordinate = coordinateIn;
     }
 }

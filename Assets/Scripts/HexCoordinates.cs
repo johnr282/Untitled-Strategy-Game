@@ -8,6 +8,7 @@ using UnityEngine;
 // implements classes for offset and axial coordinate systems
 // ------------------------------------------------------------------
 
+// Pointed-top odd-r offset coordinates
 public class HexCoordinateOffset
 {
     public int Col { get; }
@@ -89,11 +90,11 @@ public class HexCoordinateOffset
             offsets = new HexCoordinateOffset[6]
                 {
                     new HexCoordinateOffset(1, 0),
-                    new HexCoordinateOffset(1, -1),
                     new HexCoordinateOffset(0, -1),
+                    new HexCoordinateOffset(-1, -1),
                     new HexCoordinateOffset(-1, 0),
-                    new HexCoordinateOffset(0, 1),
-                    new HexCoordinateOffset(1, 1)
+                    new HexCoordinateOffset(-1, 1),
+                    new HexCoordinateOffset(0, 1)
                 };
         }
         else
@@ -101,11 +102,11 @@ public class HexCoordinateOffset
             offsets = new HexCoordinateOffset[6]
                 {
                     new HexCoordinateOffset(1, 0),
+                    new HexCoordinateOffset(1, -1),
                     new HexCoordinateOffset(0, -1),
-                    new HexCoordinateOffset(-1, -1),
                     new HexCoordinateOffset(-1, 0),
-                    new HexCoordinateOffset(-1, 1),
-                    new HexCoordinateOffset(0, 1)
+                    new HexCoordinateOffset(0, 1),
+                    new HexCoordinateOffset(1, 1)
                 };
         }
 
@@ -116,6 +117,14 @@ public class HexCoordinateOffset
         }
 
         return adjacentHexes;
+    }
+
+    // Converts this offset coordinate to the axial coordinate system
+    public HexCoordinateAxial OffsetToAxial()
+    {
+        int x = Col - (Row - (Row % 2)) / 2;
+        int y = Row;
+        return new HexCoordinateAxial(x, y);
     }
 }
 
@@ -151,5 +160,14 @@ public class HexCoordinateAxial
     public override string ToString()
     {
         return "X: " + X.ToString() + ", Y: " + Y.ToString();
+    }
+    
+
+    // Converts this axial coordinate to the offset coordinate system
+    public HexCoordinateOffset AxialToOffset()
+    {
+        int col = X + (Y - (Y % 2)) / 2;
+        int row = Y;
+        return new HexCoordinateOffset(col, row);
     }
 }

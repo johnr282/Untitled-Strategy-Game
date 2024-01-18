@@ -9,23 +9,26 @@ using UnityEngine;
 
 public static class HexUtilities 
 {
-    // Given a hex coordinate (col, row), returns a list of coordinates
-    // of the 6 adjacent hex tiles
-    public static Vector2Int[] AdjacentHexes(Vector2Int coordinate)
+    // Given two offset hex coordinates, returns the distance in hexes 
+    // between them
+    public static int DistanceBetween(HexCoordinateOffset a, 
+        HexCoordinateOffset b)
     {
-        Vector2Int[] adjacentCoordinates = new Vector2Int[6];
+        HexCoordinateAxial axialA = a.OffsetToAxial();
+        HexCoordinateAxial axialB = b.OffsetToAxial();
+        return DistanceBetween(axialA, axialB);
+    }
 
-        int col = coordinate.x;
-        int row = coordinate.y;
-
-        // Offsets are different for odd and even rows
-        bool evenRow = (row % 2) == 0;
-
-        if(evenRow)
-        {
-
-        }
-
-        return adjacentCoordinates;
+    // Given two axial hex coordinates, returns the distance in hexes
+    // between them
+    public static int DistanceBetween(HexCoordinateAxial a, 
+        HexCoordinateAxial b)
+    {
+        HexCoordinateAxial diff = a - b;
+        // Calculate implicit z coordinate used in cube coordinates
+        int diffZ = -1 * diff.X - diff.Y;
+        return Mathf.Max(Mathf.Abs(diff.X), 
+            Mathf.Abs(diff.Y), 
+            Mathf.Abs(diffZ));
     }
 }
