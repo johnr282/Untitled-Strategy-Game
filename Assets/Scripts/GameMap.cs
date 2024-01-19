@@ -22,9 +22,21 @@ public class GameMap : MonoBehaviour
 
     // Adds given HexTile at given coordinate to map
     public void AddTile(HexCoordinateOffset coordinate, 
-        GameTile tile)
+        GameTile newTile)
     {
-        _gameMap.Add(coordinate, tile);
+        _gameMap.Add(coordinate, newTile);
+    }
+
+    // Sets GameTile at given coordinate to given GameTile; returns false if no
+    // tile exists at given coordinate, returns true otherwise
+    public bool SetTile(HexCoordinateOffset coordinate, 
+        GameTile newTile)
+    {
+        if (!FindTile(coordinate, out GameTile tile))
+            return false;
+
+        _gameMap[coordinate] = newTile;
+        return true;
     }
 
     // Changes terrain of GameTile at given coordinate to given TerrainType; 
@@ -36,6 +48,19 @@ public class GameMap : MonoBehaviour
             return false;
 
         tile.TileTerrain = new Terrain(newTerrainType);
+        _gameMap[coordinate] = tile;
+        return true;
+    }
+
+    // Sets continent ID of GameTile at given coordinate to given ID; returns false
+    // if no tile exists at given coordinate, returns true otherwise
+    public bool SetContinentID(HexCoordinateOffset coordinate, 
+        int newContinentID)
+    {
+        if (!FindTile(coordinate, out GameTile tile))
+            return false;
+
+        tile.ContinentID = newContinentID;
         _gameMap[coordinate] = tile;
         return true;
     }

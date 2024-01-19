@@ -26,7 +26,7 @@ public static class HexUtilities
     {
         HexCoordinateAxial diff = a - b;
         // Calculate implicit z coordinate used in cube coordinates
-        int diffZ = -1 * diff.X - diff.Y;
+        int diffZ = diff.CalculateZ();
         return Mathf.Max(Mathf.Abs(diff.X), 
             Mathf.Abs(diff.Y), 
             Mathf.Abs(diffZ));

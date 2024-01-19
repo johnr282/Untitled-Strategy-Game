@@ -83,12 +83,16 @@ public class MapGeneration : MonoBehaviour
     // Generate continents without considering terrain
     void GenerateContinents()
     {
-        List<HexCoordinateOffset> centralCoordinates  = ChooseContinentCentralTiles();
+        // Choose a central tile for each continent
+        List<HexCoordinateOffset> centralCoordinates = ChooseContinentCentralTiles();
 
-        foreach(HexCoordinateOffset centralCoordinate in centralCoordinates)
+        for(int i = 0; i <  centralCoordinates.Count; i++)
         {
-            _gameMap.ChangeTerrain(centralCoordinate, Terrain.TerrainType.land);
+            _gameMap.ChangeTerrain(centralCoordinates[i], Terrain.TerrainType.land);
+            GenerateContinent(centralCoordinates[i], i);
         }
+
+
     }
 
     // Choose central tiles for each continent and return list of these coordinates
@@ -157,7 +161,7 @@ public class MapGeneration : MonoBehaviour
         }
     }
 
-    // Randomly chooses n points out of given list; returns array of chosen points;
+    // Randomly chooses n points out of given list, returns array of chosen points;
     // points are less likely to be chosen if tiles in adjacent grid cells have
     // already been chosen
     List<HexCoordinateOffset> SelectCentralTilesFromList(int n,
@@ -252,7 +256,7 @@ public class MapGeneration : MonoBehaviour
         return numAdjacentCellsChosen;
     }
 
-    // Given a 2D coordinate, return an array of the 8 adjacent coordinates 
+    // Given a 2D coordinate, returns an array of the 8 adjacent coordinates 
     // (including diagonal)
     Vector2Int[] CalculateAdjacentCoordinates(Vector2Int coordinate)
     {
@@ -276,5 +280,12 @@ public class MapGeneration : MonoBehaviour
         }
 
         return adjacentCoords;
+    }
+
+    // Generates continent around given central coordinate with given ID
+    public void GenerateContinent(HexCoordinateOffset centralCoordinate, 
+        int continentID)
+    {
+        _gameMap.SetContinentID(centralCoordinate, continentID);
     }
 }

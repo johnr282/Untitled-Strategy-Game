@@ -1,21 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
 using UnityEngine;
 
 // ------------------------------------------------------------------
-// Classes representing the location of a tile in a hexagonal map; 
-// implements classes for offset and axial coordinate systems
+// Class representing the location of a tile in a pointed-top hexagonal
+// map using odd offset coordinates (odd rows pushed inward, even rows
+// pushed outward)
 // ------------------------------------------------------------------
 
-// Pointed-top odd-r offset coordinates
 public class HexCoordinateOffset
 {
     public int Col { get; }
     public int Row { get; }
 
     // Constructor
-    public HexCoordinateOffset(int colIn, 
+    public HexCoordinateOffset(int colIn,
         int rowIn)
     {
         Col = colIn;
@@ -26,7 +25,7 @@ public class HexCoordinateOffset
     public static HexCoordinateOffset operator +(HexCoordinateOffset lhs,
         HexCoordinateOffset rhs)
     {
-        return new HexCoordinateOffset(lhs.Col + rhs.Col, 
+        return new HexCoordinateOffset(lhs.Col + rhs.Col,
             lhs.Row + rhs.Row);
     }
 
@@ -34,7 +33,7 @@ public class HexCoordinateOffset
     public static HexCoordinateOffset operator -(HexCoordinateOffset lhs,
         HexCoordinateOffset rhs)
     {
-        return new HexCoordinateOffset(lhs.Col - rhs.Col, 
+        return new HexCoordinateOffset(lhs.Col - rhs.Col,
             lhs.Row - rhs.Row);
     }
 
@@ -50,7 +49,7 @@ public class HexCoordinateOffset
 
     public override bool Equals(object obj)
     {
-        if ((obj == null) || 
+        if ((obj == null) ||
             !this.GetType().Equals(obj.GetType()))
         {
             return false;
@@ -111,7 +110,7 @@ public class HexCoordinateOffset
         }
 
         // Add each offset to this hex to get the adjacent hexes
-        for(int i = 0; i < 6; i++)
+        for (int i = 0; i < 6; i++)
         {
             adjacentHexes[i] = this + offsets[i];
         }
@@ -126,48 +125,19 @@ public class HexCoordinateOffset
         int y = Row;
         return new HexCoordinateAxial(x, y);
     }
-}
 
-public class HexCoordinateAxial
-{
-    public int X { get; }
-    public int Y { get; }
-
-    // Constructor
-    public HexCoordinateAxial(int xIn, 
-        int yIn)
+    // Returns all hexes exactly n steps away from this hex
+    public List<HexCoordinateOffset> HexesExactlyNAway(int n)
     {
-        X = xIn;
-        Y = yIn;
-    }
+        HexCoordinateAxial axialHex = OffsetToAxial();
+        List<HexCoordinateAxial> axialHexesNAway = axialHex.HexesExactlyNAway(n);
 
-    // Addition operator overload
-    public static HexCoordinateAxial operator +(HexCoordinateAxial lhs,
-        HexCoordinateAxial rhs)
-    {
-        return new HexCoordinateAxial(lhs.X + rhs.X, 
-            lhs.Y + rhs.Y);
-    }
+        List<HexCoordinateOffset> hexesNAway = new();
+        foreach (HexCoordinateAxial hex in axialHexesNAway)
+        {
+            hexesNAway.Add(hex.AxialToOffset());
+        }
 
-    // Subtraction operator overload
-    public static HexCoordinateAxial operator -(HexCoordinateAxial lhs,
-        HexCoordinateAxial rhs)
-    {
-        return new HexCoordinateAxial(lhs.X - rhs.X, 
-            lhs.Y - rhs.Y);
-    }
-
-    public override string ToString()
-    {
-        return "X: " + X.ToString() + ", Y: " + Y.ToString();
-    }
-    
-
-    // Converts this axial coordinate to the offset coordinate system
-    public HexCoordinateOffset AxialToOffset()
-    {
-        int col = X + (Y - (Y % 2)) / 2;
-        int row = Y;
-        return new HexCoordinateOffset(col, row);
+        return hexesNAway;
     }
 }
