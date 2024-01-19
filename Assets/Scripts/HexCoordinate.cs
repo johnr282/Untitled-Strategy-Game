@@ -4,8 +4,19 @@ using System.Drawing;
 using UnityEngine;
 
 // ------------------------------------------------------------------
-// Base class representing the location of a tile in a hexagonal map
+// Interface representing the location of a tile in a hexagonal map
 // ------------------------------------------------------------------
 
+public interface HexCoordinate<HexCoordinateType> 
+{
+    // Returns an array of the 6 adjacent hex coordinates to this hex
+    // The first coordinate in array is the hex directly to the east, 
+    // and the rest continue counter-clockwise 
+    public HexCoordinateType[] AdjacentHexes();
 
+    // Returns the hex coordinate adjacent to this hex in the given direction
+    public HexCoordinateType AdjacentHex(HexUtilities.Direction direction);
 
+    // Returns all hexes exactly n steps away from this hex
+    public List<HexCoordinateType> HexesExactlyNAway(int n);
+}

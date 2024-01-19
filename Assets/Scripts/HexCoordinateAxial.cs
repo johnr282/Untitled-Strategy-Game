@@ -7,7 +7,7 @@ using UnityEngine;
 // map using axial coordinates 
 // ------------------------------------------------------------------
 
-public class HexCoordinateAxial
+public class HexCoordinateAxial: HexCoordinate<HexCoordinateAxial>
 {
     public int X { get; }
     public int Y { get; }
@@ -18,6 +18,54 @@ public class HexCoordinateAxial
     {
         X = xIn;
         Y = yIn;
+    }
+
+    public override string ToString()
+    {
+        return "X: " + X.ToString() + ", Y: " + Y.ToString();
+    }
+
+    public override int GetHashCode()
+    {
+        return X.GetHashCode() ^ Y.GetHashCode();
+    }
+
+    public override bool Equals(object obj)
+    {
+        if ((obj == null) ||
+            !this.GetType().Equals(obj.GetType()))
+        {
+            return false;
+        }
+        else
+        {
+            HexCoordinateAxial hex = (HexCoordinateAxial)obj;
+            return (X == hex.X) && (Y == hex.Y);
+        }
+    }
+
+    // Returns an array of the 6 adjacent hex coordinates to this hex
+    // The first coordinate in array is the hex directly to the east, 
+    // and the rest continue counter-clockwise 
+    public HexCoordinateAxial[] AdjacentHexes()
+    {
+
+    }
+
+    // Returns the hex coordinate adjacent to this hex in the given direction
+    public HexCoordinateAxial AdjacentHex(HexUtilities.Direction direction)
+    {
+        return new HexCoordinateAxial(1, 1);
+    }
+
+    // Returns all hexes exactly n steps away from this hex
+    public List<HexCoordinateAxial> HexesExactlyNAway(int n)
+    {
+        // Hexes n steps away will satisfy max(abs(x), abs(y), abs(z)) = n, 
+        // where x,y,z are the coordinates of this - hexAway
+        List<HexCoordinateAxial> hexesNAway = new();
+
+        return hexesNAway;
     }
 
     // Addition operator overload
@@ -36,11 +84,6 @@ public class HexCoordinateAxial
             lhs.Y - rhs.Y);
     }
 
-    public override string ToString()
-    {
-        return "X: " + X.ToString() + ", Y: " + Y.ToString();
-    }
-
     // Converts this axial coordinate to the offset coordinate system
     public HexCoordinateOffset AxialToOffset()
     {
@@ -55,13 +98,5 @@ public class HexCoordinateAxial
         return (-X) - Y;
     }
 
-    // Returns all hexes exactly n steps away from this hex
-    public List<HexCoordinateAxial> HexesExactlyNAway(int n)
-    {
-        // Hexes n steps away will satisfy max(abs(x), abs(y), abs(z)) = n, 
-        // where x,y,z are the coordinates of this - hexAway
-        List<HexCoordinateAxial> hexesNAway = new();
-
-        return hexesNAway;
-    }
+    
 }

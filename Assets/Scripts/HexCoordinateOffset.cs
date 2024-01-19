@@ -8,7 +8,7 @@ using UnityEngine;
 // pushed outward)
 // ------------------------------------------------------------------
 
-public class HexCoordinateOffset
+public class HexCoordinateOffset : HexCoordinate<HexCoordinateOffset>
 {
     public int Col { get; }
     public int Row { get; }
@@ -19,22 +19,6 @@ public class HexCoordinateOffset
     {
         Col = colIn;
         Row = rowIn;
-    }
-
-    // Addition operator overload
-    public static HexCoordinateOffset operator +(HexCoordinateOffset lhs,
-        HexCoordinateOffset rhs)
-    {
-        return new HexCoordinateOffset(lhs.Col + rhs.Col,
-            lhs.Row + rhs.Row);
-    }
-
-    // Subtraction operator overload
-    public static HexCoordinateOffset operator -(HexCoordinateOffset lhs,
-        HexCoordinateOffset rhs)
-    {
-        return new HexCoordinateOffset(lhs.Col - rhs.Col,
-            lhs.Row - rhs.Row);
     }
 
     public override string ToString()
@@ -59,18 +43,6 @@ public class HexCoordinateOffset
             HexCoordinateOffset hex = (HexCoordinateOffset)obj;
             return (Col == hex.Col) && (Row == hex.Row);
         }
-    }
-
-    // Converts this coordinate to a Vector2Int of the form (Col, Row)
-    public Vector2Int ConvertToVector2Int()
-    {
-        return new Vector2Int(Col, Row);
-    }
-
-    // Converts this coordinate to a Vector3Int of the form (Col, Row, 0)
-    public Vector3Int ConvertToVector3Int()
-    {
-        return new Vector3Int(Col, Row, 0);
     }
 
     // Returns an array of the 6 adjacent hex coordinates to this hex
@@ -118,12 +90,10 @@ public class HexCoordinateOffset
         return adjacentHexes;
     }
 
-    // Converts this offset coordinate to the axial coordinate system
-    public HexCoordinateAxial OffsetToAxial()
+    // Returns the hex coordinate adjacent to this hex in the given direction
+    public HexCoordinateOffset AdjacentHex(HexUtilities.Direction direction)
     {
-        int x = Col - (Row - (Row % 2)) / 2;
-        int y = Row;
-        return new HexCoordinateAxial(x, y);
+        return new HexCoordinateOffset(1, 1);
     }
 
     // Returns all hexes exactly n steps away from this hex
@@ -140,4 +110,42 @@ public class HexCoordinateOffset
 
         return hexesNAway;
     }
+
+    // Addition operator overload
+    public static HexCoordinateOffset operator +(HexCoordinateOffset lhs,
+        HexCoordinateOffset rhs)
+    {
+        return new HexCoordinateOffset(lhs.Col + rhs.Col,
+            lhs.Row + rhs.Row);
+    }
+
+    // Subtraction operator overload
+    public static HexCoordinateOffset operator -(HexCoordinateOffset lhs,
+        HexCoordinateOffset rhs)
+    {
+        return new HexCoordinateOffset(lhs.Col - rhs.Col,
+            lhs.Row - rhs.Row);
+    }
+
+    // Converts this coordinate to a Vector2Int of the form (Col, Row)
+    public Vector2Int ConvertToVector2Int()
+    {
+        return new Vector2Int(Col, Row);
+    }
+
+    // Converts this coordinate to a Vector3Int of the form (Col, Row, 0)
+    public Vector3Int ConvertToVector3Int()
+    {
+        return new Vector3Int(Col, Row, 0);
+    }
+
+    // Converts this offset coordinate to the axial coordinate system
+    public HexCoordinateAxial OffsetToAxial()
+    {
+        int x = Col - (Row - (Row % 2)) / 2;
+        int y = Row;
+        return new HexCoordinateAxial(x, y);
+    }
+
+    
 }
