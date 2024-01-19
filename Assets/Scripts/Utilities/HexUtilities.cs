@@ -9,6 +9,17 @@ using UnityEngine;
 
 public static class HexUtilities 
 {
+    // Represents the 6 possible directions from a hex
+    public enum Direction
+    {
+        east, 
+        northeast, 
+        northwest, 
+        west, 
+        southwest, 
+        southeast
+    }
+
     // Given two offset hex coordinates, returns the distance in hexes 
     // between them
     public static int DistanceBetween(HexCoordinateOffset a, 
