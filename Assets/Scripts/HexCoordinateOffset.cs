@@ -50,8 +50,6 @@ public class HexCoordinateOffset : HexCoordinate<HexCoordinateOffset>
     // and the rest continue counter-clockwise 
     public HexCoordinateOffset[] AdjacentHexes()
     {
-        HexCoordinateOffset[] adjacentHexes = new HexCoordinateOffset[6];
-
         // Offsets are different for odd and even rows
         HexCoordinateOffset[] offsets = new HexCoordinateOffset[6];
         bool evenRow = (Row % 2) == 0;
@@ -82,6 +80,7 @@ public class HexCoordinateOffset : HexCoordinate<HexCoordinateOffset>
         }
 
         // Add each offset to this hex to get the adjacent hexes
+        HexCoordinateOffset[] adjacentHexes = new HexCoordinateOffset[6];
         for (int i = 0; i < 6; i++)
         {
             adjacentHexes[i] = this + offsets[i];
@@ -91,14 +90,15 @@ public class HexCoordinateOffset : HexCoordinate<HexCoordinateOffset>
     }
 
     // Returns the hex coordinate adjacent to this hex in the given direction
-    public HexCoordinateOffset AdjacentHex(HexUtilities.Direction direction)
+    public HexCoordinateOffset AdjacentHex(HexUtilities.HexDirection direction)
     {
-        return new HexCoordinateOffset(1, 1);
+        return AdjacentHexes()[(int)direction];
     }
 
     // Returns all hexes exactly n steps away from this hex
     public List<HexCoordinateOffset> HexesExactlyNAway(int n)
     {
+        // Easier to calculate using axial coordinates
         HexCoordinateAxial axialHex = OffsetToAxial();
         List<HexCoordinateAxial> axialHexesNAway = axialHex.HexesExactlyNAway(n);
 

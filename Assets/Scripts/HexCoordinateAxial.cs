@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 // ------------------------------------------------------------------
@@ -49,21 +51,49 @@ public class HexCoordinateAxial: HexCoordinate<HexCoordinateAxial>
     // and the rest continue counter-clockwise 
     public HexCoordinateAxial[] AdjacentHexes()
     {
+        HexCoordinateAxial[] offsets = new HexCoordinateAxial[6]
+            {
+                new HexCoordinateAxial(1, 0),
+                new HexCoordinateAxial(1, -1),
+                new HexCoordinateAxial(0, -1),
+                new HexCoordinateAxial(-1, 0),
+                new HexCoordinateAxial(-1, 1),
+                new HexCoordinateAxial(0, 1),
+            };
 
+        HexCoordinateAxial[] adjacentHexes = new HexCoordinateAxial[6];
+        for(int i = 0; i < 6; i++)
+        {
+            adjacentHexes[i] = this + offsets[i];
+        }
+
+        return adjacentHexes;
     }
 
     // Returns the hex coordinate adjacent to this hex in the given direction
-    public HexCoordinateAxial AdjacentHex(HexUtilities.Direction direction)
+    public HexCoordinateAxial AdjacentHex(HexUtilities.HexDirection direction)
     {
-        return new HexCoordinateAxial(1, 1);
+        return AdjacentHexes()[(int)direction];
     }
 
     // Returns all hexes exactly n steps away from this hex
     public List<HexCoordinateAxial> HexesExactlyNAway(int n)
     {
-        // Hexes n steps away will satisfy max(abs(x), abs(y), abs(z)) = n, 
-        // where x,y,z are the coordinates of this - hexAway
         List<HexCoordinateAxial> hexesNAway = new();
+
+        // Traces hexagonal ring of hexes n steps away from this hex
+        // Draw lines of n - 1 hexes in each possible direction
+        HexCoordinateAxial offset = new HexCoordinateAxial(-n, n);
+        Array directions = Enum.GetValues(typeof(HexUtilities.HexDirection));
+
+        foreach (HexUtilities.HexDirection direction in directions)
+        {
+            for(int i = 0; i < n; i++)
+            {
+                hexesNAway.Add(this + offset);
+                offset = offset.AdjacentHex(direction);
+            }
+        }
 
         return hexesNAway;
     }

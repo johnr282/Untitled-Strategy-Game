@@ -10,7 +10,7 @@ using UnityEngine;
 public static class HexUtilities 
 {
     // Represents the 6 possible directions from a hex
-    public enum Direction
+    public enum HexDirection
     {
         east, 
         northeast, 

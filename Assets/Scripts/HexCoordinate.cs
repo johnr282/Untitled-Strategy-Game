@@ -15,7 +15,7 @@ public interface HexCoordinate<HexCoordinateType>
     public HexCoordinateType[] AdjacentHexes();
 
     // Returns the hex coordinate adjacent to this hex in the given direction
-    public HexCoordinateType AdjacentHex(HexUtilities.Direction direction);
+    public HexCoordinateType AdjacentHex(HexUtilities.HexDirection direction);
 
     // Returns all hexes exactly n steps away from this hex
     public List<HexCoordinateType> HexesExactlyNAway(int n);

@@ -109,14 +109,6 @@ public class MapVisuals : MonoBehaviour
 
         _currentlyHighlightedTile = tilePos;
         EventBus.Publish(new NewTileHighlightedEvent(tilePos));
-
-        // Debugging purposes only
-        HexCoordinateOffset highlightedHexCoord = new HexCoordinateOffset(
-            tilePos.x, tilePos.y);
-        HexCoordinateOffset selectedHexCoord = new HexCoordinateOffset(
-            _currentlySelectedTile.x, _currentlySelectedTile.y);
-        Debug.Log("Distance to selected tile: " + 
-            HexUtilities.DistanceBetween(selectedHexCoord, highlightedHexCoord).ToString());
     }
 
     // Selects tile at given world position; does nothing if no tile exists
@@ -136,6 +128,10 @@ public class MapVisuals : MonoBehaviour
 
         _currentlySelectedTile = tilePos;
         EventBus.Publish(new TileSelectedEvent(tilePos));
+
+        // Debugging purposes only
+        HexCoordinateOffset selectedHexCoord = new HexCoordinateOffset(
+            _currentlySelectedTile.x, _currentlySelectedTile.y);
     }
 
     // Multiplies saturation value of tile's color at tilePos by saturation 
