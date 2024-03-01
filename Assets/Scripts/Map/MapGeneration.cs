@@ -22,11 +22,11 @@ public class MapGeneration : MonoBehaviour
         _gameMap = GetComponent<GameMap>();
         _parameters = GetComponent<MapGenerationParameters>();
 
-        GenerateMap();
+        //GenerateMap();
     }
 
     // Randomly generate the game map based on map generation parameters
-    void GenerateMap()
+    public void GenerateMap()
     {
         SeedRandomGeneration();
         CalculateMapDimensions();
@@ -283,7 +283,7 @@ public class MapGeneration : MonoBehaviour
     }
 
     // Generates continent around given central coordinate with given ID
-    public void GenerateContinent(HexCoordinateOffset centralCoordinate, 
+    void GenerateContinent(HexCoordinateOffset centralCoordinate, 
         int continentID)
     {
         _gameMap.SetContinentID(centralCoordinate, continentID);

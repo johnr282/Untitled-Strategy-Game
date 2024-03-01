@@ -1,8 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
-using UnityEngine;
 
 // ------------------------------------------------------------------
 // Class representing the location of a tile in a pointed-top hexagonal
