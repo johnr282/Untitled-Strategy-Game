@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 // ------------------------------------------------------------------
-// Handles starting or joining multiplayer sessions
+// Handles starting and joining multiplayer sessions
 // ------------------------------------------------------------------
 
 public class SessionManager : MonoBehaviour, INetworkRunnerCallbacks
@@ -35,7 +35,8 @@ public class SessionManager : MonoBehaviour, INetworkRunnerCallbacks
     // Creates or joins a session depending on mode
     private async void StartGame(GameMode mode)
     {
-        // Create the Fusion runner and let it know that we will be providing user input
+        // Create the Fusion runner and let it know that we will be
+        // providing user input
         _runner = gameObject.AddComponent<NetworkRunner>();
         _runner.ProvideInput = true;
 
@@ -47,11 +48,9 @@ public class SessionManager : MonoBehaviour, INetworkRunnerCallbacks
             sceneInfo.AddSceneRef(scene, LoadSceneMode.Additive);
         }
 
-        // Only the host should generate the map
+        // Only the host should generate the seed
         if (mode == GameMode.Host)
-        {
-            _mapGenerator.GenerateMap();
-        }
+            _mapGenerator.GenerateRandomSeed();
 
         StartGameArgs startGameArgs = new StartGameArgs()
         {
@@ -67,7 +66,12 @@ public class SessionManager : MonoBehaviour, INetworkRunnerCallbacks
 
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) 
     {
-        Debug.Log("Player joined");
+        if (runner.IsServer)
+        {
+            ServerMessages.RPC_GenerateMap(runner,
+                player,
+                _mapGenerator.GetMapSeed());
+        }
     }
 
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) 

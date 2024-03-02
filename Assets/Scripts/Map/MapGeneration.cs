@@ -16,19 +16,51 @@ public class MapGeneration : MonoBehaviour
     GameMap _gameMap;
     MapGenerationParameters _parameters;
 
-    void Start()
+    Subscription<GenerateMapEvent> _generateMapSub;
+
+    private void Start()
     {
          _mapVisuals = GetComponent<MapVisuals>();   
         _gameMap = GetComponent<GameMap>();
         _parameters = GetComponent<MapGenerationParameters>();
 
-        //GenerateMap();
+        _generateMapSub = EventBus.Subscribe<GenerateMapEvent>(GenerateMapCallback);
+    }
+
+    private void OnDestroy()
+    {
+        EventBus.Unsubscribe(_generateMapSub);
+    }
+
+    // Generates random seed to use for map generation
+    public void GenerateRandomSeed()
+    {
+        // If _parameters.RandomlyGenerateSeed is false, simply use the 
+        // serialized seed
+        if (_parameters.RandomlyGenerateSeed)
+            _parameters.Seed = Random.Range(int.MinValue, int.MaxValue);
+
+        Debug.Log("Seed: " + _parameters.Seed.ToString());
+    }
+
+    // Returns the map seed used for map generation; should be called 
+    // only after calling GenerateRandomSeed()
+    public int GetMapSeed()
+    {
+        return _parameters.Seed;
+    }
+
+    private void GenerateMapCallback(GenerateMapEvent generateMapEvent)
+    {
+        GenerateMap(generateMapEvent.MapSeed);
     }
 
     // Randomly generate the game map based on map generation parameters
-    public void GenerateMap()
+    // and given seed
+    private void GenerateMap(int seed)
     {
-        SeedRandomGeneration();
+        Debug.Log("Generating map with seed " + seed.ToString());
+        SeedRandomGeneration(seed);
         CalculateMapDimensions();
         InitializeEveryTileToSea();
         GenerateContinents();
@@ -37,16 +69,10 @@ public class MapGeneration : MonoBehaviour
             _parameters.MapWidth);
     }
 
-    // Initializes random generation with a seed
-    void SeedRandomGeneration()
+    // Initializes random generation with given seed
+    void SeedRandomGeneration(int seed)
     {
-        // If _parameters.RandomlyGenerateSeed is false, simply use the 
-        // serialized seed
-        if (_parameters.RandomlyGenerateSeed)
-            _parameters.Seed = Random.Range(int.MinValue, int.MaxValue);
-
-        Debug.Log("Seed: " + _parameters.Seed.ToString());
-        Random.InitState(_parameters.Seed);
+        Random.InitState(seed);
     }
 
     // Calculates the height and width of the map based on number of continents

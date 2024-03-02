@@ -25,3 +25,13 @@ public class TileSelectedEvent
         Coordinate = coordinateIn;
     }
 }
+
+public class GenerateMapEvent
+{
+    public int MapSeed { get; }
+
+    public GenerateMapEvent(int mapSeedIn)
+    {
+        MapSeed = mapSeedIn;
+    }
+}
