@@ -821,6 +821,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _mapGenerator: {fileID: 14530135}
+  _numPlayers: 3
 --- !u!4 &1726182346
 Transform:
   m_ObjectHideFlags: 0

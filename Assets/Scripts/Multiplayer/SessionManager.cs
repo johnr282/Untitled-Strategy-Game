@@ -13,8 +13,10 @@ using UnityEngine.SceneManagement;
 public class SessionManager : MonoBehaviour, INetworkRunnerCallbacks
 {
     [SerializeField] private MapGeneration _mapGenerator;
+    [SerializeField] private int _numPlayers;
 
     private NetworkRunner _runner;
+    private int _playersJoined = 0;
 
     // Creates buttons to choose whether to host or join
     private void OnGUI()
@@ -64,12 +66,25 @@ public class SessionManager : MonoBehaviour, INetworkRunnerCallbacks
         await _runner.StartGame(startGameArgs);
     }
 
-    public void OnPlayerJoined(NetworkRunner runner, PlayerRef player) 
+    public void OnPlayerJoined(NetworkRunner runner, 
+        PlayerRef player) 
     {
         if (runner.IsServer)
+            OnPlayerJoinedServer(runner, player);       
+    }
+
+    // Called by server when a player joins the session
+    private void OnPlayerJoinedServer(NetworkRunner runner, 
+        PlayerRef player)
+    {
+        _playersJoined++;
+        Debug.Log(_playersJoined.ToString() + " players joined");
+        bool allPlayersJoined = (_playersJoined == _numPlayers);
+
+        if (allPlayersJoined)
         {
+            Debug.Log("All players joined");
             ServerMessages.RPC_GenerateMap(runner,
-                player,
                 _mapGenerator.GetMapSeed());
         }
     }
