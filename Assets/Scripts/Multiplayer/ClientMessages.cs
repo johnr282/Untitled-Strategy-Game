@@ -9,5 +9,14 @@ using UnityEngine;
 
 public class ClientMessages : NetworkBehaviour  
 {
-    
+    // Called by a client to notify server that the player's turn
+    // corresponding to playerID is finished
+    [Rpc]
+    public static void RPC_EndTurn(NetworkRunner runner,
+        [RpcTarget] PlayerRef player, 
+        int playerID)
+    {
+        Debug.Log("Calling RPC_EndTurn");
+        EventBus.Publish(new TurnFinishedEvent(playerID));
+    }
 }

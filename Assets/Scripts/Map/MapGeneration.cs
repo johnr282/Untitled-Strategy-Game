@@ -18,7 +18,7 @@ public class MapGeneration : MonoBehaviour
 
     Subscription<GenerateMapEvent> _generateMapSub;
 
-    private void Start()
+    void Start()
     {
          _mapVisuals = GetComponent<MapVisuals>();   
         _gameMap = GetComponent<GameMap>();
@@ -27,7 +27,7 @@ public class MapGeneration : MonoBehaviour
         _generateMapSub = EventBus.Subscribe<GenerateMapEvent>(GenerateMapCallback);
     }
 
-    private void OnDestroy()
+    void OnDestroy()
     {
         EventBus.Unsubscribe(_generateMapSub);
     }
@@ -50,14 +50,15 @@ public class MapGeneration : MonoBehaviour
         return _parameters.Seed;
     }
 
-    private void GenerateMapCallback(GenerateMapEvent generateMapEvent)
+    // Generates map with seed given in generateMapEvent
+    void GenerateMapCallback(GenerateMapEvent generateMapEvent)
     {
         GenerateMap(generateMapEvent.MapSeed);
     }
 
     // Randomly generate the game map based on map generation parameters
     // and given seed
-    private void GenerateMap(int seed)
+    void GenerateMap(int seed)
     {
         Debug.Log("Generating map with seed " + seed.ToString());
         SeedRandomGeneration(seed);

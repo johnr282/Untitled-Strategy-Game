@@ -7,19 +7,20 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 // ------------------------------------------------------------------
-// Handles starting and joining multiplayer sessions
+// Handles starting, joining, and managing multiplayer sessions
 // ------------------------------------------------------------------
 
 public class SessionManager : MonoBehaviour, INetworkRunnerCallbacks
 {
-    [SerializeField] private MapGeneration _mapGenerator;
-    [SerializeField] private int _numPlayers;
+    [SerializeField] MapGeneration _mapGenerator;
+    [SerializeField] PlayerManager _playerManager;
+    [SerializeField] int _numPlayers;
 
-    private NetworkRunner _runner;
-    private int _playersJoined = 0;
+    NetworkRunner _runner;
+    int _playersJoined = 0;
 
     // Creates buttons to choose whether to host or join
-    private void OnGUI()
+    void OnGUI()
     {
         if (_runner == null)
         {
@@ -35,7 +36,7 @@ public class SessionManager : MonoBehaviour, INetworkRunnerCallbacks
     }
 
     // Creates or joins a session depending on mode
-    private async void StartGame(GameMode mode)
+    async void StartGame(GameMode mode)
     {
         // Create the Fusion runner and let it know that we will be
         // providing user input
@@ -74,10 +75,11 @@ public class SessionManager : MonoBehaviour, INetworkRunnerCallbacks
     }
 
     // Called by server when a player joins the session
-    private void OnPlayerJoinedServer(NetworkRunner runner, 
+    void OnPlayerJoinedServer(NetworkRunner runner, 
         PlayerRef player)
     {
         _playersJoined++;
+        _playerManager.AddPlayer(runner, player);   
         Debug.Log(_playersJoined.ToString() + " players joined");
         bool allPlayersJoined = (_playersJoined == _numPlayers);
 
