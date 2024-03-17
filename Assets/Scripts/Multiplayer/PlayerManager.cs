@@ -33,15 +33,20 @@ public class PlayerManager : NetworkBehaviour
 
     // Creates a new player and corresponding ID, and sends player ID to
     // client corresponding to given PlayerRef
-    public void AddPlayer(NetworkRunner runner, 
-        PlayerRef player)
+    public void AddPlayer(PlayerRef player)
     {
         int newPlayerID = _players.Count + 1;
         _players.Add(newPlayerID, new Player(player, newPlayerID));
         _turnOrder.Add(newPlayerID);
-        ServerMessages.RPC_SendPlayerID(runner,
+        ServerMessages.RPC_SendPlayerID(Runner,
             player,
             newPlayerID);
+    }
+
+    // Notifies the first player in _turnOrder that it's their turn
+    public void NotifyFirstPlayer()
+    {
+        NotifyNextPlayer();
     }
 
     // Updates _currTurnIndex and notifies next player that it's their turn
@@ -58,6 +63,8 @@ public class PlayerManager : NetworkBehaviour
             _currTurnIndex = 0;
         else
             _currTurnIndex++;
+
+        Debug.Log("Updated curr turn index to : " +  _currTurnIndex);
     }
 
     // Notifies the next player that it's their turn
@@ -73,6 +80,7 @@ public class PlayerManager : NetworkBehaviour
             return;
         }
 
-        
+        ServerMessages.RPC_NotifyPlayerTurn(Runner, 
+            nextPlayer.ClientRef);
     }
 }

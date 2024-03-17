@@ -79,7 +79,7 @@ public class SessionManager : MonoBehaviour, INetworkRunnerCallbacks
         PlayerRef player)
     {
         _playersJoined++;
-        _playerManager.AddPlayer(runner, player);   
+        _playerManager.AddPlayer(player);   
         Debug.Log(_playersJoined.ToString() + " players joined");
         bool allPlayersJoined = (_playersJoined == _numPlayers);
 
@@ -88,6 +88,7 @@ public class SessionManager : MonoBehaviour, INetworkRunnerCallbacks
             Debug.Log("All players joined");
             ServerMessages.RPC_GenerateMap(runner,
                 _mapGenerator.GetMapSeed());
+            _playerManager.NotifyFirstPlayer();
         }
     }
 

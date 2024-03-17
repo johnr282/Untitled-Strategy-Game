@@ -1,3 +1,4 @@
+using Fusion;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -61,6 +62,6 @@ public class TurnFinishedEvent
     
     public TurnFinishedEvent(int playerIDIn)
     {
-        PlayerID = playerIDIn;
+        PlayerID = playerIDIn;  
     }
 }
