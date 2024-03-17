@@ -9,14 +9,16 @@ using Fusion;
 
 public class ClientPlayerData : NetworkBehaviour
 {
-    int _playerID;
-    bool _myTurn = false;
+    public int PlayerID { get; private set; }
+    public bool MyTurn {  get; private set; }
 
     Subscription<PlayerIDReceivedEvent> _playerIDSub;
     Subscription<PlayerTurnEvent> _turnSub;
 
     void Start()
     {
+        MyTurn = false;
+
         _playerIDSub = EventBus.Subscribe<PlayerIDReceivedEvent>(PlayerIDCallback);
         _turnSub = EventBus.Subscribe<PlayerTurnEvent>(PlayerTurnCallback);
     }
@@ -27,21 +29,26 @@ public class ClientPlayerData : NetworkBehaviour
         EventBus.Unsubscribe(_turnSub);
     }
 
-    // Sets _playerID to ID given in playerIDEvent
-    void PlayerIDCallback(PlayerIDReceivedEvent playerIDEvent)
+    public void EndTurn()
     {
-        _playerID = playerIDEvent.PlayerID;
+        Debug.Log("Player " + PlayerID + " ending turn");
+        MyTurn = false;
+
+        ClientMessages.RPC_EndTurn(Runner,
+            PlayerRef.None,
+            PlayerID);
     }
 
-    // Sets _myTurn to true 
+    // Sets PlayerID to ID given in playerIDEvent
+    void PlayerIDCallback(PlayerIDReceivedEvent playerIDEvent)
+    {
+        PlayerID = playerIDEvent.PlayerID;
+    }
+
+    // Sets MyTurn to true 
     void PlayerTurnCallback(PlayerTurnEvent turnEvent)
     {
-        _myTurn = true;
-        Debug.Log("Player " + _playerID.ToString() + ": It's my turn!");
-        _myTurn = false;
-
-        ClientMessages.RPC_EndTurn(Runner, 
-            PlayerRef.None, 
-            _playerID);
+        MyTurn = true;
+        Debug.Log("Player " + PlayerID.ToString() + ": It's my turn!");
     }
 }
