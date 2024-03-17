@@ -884,8 +884,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _mapGenerator: {fileID: 14530135}
-  _playerManager: {fileID: 0}
-  _numPlayers: 3
+  _playerManager: {fileID: 707688584}
+  _numPlayers: 2
 --- !u!4 &1726182346
 Transform:
   m_ObjectHideFlags: 0
