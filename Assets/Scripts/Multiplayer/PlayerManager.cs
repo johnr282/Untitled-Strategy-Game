@@ -9,9 +9,14 @@ using UnityEngine;
 
 public class PlayerManager : NetworkBehaviour
 {
-    Dictionary<int, Player> _players;   // maps player IDs to players
-    List<int> _turnOrder;               // contains player IDs
-    int _currTurnIndex = 0;             // contains an index to _turnOrder
+    // Maps player IDs to players
+    Dictionary<int, Player> _players = new Dictionary<int, Player>();
+
+    // Contains player IDs
+    List<int> _turnOrder = new List<int>();
+
+    // Contains an index to _turnOrder
+    int _currTurnIndex = 0;             
 
     Subscription<TurnFinishedEvent> _turnFinishedSub;
 
