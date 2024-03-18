@@ -7,7 +7,7 @@ using UnityEngine;
 // Contains Event definitions used with EventBus system
 // ------------------------------------------------------------------
 
-// Published when a new tile is highlighted
+// Published on a client when a new tile is highlighted
 public class NewTileHighlightedEvent
 {
     public Vector3Int Coordinate { get; }
@@ -18,7 +18,7 @@ public class NewTileHighlightedEvent
     }
 }
 
-// Published when a tile is selected
+// Published on a client when a tile is selected
 public class TileSelectedEvent
 { 
     public Vector3Int Coordinate { get; }
@@ -29,7 +29,7 @@ public class TileSelectedEvent
     }
 }
 
-// Published to a client when they should generate the map with the given
+// Published on a client when they should generate the map with the given
 // seed
 public class GenerateMapEvent
 {
@@ -41,10 +41,7 @@ public class GenerateMapEvent
     }
 }
 
-// Published to a client when it's their turn
-public class PlayerTurnEvent { }
-
-// Published to a client when they receive their player ID from the server
+// Published on a client when they receive their player ID from the server
 public class PlayerIDReceivedEvent
 { 
     public int PlayerID { get; }
@@ -55,13 +52,36 @@ public class PlayerIDReceivedEvent
     }
 }
 
-// Published to the server when a client finishes their turn
-public class TurnFinishedEvent
+// Published on a client when it's their turn
+public class PlayerTurnEvent
 {
-    public int PlayerID { get; }
-    
-    public TurnFinishedEvent(int playerIDIn)
+    public TurnStartData TurnStartInfo { get; }
+
+    public PlayerTurnEvent(TurnStartData turnStartInfoIn)
     {
-        PlayerID = playerIDIn;  
+        TurnStartInfo = turnStartInfoIn;
     }
 }
+
+// Published on the server when a client finishes their turn
+public class TurnFinishedEvent
+{
+    public TurnEndData TurnEndInfo { get; }
+    
+    public TurnFinishedEvent(TurnEndData turnEndInfoIn)
+    {
+        TurnEndInfo = turnEndInfoIn;
+    }
+}
+
+// Published on a client when they select a hex on their turn
+public class HexSelectedEvent
+{
+    public Vector3Int Hex { get; }
+
+    public HexSelectedEvent(Vector3Int hexIn)
+    {
+        Hex = hexIn;
+    }
+}
+

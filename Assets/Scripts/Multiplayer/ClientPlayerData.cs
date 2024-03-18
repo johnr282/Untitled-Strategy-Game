@@ -29,7 +29,7 @@ public class ClientPlayerData : NetworkBehaviour
         EventBus.Unsubscribe(_turnSub);
     }
 
-    public void EndTurn()
+    public void EndTurn(Vector3Int selectedHex)
     {
         Debug.Log("Player " + PlayerID + " ending turn");
         MyTurn = false;

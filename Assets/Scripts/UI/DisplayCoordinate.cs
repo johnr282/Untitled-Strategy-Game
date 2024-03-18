@@ -10,17 +10,22 @@ using UnityEngine;
 
 public class DisplayCoordinate : MonoBehaviour
 {
-    TextMeshProUGUI tmp;
-    Subscription<NewTileHighlightedEvent> _tileSelectedSub;
+    TextMeshProUGUI _coordinateDisplay;
+    Subscription<NewTileHighlightedEvent> _tileHighlightedSub;
 
     void Awake()
     {
-        tmp = GetComponent<TextMeshProUGUI>();
-        _tileSelectedSub = EventBus.Subscribe<NewTileHighlightedEvent>(ChangeDisplayCoordinate);    
+        _coordinateDisplay = GetComponent<TextMeshProUGUI>();
+        _tileHighlightedSub = EventBus.Subscribe<NewTileHighlightedEvent>(ChangeDisplayCoordinate);    
     }
 
-    void ChangeDisplayCoordinate(NewTileHighlightedEvent tileSelectedEvent)
+    void OnDestroy()
     {
-        tmp.text = tileSelectedEvent.Coordinate.ToString();
+        EventBus.Unsubscribe(_tileHighlightedSub);    
+    }
+
+    void ChangeDisplayCoordinate(NewTileHighlightedEvent tileHighlightedEvent)
+    {
+        _coordinateDisplay.text = tileHighlightedEvent.Coordinate.ToString();
     }
 }

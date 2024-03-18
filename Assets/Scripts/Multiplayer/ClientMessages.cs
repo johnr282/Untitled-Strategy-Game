@@ -19,4 +19,14 @@ public class ClientMessages : NetworkBehaviour
         Debug.Log("Calling RPC_EndTurn");
         EventBus.Publish(new TurnFinishedEvent(playerID));
     }
+
+    // Called by a client to send its selected hex to the server
+    [Rpc]
+    public static void RPC_SendSelectedHex(NetworkRunner runner,
+        [RpcTarget] PlayerRef player,
+        Vector3Int selectedHex)
+    {
+        Debug.Log("Calling RPC_SendSelectedHex");
+
+    }
 }

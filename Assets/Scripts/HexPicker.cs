@@ -9,16 +9,28 @@ using Fusion;
 
 public class HexPicker : MonoBehaviour
 {
-    [SerializeField] ClientPlayerData _playerData;
+    [SerializeField] ClientPlayerData _thisPlayer;
+    Subscription<TileSelectedEvent> _tileSelectedSub;
 
-    void Update()
+    void Start()
     {
-        if (!_playerData.MyTurn)
+        _tileSelectedSub = EventBus.Subscribe<TileSelectedEvent>(SelectHexOnTurn);    
+    }
+
+    void OnDestroy()
+    {
+        EventBus.Unsubscribe(_tileSelectedSub);
+    }
+
+    // If it's this player's turn, allow them to select the hex given
+    // in tileSelectedEvent
+    void SelectHexOnTurn(TileSelectedEvent tileSelectedEvent)
+    {
+        if (!_thisPlayer.MyTurn)
             return;
 
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            _playerData.EndTurn();
-        }
+        Vector3Int selectedHex = tileSelectedEvent.Coordinate;
+        EventBus.Publish(new HexSelectedEvent(selectedHex));
+        _thisPlayer.EndTurn(selectedHex);
     }
 }
