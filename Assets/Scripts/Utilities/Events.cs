@@ -64,24 +64,23 @@ public class PlayerTurnEvent
 }
 
 // Published on the server when a client finishes their turn
-public class TurnFinishedEvent
+public class TurnFinishedEventServer
 {
     public TurnEndData TurnEndInfo { get; }
     
-    public TurnFinishedEvent(TurnEndData turnEndInfoIn)
+    public TurnFinishedEventServer(TurnEndData turnEndInfoIn)
     {
         TurnEndInfo = turnEndInfoIn;
     }
 }
 
-// Published on a client when they select a hex on their turn
-public class HexSelectedEvent
+// Published on a client when their turn finishes
+public class TurnFinishedEventClient
 {
-    public Vector3Int Hex { get; }
+    public TurnEndData TurnEndInfo { get; }
 
-    public HexSelectedEvent(Vector3Int hexIn)
+    public TurnFinishedEventClient(TurnEndData turnEndInfoIn)
     {
-        Hex = hexIn;
+        TurnEndInfo = turnEndInfoIn;
     }
 }
-

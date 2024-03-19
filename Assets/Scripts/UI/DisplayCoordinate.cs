@@ -8,6 +8,7 @@ using UnityEngine;
 // tile
 // ------------------------------------------------------------------
 
+[RequireComponent(typeof(TextMeshProUGUI))]
 public class DisplayCoordinate : MonoBehaviour
 {
     TextMeshProUGUI _coordinateDisplay;

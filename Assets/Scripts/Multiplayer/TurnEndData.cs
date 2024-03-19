@@ -1,3 +1,4 @@
+using Fusion;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,7 +7,7 @@ using UnityEngine;
 // Stores data sent to server when a player finishes their turn
 // ------------------------------------------------------------------
 
-public class TurnEndData 
+public struct TurnEndData : INetworkStruct
 {
     public int PlayerID { get; }
     public Vector3Int SelectedHex {  get; }

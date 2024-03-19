@@ -22,15 +22,15 @@ public class HexPicker : MonoBehaviour
         EventBus.Unsubscribe(_tileSelectedSub);
     }
 
-    // If it's this player's turn, allow them to select the hex given
-    // in tileSelectedEvent
+    // If it's this player's turn, end their turn with the selected hex
+    // given in tileSelectedEvent
     void SelectHexOnTurn(TileSelectedEvent tileSelectedEvent)
     {
         if (!_thisPlayer.MyTurn)
             return;
 
-        Vector3Int selectedHex = tileSelectedEvent.Coordinate;
-        EventBus.Publish(new HexSelectedEvent(selectedHex));
-        _thisPlayer.EndTurn(selectedHex);
+        TurnEndData turnEndData = new TurnEndData(_thisPlayer.PlayerID,
+            tileSelectedEvent.Coordinate);
+        _thisPlayer.EndTurn(turnEndData);
     }
 }

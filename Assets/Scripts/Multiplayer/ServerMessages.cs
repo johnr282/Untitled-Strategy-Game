@@ -32,9 +32,10 @@ public class ServerMessages : NetworkBehaviour
     // Called by server to notify a player that it's their turn
     [Rpc]
     public static void RPC_NotifyPlayerTurn(NetworkRunner runner,
-        [RpcTarget] PlayerRef player)
+        [RpcTarget] PlayerRef player, 
+        TurnStartData turnStartData)
     {
         Debug.Log("Calling RPC_NotifyPlayerTurn");
-        EventBus.Publish(new PlayerTurnEvent());
+        EventBus.Publish(new PlayerTurnEvent(turnStartData));
     }
 }

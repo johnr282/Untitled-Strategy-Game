@@ -14,10 +14,10 @@ public class ClientMessages : NetworkBehaviour
     [Rpc]
     public static void RPC_EndTurn(NetworkRunner runner,
         [RpcTarget] PlayerRef player, 
-        int playerID)
+        TurnEndData turnEndData)
     {
         Debug.Log("Calling RPC_EndTurn");
-        EventBus.Publish(new TurnFinishedEvent(playerID));
+        EventBus.Publish(new TurnFinishedEventServer(turnEndData));
     }
 
     // Called by a client to send its selected hex to the server

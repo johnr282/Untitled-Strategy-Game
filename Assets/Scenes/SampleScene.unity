@@ -385,7 +385,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f553f4d496c44340ac736ff89243ea7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _thisPlayer: {fileID: 0}
+  _thisPlayer: {fileID: 1320870686}
 --- !u!4 &635456689
 Transform:
   m_ObjectHideFlags: 0
@@ -706,6 +706,7 @@ GameObject:
   - component: {fileID: 1025867115}
   - component: {fileID: 1025867117}
   - component: {fileID: 1025867116}
+  - component: {fileID: 1025867118}
   m_Layer: 5
   m_Name: TurnInfoDisplay
   m_TagString: Untagged
@@ -829,6 +830,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1025867114}
   m_CullTransparentMesh: 1
+--- !u!114 &1025867118
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1025867114}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 958aeaa0aa5d74a498dd4514a38a64bd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1233646521
 GameObject:
   m_ObjectHideFlags: 0

@@ -29,14 +29,15 @@ public class ClientPlayerData : NetworkBehaviour
         EventBus.Unsubscribe(_turnSub);
     }
 
-    public void EndTurn(Vector3Int selectedHex)
+    public void EndTurn(TurnEndData turnEndData)
     {
         Debug.Log("Player " + PlayerID + " ending turn");
         MyTurn = false;
 
         ClientMessages.RPC_EndTurn(Runner,
             PlayerRef.None,
-            PlayerID);
+            turnEndData);
+        EventBus.Publish(new TurnFinishedEventClient(turnEndData));
     }
 
     // Sets PlayerID to ID given in playerIDEvent

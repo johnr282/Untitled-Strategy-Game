@@ -18,11 +18,11 @@ public class PlayerManager : NetworkBehaviour
     // Contains an index to _turnOrder
     int _currTurnIndex = 0;             
 
-    Subscription<TurnFinishedEvent> _turnFinishedSub;
+    Subscription<TurnFinishedEventServer> _turnFinishedSub;
 
     void Start()
     {
-        _turnFinishedSub = EventBus.Subscribe<TurnFinishedEvent>(
+        _turnFinishedSub = EventBus.Subscribe<TurnFinishedEventServer>(
             TurnFinishedCallback);
     }
 
@@ -46,14 +46,15 @@ public class PlayerManager : NetworkBehaviour
     // Notifies the first player in _turnOrder that it's their turn
     public void NotifyFirstPlayer()
     {
-        NotifyNextPlayer();
+        NotifyNextPlayer(new TurnStartData(true));
     }
 
     // Updates _currTurnIndex and notifies next player that it's their turn
-    void TurnFinishedCallback(TurnFinishedEvent turnFinishedEvent)
+    void TurnFinishedCallback(TurnFinishedEventServer turnFinishedEvent)
     {
         UpdateCurrTurnIndex();
-        NotifyNextPlayer();
+        NotifyNextPlayer(new TurnStartData(false,
+            turnFinishedEvent.TurnEndInfo.SelectedHex));
     }
 
     // Increments _currTurnIndex or wraps it back around to 0
@@ -68,7 +69,7 @@ public class PlayerManager : NetworkBehaviour
     }
 
     // Notifies the next player that it's their turn
-    void NotifyNextPlayer()
+    void NotifyNextPlayer(TurnStartData turnStartData)
     {
         int nextPlayerID = _turnOrder[_currTurnIndex];
         bool playerNotFound = !_players.TryGetValue(nextPlayerID, 
@@ -81,6 +82,7 @@ public class PlayerManager : NetworkBehaviour
         }
 
         ServerMessages.RPC_NotifyPlayerTurn(Runner, 
-            nextPlayer.ClientRef);
+            nextPlayer.ClientRef,
+            turnStartData);
     }
 }
