@@ -24,8 +24,8 @@ public class MapGenerationParameters : MonoBehaviour
     [SerializeField] int _numContinents;
     public int NumContinents { get => _numContinents; }
 
-    [SerializeField] int _averageContinentDiameter;
-    public int AverageContinentDiameter { get => _averageContinentDiameter; }
+    [SerializeField] int _averageContinentRadius;
+    public int AverageContinentRadius { get => _averageContinentRadius; }
 
     // The higher these parameters, the farther the continents will be spread apart
     [SerializeField] float _continentDiameterToGridCellSizeRatio;
@@ -35,6 +35,11 @@ public class MapGenerationParameters : MonoBehaviour
     [SerializeField] int _minDistanceBetweenCentralContinentTiles;
     public int MinDistanceBetweenCentralContinentTiles 
     { get => _minDistanceBetweenCentralContinentTiles; }
+
+    // Must be a value in between 0 and 1
+    // Increasing this parameter causes each continent to have less contiguous land
+    [SerializeField] float _landGenerationThreshold;
+    public float LandGenerationThreshold { get => _landGenerationThreshold; }
 
     // MapHeight and MapWidth are calculated based on other parameters, so
     // they aren't serialized

@@ -80,16 +80,15 @@ public class MapGeneration : MonoBehaviour
     // and bounds on continent size
     void CalculateMapDimensions()
     {
-        int mapWidth = Mathf.FloorToInt(_parameters.AverageContinentDiameter *
+        int averageContinentDiameter = _parameters.AverageContinentRadius * 2;
+        _parameters.MapWidth = Mathf.FloorToInt(averageContinentDiameter *
             _parameters.ContinentDiameterToGridCellSizeRatio *
             _parameters.NumContinents);
-        _parameters.MapWidth = mapWidth;
 
-        int mapHeight = Mathf.FloorToInt(mapWidth * _parameters.WidthToHeightRatio);
-        _parameters.MapHeight = mapHeight;
+        _parameters.MapHeight = Mathf.FloorToInt(_parameters.MapWidth * _parameters.WidthToHeightRatio);
 
-        Debug.Log("Map width: " + mapWidth.ToString());
-        Debug.Log("Map height: " + mapHeight.ToString());
+        Debug.Log("Map width: " + _parameters.MapWidth.ToString());
+        Debug.Log("Map height: " + _parameters.MapHeight.ToString());
     }
 
     // Initialize every tile in _gameMap to sea
@@ -100,9 +99,8 @@ public class MapGeneration : MonoBehaviour
             for(int col = 0;  col < _parameters.MapWidth; col++)
             {
                 HexCoordinateOffset coordinate = new HexCoordinateOffset(col, row);
-                Terrain seaTerrain = new Terrain(Terrain.TerrainType.sea);
-                GameTile newTile = new GameTile(coordinate, seaTerrain);
-                _gameMap.AddTile(coordinate, newTile);
+                _gameMap.AddTile(coordinate, 
+                    new GameTile(coordinate, Terrain.TerrainType.sea));
             }
         }
     }
@@ -128,7 +126,7 @@ public class MapGeneration : MonoBehaviour
         // Divide map into grid of square cells of size cellSize x cellSize and randomly 
         // choose a point in each cell
         int cellSize = Mathf.FloorToInt(
-            _parameters.AverageContinentDiameter * 
+            _parameters.AverageContinentRadius * 
             _parameters.ContinentDiameterToGridCellSizeRatio);
 
         //Debug.Log("Cell size: " + cellSize.ToString());
@@ -314,5 +312,45 @@ public class MapGeneration : MonoBehaviour
         int continentID)
     {
         _gameMap.SetContinentID(centralCoordinate, continentID);
+
+        int currentRadius = 0;
+        while(ContinueGeneratingContinent(currentRadius))
+        {
+            currentRadius++;
+            GenerateContinentRing(centralCoordinate, 
+                continentID, 
+                currentRadius);
+        }
+    }
+
+    // Returns whether a continent with the given radius should continue growing
+    bool ContinueGeneratingContinent(int currentContinentRadius)
+    {
+        // TODO
+        return true;
+    }
+
+    // Generates the nth ring of the continent with given central coordinate and ID
+    void GenerateContinentRing(HexCoordinateOffset centralCoordinate,
+        int continentID, 
+        int n)
+    {
+        List<HexCoordinateOffset> ring = centralCoordinate.HexesExactlyNAway(n);
+        
+        foreach (HexCoordinateOffset hex in ring)
+        {
+            if (IncludeHex(hex))
+            {
+                _gameMap.AddTile(hex, 
+                    new GameTile(hex, Terrain.TerrainType.land, continentID));
+            }
+        }
+    }
+
+    // Returns whether given hex should be included in continent
+    bool IncludeHex(HexCoordinateOffset hex)
+    {
+        // TODO
+        return true;
     }
 }

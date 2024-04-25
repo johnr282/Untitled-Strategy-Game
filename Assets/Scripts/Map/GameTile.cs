@@ -17,10 +17,12 @@ public class GameTile
     public int ContinentID { get; set; }
 
     // Constructor
-    public GameTile(HexCoordinateOffset coordinate, 
-        Terrain terrain)
+    public GameTile(HexCoordinateOffset coordinateIn, 
+        Terrain.TerrainType terrainTypeIn, 
+        int contintentIDIn = -1)
     {
-        _coordinate = coordinate;
-        TileTerrain = terrain;
+        _coordinate = coordinateIn;
+        TileTerrain = new Terrain(terrainTypeIn);
+        ContinentID = contintentIDIn;
     }
 }
