@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // ------------------------------------------------------------------
-// Contains RPCs used by the server to send messages to clients
+// Contains RPCs used by the server to communicate with clients
 // ------------------------------------------------------------------
 
 public class ServerMessages : NetworkBehaviour
