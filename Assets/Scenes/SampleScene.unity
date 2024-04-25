@@ -304,9 +304,10 @@ MonoBehaviour:
   _randomlyGenerateSeed: 1
   _widthToHeightRatio: 0.5
   _numContinents: 8
-  _averageContinentDiameter: 3
+  _averageContinentRadius: 2
   _continentDiameterToGridCellSizeRatio: 1.5
   _minDistanceBetweenCentralContinentTiles: 0
+  _landGenerationThreshold: 0
 --- !u!114 &14530135
 MonoBehaviour:
   m_ObjectHideFlags: 0
