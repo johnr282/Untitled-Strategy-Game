@@ -526,7 +526,7 @@ MonoBehaviour:
   m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SortKey: 1560751862
+  SortKey: 3207180889
   ObjectInterest: 1
   Flags: 262145
   NestedObjects: []
@@ -1020,7 +1020,7 @@ MonoBehaviour:
   m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SortKey: 2500716259
+  SortKey: 4147145286
   ObjectInterest: 1
   Flags: 262145
   NestedObjects: []
@@ -1141,7 +1141,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _mapGenerator: {fileID: 14530135}
   _playerManager: {fileID: 707688584}
-  _numPlayers: 3
+  _numPlayers: 1
 --- !u!4 &1726182346
 Transform:
   m_ObjectHideFlags: 0

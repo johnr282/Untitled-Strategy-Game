@@ -80,7 +80,7 @@ public class MapGeneration : MonoBehaviour
     // and bounds on continent size
     void CalculateMapDimensions()
     {
-        int averageContinentDiameter = _parameters.AverageContinentRadius * 2;
+        float averageContinentDiameter = _parameters.AverageContinentRadius * 2;
         _parameters.MapWidth = Mathf.FloorToInt(averageContinentDiameter *
             _parameters.ContinentDiameterToGridCellSizeRatio *
             _parameters.NumContinents);
@@ -114,7 +114,7 @@ public class MapGeneration : MonoBehaviour
         for(int i = 0; i <  centralCoordinates.Count; i++)
         {
             _gameMap.ChangeTerrain(centralCoordinates[i], Terrain.TerrainType.land);
-            GenerateContinent(centralCoordinates[i], i);
+            //GenerateContinent(centralCoordinates[i], i);
         }
 
 
@@ -125,8 +125,9 @@ public class MapGeneration : MonoBehaviour
     {
         // Divide map into grid of square cells of size cellSize x cellSize and randomly 
         // choose a point in each cell
+        float averageContinentDiameter = _parameters.AverageContinentRadius * 2;
         int cellSize = Mathf.FloorToInt(
-            _parameters.AverageContinentRadius * 
+             averageContinentDiameter * 
             _parameters.ContinentDiameterToGridCellSizeRatio);
 
         //Debug.Log("Cell size: " + cellSize.ToString());

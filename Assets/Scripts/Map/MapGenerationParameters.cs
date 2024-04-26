@@ -24,8 +24,8 @@ public class MapGenerationParameters : MonoBehaviour
     [SerializeField] int _numContinents;
     public int NumContinents { get => _numContinents; }
 
-    [SerializeField] int _averageContinentRadius;
-    public int AverageContinentRadius { get => _averageContinentRadius; }
+    [SerializeField] float _averageContinentRadius;
+    public float AverageContinentRadius { get => _averageContinentRadius; }
 
     // The higher these parameters, the farther the continents will be spread apart
     [SerializeField] float _continentDiameterToGridCellSizeRatio;
