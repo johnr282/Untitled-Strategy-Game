@@ -121,6 +121,7 @@ public class MapGeneration : MonoBehaviour
     }
 
     // Choose central tiles for each continent and return list of these coordinates
+    // Throws RuntimeException if selection process fails too many times
     List<HexCoordinateOffset> ChooseContinentCentralTiles()
     {
         // Divide map into grid of square cells of size cellSize x cellSize and randomly 
@@ -137,11 +138,24 @@ public class MapGeneration : MonoBehaviour
             out Dictionary<HexCoordinateOffset, Vector2Int> correspondingGridCells);
 
         // Pick numContinents points out of the randomly chosen points to be the central 
-        // tiles for each continent
-        List<HexCoordinateOffset> centralCoordinates = SelectCentralTilesFromList(
-            _parameters.NumContinents,
-            randomPoints,
-            correspondingGridCells);
+        // tiles for each continent; selection process can fail, hence the while loop
+        List<HexCoordinateOffset> centralCoordinates;
+        bool selectionFailed;
+        int numAttempts = 0;
+        do
+        {
+            numAttempts++;
+            if (numAttempts > _parameters.MaxCentralTileSelectionAttempts)
+                throw new RuntimeException(
+                    "Exceeded maximum continent central tile selection attempts");
+
+            centralCoordinates = SelectCentralTilesFromList(
+                _parameters.NumContinents,
+                randomPoints,
+                correspondingGridCells);
+            selectionFailed = (centralCoordinates.Count == 0);
+        } while (selectionFailed);
+
         return centralCoordinates;
     }
 
@@ -187,9 +201,11 @@ public class MapGeneration : MonoBehaviour
         }
     }
 
-    // Randomly chooses n points out of given list, returns array of chosen points;
+    // Randomly chooses n points out of given list, returns list of chosen points;
     // points are less likely to be chosen if tiles in adjacent grid cells have
     // already been chosen
+    // Returns empty list if selection process failed, which could happen if too
+    // many of the randomly chosen points are too close together
     List<HexCoordinateOffset> SelectCentralTilesFromList(int n,
         List<HexCoordinateOffset> randomPoints,
         Dictionary<HexCoordinateOffset, Vector2Int> correspondingGridCells)
@@ -203,13 +219,24 @@ public class MapGeneration : MonoBehaviour
             // to be selected; this makes it much less likely that a cell adjacent to
             // several chosen cells will be chosen, which will ensure that the
             // continents aren't all clustered together
-            int chosenIndex = Random.Range(0, randomPoints.Count); // dummy value to prevent compiler error
+            int chosenIndex = 0; // dummy value to prevent compiler error
             bool pointSelected = false;
 
             while (!pointSelected)
             {
+                // If randomPoints is empty, selection process has failed and empty
+                // list is returned
+                if (randomPoints.Count == 0)
+                    return new List<HexCoordinateOffset>();
+
                 chosenIndex = Random.Range(0, randomPoints.Count);
                 HexCoordinateOffset possiblePoint = randomPoints[chosenIndex];
+                if (TooCloseToChosenPoint(possiblePoint, chosenPoints))
+                {
+                    randomPoints.RemoveAt(chosenIndex);
+                    continue;
+                }
+
                 Vector2Int correspondingGridCell = correspondingGridCells[possiblePoint];
 
                 int numAdjacentCellsChosen = AdjacentCellsChosen(correspondingGridCell, 
@@ -259,6 +286,14 @@ public class MapGeneration : MonoBehaviour
     bool TooCloseToChosenPoint(HexCoordinateOffset point, 
         List<HexCoordinateOffset> chosenPoints)
     {
+        foreach (HexCoordinateOffset chosenPoint in chosenPoints) 
+        {
+            if (HexUtilities.DistanceBetween(point, chosenPoint) < 
+                _parameters.MinDistanceBetweenCentralContinentTiles)
+            {
+                return true;
+            }
+        }
         return false;
     }
 

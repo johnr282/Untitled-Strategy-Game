@@ -41,6 +41,10 @@ public class MapGenerationParameters : MonoBehaviour
     [SerializeField] float _landGenerationThreshold;
     public float LandGenerationThreshold { get => _landGenerationThreshold; }
 
+    [SerializeField] int _maxCentralTileSelectionAttempts;
+    public int MaxCentralTileSelectionAttempts
+    { get => _maxCentralTileSelectionAttempts; }
+
     // MapHeight and MapWidth are calculated based on other parameters, so
     // they aren't serialized
     public int MapHeight { get; set; }
