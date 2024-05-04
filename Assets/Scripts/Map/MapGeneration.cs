@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Analytics;
+using UnityEngine.Networking.PlayerConnection;
 using UnityEngine.Tilemaps;
 
 // ------------------------------------------------------------------
@@ -111,13 +113,22 @@ public class MapGeneration : MonoBehaviour
         // Choose a central tile for each continent
         List<HexCoordinateOffset> centralCoordinates = ChooseContinentCentralTiles();
 
-        for(int i = 0; i <  centralCoordinates.Count; i++)
+        for(int i = 0; i < centralCoordinates.Count; i++)
         {
             _gameMap.ChangeTerrain(centralCoordinates[i], Terrain.TerrainType.land);
-            //GenerateContinent(centralCoordinates[i], i);
+            int continentRadius = UnityUtilities.NormalDistributionInt(
+                _parameters.AverageContinentRadius,
+                _parameters.StdDevContinentRadius);
+
+            if (continentRadius <= 0)
+                continentRadius = 1;
+
+            int continentID = i;
+            Debug.Log("Generating continent " + continentID.ToString() + 
+                " with radius " + continentRadius.ToString() + 
+                " and central tile " + centralCoordinates[i].ToString());
+            GenerateContinent(centralCoordinates[i], continentID, continentRadius);
         }
-
-
     }
 
     // Choose central tiles for each continent and return list of these coordinates
@@ -343,50 +354,60 @@ public class MapGeneration : MonoBehaviour
         return adjacentCoords;
     }
 
-    // Generates continent around given central coordinate with given ID
+    // Generates continent around given central coordinate with given ID and radius
     void GenerateContinent(HexCoordinateOffset centralCoordinate, 
-        int continentID)
+        int continentID, 
+        int radius)
     {
+        float perlinOffset = Random.Range(float.MinValue, float.MaxValue);
         _gameMap.SetContinentID(centralCoordinate, continentID);
 
         int currentRadius = 0;
-        while(ContinueGeneratingContinent(currentRadius))
+        while(currentRadius < radius)
         {
             currentRadius++;
             GenerateContinentRing(centralCoordinate, 
                 continentID, 
-                currentRadius);
+                currentRadius, 
+                perlinOffset);
         }
-    }
-
-    // Returns whether a continent with the given radius should continue growing
-    bool ContinueGeneratingContinent(int currentContinentRadius)
-    {
-        // TODO
-        return true;
     }
 
     // Generates the nth ring of the continent with given central coordinate and ID
     void GenerateContinentRing(HexCoordinateOffset centralCoordinate,
         int continentID, 
-        int n)
+        int n, 
+        float offset)
     {
         List<HexCoordinateOffset> ring = centralCoordinate.HexesExactlyNAway(n);
         
         foreach (HexCoordinateOffset hex in ring)
         {
-            if (IncludeHex(hex))
+            if (!_gameMap.FindTile(hex, out GameTile tile))
             {
-                _gameMap.AddTile(hex, 
+                Debug.Log("Attempted to add out of bounds tile " + hex.ToString() +
+                    " to continent " + continentID.ToString());
+                continue;
+            }
+
+            if (IncludeHex(hex, offset) && !tile.InContinent())
+            {
+                Debug.Log("Adding hex " + hex.ToString() + " to continent " + 
+                    continentID.ToString());
+
+                _gameMap.SetTile(hex, 
                     new GameTile(hex, Terrain.TerrainType.land, continentID));
             }
         }
     }
 
     // Returns whether given hex should be included in continent
-    bool IncludeHex(HexCoordinateOffset hex)
+    bool IncludeHex(HexCoordinateOffset hex, 
+        float offset)
     {
-        // TODO
-        return true;
+        float x = offset + (hex.Col * _parameters.PerlinCoordinateScalingFactor);
+        float y = offset + (hex.Row * _parameters.PerlinCoordinateScalingFactor);
+        float val = Mathf.PerlinNoise(x, y);
+        return val > _parameters.LandGenerationThreshold;
     }
 }

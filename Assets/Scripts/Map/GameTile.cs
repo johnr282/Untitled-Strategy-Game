@@ -25,4 +25,10 @@ public class GameTile
         TileTerrain = new Terrain(terrainTypeIn);
         ContinentID = contintentIDIn;
     }
+
+    // Returns true if this tile is in a continent, false otherwise
+    public bool InContinent()
+    {
+        return ContinentID != -1;
+    }
 }

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -116,5 +117,30 @@ public static class UnityUtilities
         int gridCol = index % columnsInGrid;
         int gridRow = index / columnsInGrid;
         return new Vector2Int(gridCol, gridRow);
+    }
+
+    // Returns a normally distributed double using the given mean and 
+    // standard deviation
+    // Source: https://stackoverflow.com/a/218600
+    public static float NormalDistribution(float mean, 
+        float stdDev)
+    {
+        // u1 and u2 must be greater than 0
+        float u1 = UnityEngine.Random.Range(float.Epsilon, 1.0f);
+        float u2 = UnityEngine.Random.Range(float.Epsilon, 1.0f);
+
+        // random normal(0,1)
+        float randStdNormal = Mathf.Sqrt(-2.0f * Mathf.Log(u1)) *
+                     Mathf.Sin(2.0f * Mathf.PI * u2);
+        // random normal(mean,stdDev^2)
+        return mean + stdDev * randStdNormal; 
+    }
+
+    // Returns a normally distributed int using the given mean and
+    // standard deviation
+    public static int NormalDistributionInt(float mean, 
+        float stdDev)
+    {
+        return (int)Mathf.Round(NormalDistribution(mean, stdDev));
     }
 }

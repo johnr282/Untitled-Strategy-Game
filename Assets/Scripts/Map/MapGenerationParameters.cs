@@ -27,6 +27,12 @@ public class MapGenerationParameters : MonoBehaviour
     [SerializeField] float _averageContinentRadius;
     public float AverageContinentRadius { get => _averageContinentRadius; }
 
+    [SerializeField] float _stdDevContinentRadius;
+    public float StdDevContinentRadius { get => _stdDevContinentRadius; }
+
+    [SerializeField] float _perlinCoordinateScalingFactor;
+    public float PerlinCoordinateScalingFactor { get => _perlinCoordinateScalingFactor; }
+
     // The higher these parameters, the farther the continents will be spread apart
     [SerializeField] float _continentDiameterToGridCellSizeRatio;
     public float ContinentDiameterToGridCellSizeRatio 
