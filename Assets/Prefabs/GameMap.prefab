@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 8917498864812999515}
   - component: {fileID: 6525390086294753064}
   m_Layer: 0
-  m_Name: Game Map
+  m_Name: GameMap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -178,11 +178,14 @@ MonoBehaviour:
   _randomlyGenerateSeed: 1
   _widthToHeightRatio: 0.5
   _numContinents: 8
-  _averageContinentRadius: 1.5
-  _continentDiameterToGridCellSizeRatio: 1.5
+  _averageContinentRadius: 2.5
+  _stdDevContinentRadius: 0.5
+  _perlinCoordinateScalingFactor: 1
+  _maxPerlinOffset: 1000000
+  _continentDiameterToGridCellSizeRatio: 0.5
   _minDistanceBetweenCentralContinentTiles: 4
-  _landGenerationThreshold: 0
-  _maxCentralTileSelectionAttempts: 10000
+  _landGenerationThreshold: 0.3
+  _maxCentralTileSelectionAttempts: 100000
 --- !u!114 &7826073940266671414
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -211,6 +214,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _tileSaturationFactor: 1.5
+  _continentColors:
+  - {r: 0.031772807, g: 0.990566, b: 0.6176575, a: 0.003921569}
+  - {r: 0.19501355, g: 0.5377358, b: 0.022321086, a: 0.003921569}
+  - {r: 0.59616464, g: 0.735849, b: 0.19020998, a: 0}
+  - {r: 0.9811321, g: 0.82067776, b: 0.06849409, a: 0}
+  - {r: 0.6037736, g: 0.36202115, b: 0.025062274, a: 0}
+  - {r: 0.7169812, g: 0.1664871, b: 0.117693104, a: 0}
+  - {r: 0.41342628, g: 0.062014937, b: 0.49056602, a: 0}
+  - {r: 0.8708664, g: 0.5245995, b: 0.9056604, a: 0}
 --- !u!114 &8917498864812999515
 MonoBehaviour:
   m_ObjectHideFlags: 0

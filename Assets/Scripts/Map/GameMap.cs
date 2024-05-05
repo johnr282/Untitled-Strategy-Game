@@ -10,7 +10,7 @@ using UnityEngine;
 public class GameMap : MonoBehaviour
 {
     // Keys are coordinates of tiles in the map, value is the tile itself
-    Dictionary<HexCoordinateOffset, GameTile> _gameMap = new Dictionary<HexCoordinateOffset, GameTile>();
+    Dictionary<HexCoordinateOffset, GameTile> _gameMap = new();
 
     // Returns true if HexTile exists at given coordinate and gets HexTile 
     // at that location; returns false otherwise
@@ -64,4 +64,20 @@ public class GameMap : MonoBehaviour
         _gameMap[coordinate] = tile;
         return true;
     }
+
+    // Returns list of tiles adjacent to given tile
+    public List<GameTile> AdjacentTiles(GameTile tile)
+    {
+        List<GameTile> adjacentTiles = new();
+        HexCoordinateOffset[] adjacentHexes = tile.Coordinate.AdjacentHexes();
+
+        foreach (HexCoordinateOffset adjacentHex in adjacentHexes)
+        {
+            if (FindTile(adjacentHex, out GameTile adjacentTile))
+                adjacentTiles.Add(adjacentTile);
+        }
+
+        return adjacentTiles;
+    }
+
 }

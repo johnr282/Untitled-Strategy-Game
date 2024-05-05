@@ -10,7 +10,7 @@ using UnityEngine;
 public class GameTile
 {
     // Location of tile in game map
-    HexCoordinateOffset _coordinate;
+    public HexCoordinateOffset Coordinate { get; }
 
     public Terrain TileTerrain { get; set; }
 
@@ -21,7 +21,7 @@ public class GameTile
         Terrain.TerrainType terrainTypeIn, 
         int contintentIDIn = -1)
     {
-        _coordinate = coordinateIn;
+        Coordinate = coordinateIn;
         TileTerrain = new Terrain(terrainTypeIn);
         ContinentID = contintentIDIn;
     }

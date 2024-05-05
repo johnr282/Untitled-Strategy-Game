@@ -1,5 +1,7 @@
+using Fusion.Photon.Realtime;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Analytics;
 using UnityEngine.Networking.PlayerConnection;
@@ -359,7 +361,8 @@ public class MapGeneration : MonoBehaviour
         int continentID, 
         int radius)
     {
-        float perlinOffset = Random.Range(float.MinValue, float.MaxValue);
+        float perlinOffset = Random.Range(0.0f, _parameters.MaxPerlinOffset);
+        Debug.Log("Perlin offset: " + perlinOffset.ToString());
         _gameMap.SetContinentID(centralCoordinate, continentID);
 
         int currentRadius = 0;
@@ -383,14 +386,7 @@ public class MapGeneration : MonoBehaviour
         
         foreach (HexCoordinateOffset hex in ring)
         {
-            if (!_gameMap.FindTile(hex, out GameTile tile))
-            {
-                Debug.Log("Attempted to add out of bounds tile " + hex.ToString() +
-                    " to continent " + continentID.ToString());
-                continue;
-            }
-
-            if (IncludeHex(hex, offset) && !tile.InContinent())
+            if (IncludeTile(hex, continentID, offset))
             {
                 Debug.Log("Adding hex " + hex.ToString() + " to continent " + 
                     continentID.ToString());
@@ -401,13 +397,48 @@ public class MapGeneration : MonoBehaviour
         }
     }
 
-    // Returns whether given hex should be included in continent
-    bool IncludeHex(HexCoordinateOffset hex, 
+    // Returns whether given hex should be included in continent specified by
+    // given continent ID
+    bool IncludeTile(HexCoordinateOffset hex, 
+        int continentID, 
         float offset)
     {
-        float x = offset + (hex.Col * _parameters.PerlinCoordinateScalingFactor);
-        float y = offset + (hex.Row * _parameters.PerlinCoordinateScalingFactor);
+        bool tileOutOfBounds = !_gameMap.FindTile(hex, out GameTile tile);
+        if (tileOutOfBounds || tile.InContinent())
+            return false;
+
+        // If tile is an island, i.e. not adjacent to any other tiles from the 
+        // same continent, don't include it
+        List<GameTile> adjacentTiles = _gameMap.AdjacentTiles(tile);
+        bool connectedToContinent = false;
+
+        foreach (GameTile adjacentTile in adjacentTiles)
+        {
+            if (adjacentTile.ContinentID == continentID)
+            {
+                connectedToContinent = true;
+                break;
+            }
+        }
+
+        if (!connectedToContinent)
+            return false;
+
+        return CalculatePerlinValue(hex, offset) > _parameters.LandGenerationThreshold;
+    }
+
+    // Returns Perlin noise value for given hex and offset
+    float CalculatePerlinValue(HexCoordinateOffset hex, 
+        float offset)
+    {
+        // Divide by col and row to ensure val isn't an integer
+        float x = ((offset + hex.Col) / hex.Col) *
+            _parameters.PerlinCoordinateScalingFactor;
+        float y = ((offset + hex.Row) / hex.Row) *
+            _parameters.PerlinCoordinateScalingFactor;
         float val = Mathf.PerlinNoise(x, y);
-        return val > _parameters.LandGenerationThreshold;
+        Debug.Log("Hex: " + hex.ToString() + ", x: " + x.ToString() + ", y: "
+            + y.ToString() + ", val: " + val.ToString());
+        return Mathf.Clamp(val, 0.0f, 1.0f);
     }
 }

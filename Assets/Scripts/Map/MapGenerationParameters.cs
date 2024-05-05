@@ -33,6 +33,9 @@ public class MapGenerationParameters : MonoBehaviour
     [SerializeField] float _perlinCoordinateScalingFactor;
     public float PerlinCoordinateScalingFactor { get => _perlinCoordinateScalingFactor; }
 
+    [SerializeField] float _maxPerlinOffset;
+    public float MaxPerlinOffset { get => _maxPerlinOffset; }
+
     // The higher these parameters, the farther the continents will be spread apart
     [SerializeField] float _continentDiameterToGridCellSizeRatio;
     public float ContinentDiameterToGridCellSizeRatio 

@@ -21,6 +21,8 @@ public class MapVisuals : MonoBehaviour
 
     [SerializeField] float _tileSaturationFactor;
 
+    [SerializeField] List<Color> _continentColors = new();
+
     void Awake()
     {
         _tilemap = GetComponent<Tilemap>();
@@ -90,6 +92,13 @@ public class MapVisuals : MonoBehaviour
         Terrain terrain = gameTile.TileTerrain;
         TileBase correspondingTile = _tileLibrary.GetCorrespondingTile(terrain);
         _tilemap.SetTile(coordinate, correspondingTile);
+        if (gameTile.InContinent())
+        {
+            Color continentColor = _continentColors[gameTile.ContinentID];
+            // Set alpha value to 1, color is transparent otherwise
+            continentColor[3] = 1;
+            SetTileColor(coordinate, continentColor);
+        }
     }
 
     // Highlights tile at given world position; does nothing if no tile exists
@@ -146,9 +155,15 @@ public class MapVisuals : MonoBehaviour
             out float V);
         S *= saturationFactor;
         Color newTileColor = Color.HSVToRGB(H, S, V);
+        SetTileColor(tilePos, newTileColor);
+    }
 
+    // Sets tile at given position to given color
+    void SetTileColor(Vector3Int tilePos, 
+        Color color)
+    {
         // Allow tile to change color
         _tilemap.SetTileFlags(tilePos, TileFlags.None);
-        _tilemap.SetColor(tilePos, newTileColor);
+        _tilemap.SetColor(tilePos, color);
     }
 }
