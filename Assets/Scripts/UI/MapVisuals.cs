@@ -95,8 +95,6 @@ public class MapVisuals : MonoBehaviour
         if (gameTile.InContinent())
         {
             Color continentColor = _continentColors[gameTile.ContinentID];
-            // Set alpha value to 1, color is transparent otherwise
-            continentColor[3] = 1;
             SetTileColor(coordinate, continentColor);
         }
     }
