@@ -431,10 +431,11 @@ public class MapGeneration : MonoBehaviour
     float CalculatePerlinValue(HexCoordinateOffset hex, 
         float offset)
     {
-        // Divide by col and row to ensure val isn't an integer
-        float x = ((offset + hex.Col) / hex.Col) *
+        // Divide by col + 1 and row + 1 to ensure val isn't an integer, + 1
+        // because col and row could be 0
+        float x = (offset + hex.Col) / (hex.Col + 1) *
             _parameters.PerlinCoordinateScalingFactor;
-        float y = ((offset + hex.Row) / hex.Row) *
+        float y = (offset + hex.Row) / (hex.Row + 1) *
             _parameters.PerlinCoordinateScalingFactor;
         float val = Mathf.PerlinNoise(x, y);
         Debug.Log("Hex: " + hex.ToString() + ", x: " + x.ToString() + ", y: "
