@@ -734,6 +734,38 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4567755852912404877, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
+      propertyPath: _continentColors.Array.data[0].a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4567755852912404877, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
+      propertyPath: _continentColors.Array.data[1].a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4567755852912404877, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
+      propertyPath: _continentColors.Array.data[2].a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4567755852912404877, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
+      propertyPath: _continentColors.Array.data[3].a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4567755852912404877, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
+      propertyPath: _continentColors.Array.data[4].a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4567755852912404877, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
+      propertyPath: _continentColors.Array.data[5].a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4567755852912404877, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
+      propertyPath: _continentColors.Array.data[6].a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4567755852912404877, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
+      propertyPath: _continentColors.Array.data[7].a
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7202985711429058582, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
       propertyPath: m_Name
       value: GameMap

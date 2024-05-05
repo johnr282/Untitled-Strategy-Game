@@ -7,9 +7,11 @@ using UnityEngine;
 // ------------------------------------------------------------------
 
 [RequireComponent(typeof(MapVisuals))]
+[RequireComponent(typeof(Collider))]
 public class TileSelection : MonoBehaviour
 {
     MapVisuals _mapVisuals;
+    Collider _collider;
 
     // Infinite plane parallel to tilemap; used for detecting mouse location
     // on tilemap
@@ -25,6 +27,11 @@ public class TileSelection : MonoBehaviour
     {
         HighlightCurrentTile();
         CheckForSelection();
+    }
+
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        
     }
 
     // Highlights whichever tile the mouse is hovering over
