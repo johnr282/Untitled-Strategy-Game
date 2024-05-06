@@ -84,6 +84,13 @@ public static class UnityUtilities
         return pos - camera.transform.position;
     }
 
+    // Returns ray pointing towards the position of the mouse on the screen
+    public static Ray RayTowardsMouse()
+    {
+        Vector3 mousePosScreen = Input.mousePosition;
+        return Camera.main.ScreenPointToRay(mousePosScreen);
+    }
+
     // Return child GameObject of given parent GameObject with given
     // name; returns null if not found
     public static GameObject FindChildGameObject(GameObject parent, 
