@@ -104,7 +104,7 @@ public class MapGeneration : MonoBehaviour
             {
                 HexCoordinateOffset coordinate = new HexCoordinateOffset(col, row);
                 _gameMap.AddTile(coordinate, 
-                    new GameTile(coordinate, Terrain.TerrainType.sea));
+                    new GameTile(coordinate, Terrain.sea));
             }
         }
     }
@@ -117,7 +117,7 @@ public class MapGeneration : MonoBehaviour
 
         for(int i = 0; i < centralCoordinates.Count; i++)
         {
-            _gameMap.ChangeTerrain(centralCoordinates[i], Terrain.TerrainType.land);
+            _gameMap.ChangeTerrain(centralCoordinates[i], Terrain.land);
             int continentRadius = UnityUtilities.NormalDistributionInt(
                 _parameters.AverageContinentRadius,
                 _parameters.StdDevContinentRadius);
@@ -392,7 +392,7 @@ public class MapGeneration : MonoBehaviour
                     continentID.ToString());
 
                 _gameMap.SetTile(hex, 
-                    new GameTile(hex, Terrain.TerrainType.land, continentID));
+                    new GameTile(hex, Terrain.land, continentID));
             }
         }
     }

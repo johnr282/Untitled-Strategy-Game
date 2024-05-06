@@ -42,12 +42,12 @@ public class GameMap : MonoBehaviour
     // Changes terrain of GameTile at given coordinate to given TerrainType; 
     // returns false if no tile exists at given coordinate, returns true otherwise
     public bool ChangeTerrain(HexCoordinateOffset coordinate, 
-        Terrain.TerrainType newTerrainType)
+        Terrain newTerrain)
     {
         if (!FindTile(coordinate, out GameTile tile))
             return false;
 
-        tile.TileTerrain = new Terrain(newTerrainType);
+        tile.TileTerrain = newTerrain;
         _gameMap[coordinate] = tile;
         return true;
     }
@@ -78,6 +78,26 @@ public class GameMap : MonoBehaviour
         }
 
         return adjacentTiles;
+    }
+
+    // Returns true if tile at given hex is traversable by a land unit; 
+    // returns false if not, or if no tile exists at hex
+    public bool TraversableByLand(HexCoordinateOffset hex)
+    {
+        if (!FindTile(hex, out GameTile tile))
+            return false;
+
+        return tile.TraversableByLand();
+    }
+
+    // Returns true if tile at given hex traversable by a naval unit;
+    // returns false if not, or if no tile exists at hex
+    public bool TraversableBySea(HexCoordinateOffset hex)
+    {
+        if (!FindTile(hex, out GameTile tile))
+            return false;
+
+        return tile.TraversableBySea();
     }
 
 }

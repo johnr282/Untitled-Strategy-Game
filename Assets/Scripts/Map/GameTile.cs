@@ -7,6 +7,12 @@ using UnityEngine;
 // used for visual rendering
 // ------------------------------------------------------------------
 
+public enum Terrain
+{
+    sea,
+    land
+}
+
 public class GameTile
 {
     // Location of tile in game map
@@ -18,11 +24,11 @@ public class GameTile
 
     // Constructor
     public GameTile(HexCoordinateOffset coordinateIn, 
-        Terrain.TerrainType terrainTypeIn, 
+        Terrain terrainIn, 
         int contintentIDIn = -1)
     {
         Coordinate = coordinateIn;
-        TileTerrain = new Terrain(terrainTypeIn);
+        TileTerrain = terrainIn;
         ContinentID = contintentIDIn;
     }
 
@@ -30,5 +36,37 @@ public class GameTile
     public bool InContinent()
     {
         return ContinentID != -1;
+    }
+
+    // Returns true if this tile is traversable by a land unit
+    public bool TraversableByLand()
+    {
+        switch (TileTerrain)
+        {
+            case Terrain.sea:
+                return false;
+
+            case Terrain.land:
+                return true;
+
+            default:
+                throw new RuntimeException("");
+        }
+    }
+
+    // Returns true if this tile is traversable by a naval unit
+    public bool TraversableBySea()
+    {
+        switch (TileTerrain)
+        {
+            case Terrain.sea:
+                return true;
+
+            case Terrain.land:
+                return false;
+
+            default:
+                return true;
+        }
     }
 }
