@@ -8,6 +8,8 @@ using UnityEngine;
 
 public class MouseInput : MonoBehaviour
 {
+    [SerializeField] TileSelection _tileSelection;
+
     void Update()
     {
         if (SelectionDetected())
@@ -36,6 +38,9 @@ public class MouseInput : MonoBehaviour
             }
         }
 
+        // If no SelectableObject was found, then try selecting a tile from the map
+        _tileSelection.TrySelectTile();
+
         return false;
     }
 
@@ -52,6 +57,9 @@ public class MouseInput : MonoBehaviour
             }
         }
 
+        // If no HoverableObject was found, then try highlighting a tile from the map
+        _tileSelection.TryHighlightTile();
+
         return false;
     }
 
@@ -62,8 +70,7 @@ public class MouseInput : MonoBehaviour
     bool MouseRaycast(out GameObject collidedObject)
     {
         collidedObject = null;
-        Vector3 mousePosScreen = Input.mousePosition;
-        Ray rayTowardsMousePos = Camera.main.ScreenPointToRay(mousePosScreen);
+        Ray rayTowardsMousePos = UnityUtilities.RayTowardsMouse();
 
         if (!Physics.Raycast(rayTowardsMousePos, out RaycastHit hit) ||
             hit.collider == null)

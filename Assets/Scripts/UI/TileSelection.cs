@@ -7,11 +7,9 @@ using UnityEngine;
 // ------------------------------------------------------------------
 
 [RequireComponent(typeof(MapVisuals))]
-[RequireComponent(typeof(Collider))]
 public class TileSelection : MonoBehaviour
 {
     MapVisuals _mapVisuals;
-    Collider _collider;
 
     // Infinite plane parallel to tilemap; used for detecting mouse location
     // on tilemap
@@ -23,38 +21,24 @@ public class TileSelection : MonoBehaviour
         _tilemapPlane = new Plane(Vector3.up, Vector3.zero);
     }
 
-    void Update()
-    {
-        HighlightCurrentTile();
-        CheckForSelection();
-    }
-
-    void OnTriggerEnter2D(Collider2D collision)
-    {
-        
-    }
-
-    // Highlights whichever tile the mouse is hovering over
-    void HighlightCurrentTile()
+    // Highlights the tile that the mouse is currently on, or does nothing if
+    // mouse is outside the map
+    public void TryHighlightTile()
     {
         _mapVisuals.HighlightTile(MousePositionOnTilemap());
     }
 
-    // Checks if player selected a tile
-    void CheckForSelection()
+    // Selects the tile that the mouse is currently on, or does nothing if
+    // mouse is outside the map
+    public void TrySelectTile()
     {
-        int leftMouseButton = 0;
-        bool tileSelected = Input.GetMouseButtonDown(leftMouseButton);
-
-        if (tileSelected)
-            _mapVisuals.SelectTile(MousePositionOnTilemap());
+        _mapVisuals.SelectTile(MousePositionOnTilemap());
     }
 
     // Returns the point on the tilemap that the mouse is hovering over
     Vector3 MousePositionOnTilemap()
     {
-        Vector3 mousePosScreen = Input.mousePosition;
-        Ray rayTowardsMousePos = Camera.main.ScreenPointToRay(mousePosScreen);
+        Ray rayTowardsMousePos = UnityUtilities.RayTowardsMouse();
 
         if (!_tilemapPlane.Raycast(rayTowardsMousePos, out float distance))
             return Vector3.zero;
