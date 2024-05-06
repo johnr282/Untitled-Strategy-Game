@@ -9,10 +9,17 @@ using UnityEngine;
 public class TestMapGeneration : MonoBehaviour
 {
     [SerializeField] MapGeneration _mapGenerator;
+    [SerializeField] GameMap _gameMap;
 
     void Start()
     {
         _mapGenerator.GenerateRandomSeed();
         EventBus.Publish(new GenerateMapEvent(_mapGenerator.GetMapSeed()));
+
+        HexCoordinateOffset start = new HexCoordinateOffset(0, 0);
+        HexCoordinateOffset goal = new HexCoordinateOffset(1, 1);
+        List<HexCoordinateOffset> path = PathPlanning.FindShortestPath(start,
+            goal,
+            _gameMap.TraversableByLand);
     }
 }
