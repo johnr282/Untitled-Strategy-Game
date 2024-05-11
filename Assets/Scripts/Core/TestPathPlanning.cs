@@ -12,6 +12,6 @@ public class TestPathPlanning : MonoBehaviour
         HexCoordinateOffset goal = new HexCoordinateOffset(1, 1);
         List<HexCoordinateOffset> path = PathPlanning.FindShortestPath(start,
             goal,
-            _gameMap.TraversableByLand);
+            HexUtilities.DistanceBetween);
     }
 }

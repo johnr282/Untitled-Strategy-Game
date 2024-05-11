@@ -3,15 +3,35 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class PathPlanning 
+// ------------------------------------------------------------------
+// Contains an A-Star search algorithm implementation used to find the
+// shortest path between two given hexes
+// ------------------------------------------------------------------
+
+public static class PathPlanning
 {
-    // Returns the shortest path between given start and goal as a list of hexes
+    // Stores data about hexes needed by the A-Star algorithm
+    struct Vertex
+    {
+        HexCoordinateOffset hex;
+        int fScore;
+        int gScore;
+        bool inOpenList;
+    }
+
+
+
+
+    // Returns the shortest path between given start and goal as a list of hexes; 
+    // costFunc should be a function that returns the cost to travel between two 
+    // adjacent hexes
     public static List<HexCoordinateOffset> FindShortestPath(HexCoordinateOffset start,
         HexCoordinateOffset goal, 
-        Predicate<HexCoordinateOffset> traversable)
+        Func<HexCoordinateOffset, HexCoordinateOffset, int> costFunc)
     {
         List<HexCoordinateOffset> path = new();
-        Debug.Log("Start traversable: " + traversable(start).ToString());
+        int cost = costFunc(start, goal);
+        Debug.Log("Cost from start to goal: " + cost.ToString());
 
         return path;
     }
