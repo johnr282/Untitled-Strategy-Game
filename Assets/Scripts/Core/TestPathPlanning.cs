@@ -8,10 +8,10 @@ public class TestPathPlanning : MonoBehaviour
 
     void Start()
     {
-        HexCoordinateOffset start = new HexCoordinateOffset(7, 0);
-        HexCoordinateOffset goal = new HexCoordinateOffset(1, 1);
-        List<HexCoordinateOffset> path = PathPlanning.FindShortestPath(start,
-            goal,
-            HexUtilities.DistanceBetween);
+        //HexCoordinateOffset start = new HexCoordinateOffset(7, 0);
+        //HexCoordinateOffset goal = new HexCoordinateOffset(1, 1);
+        //List<HexCoordinateOffset> path = PathPlanning.FindShortestPath(start,
+        //    goal,
+        //    HexUtilities.DistanceBetween);
     }
 }

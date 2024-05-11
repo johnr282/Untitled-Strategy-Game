@@ -37,7 +37,6 @@ where TPriority : IComparable
 
     public int Count { get => set.Count; }
 
-
     // Removes and returns the element with the lowest priority
     public TElement Dequeue()
     {

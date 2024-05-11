@@ -18,7 +18,7 @@ public class TestMapGeneration : MonoBehaviour
 
         HexCoordinateOffset start = new HexCoordinateOffset(7, 0);
         HexCoordinateOffset goal = new HexCoordinateOffset(1, 1);
-        List<HexCoordinateOffset> path = PathPlanning.FindShortestPath(start,
+        List<HexCoordinateOffset> path = HexUtilities.FindShortestPath(start,
             goal,
             HexUtilities.DistanceBetween);
     }
