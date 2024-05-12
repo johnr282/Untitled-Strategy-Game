@@ -126,11 +126,17 @@ public class MapVisuals : MonoBehaviour
             _currentlySelectedTile == tilePos)
             return;
 
+        SelectTile(tilePos);
+    }
+
+    // Selects tile at given position; does nothing if no tile exists
+    public void SelectTile(Vector3Int tilePos)
+    {
         // New selected tile needs to be highlighted
         AdjustTileSaturation(tilePos, _tileSaturationFactor);
 
         // Previously selected tile needs to be un-highlighted
-        AdjustTileSaturation(_currentlySelectedTile, 
+        AdjustTileSaturation(_currentlySelectedTile,
             1 / _tileSaturationFactor);
 
         _currentlySelectedTile = tilePos;

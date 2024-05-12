@@ -90,8 +90,10 @@ public class GameMap : MonoBehaviour
     {
         ValidateAdjacentTiles(start, 
             goal, 
-            out GameTile startTile, 
-            out GameTile goalTile);
+            out GameTile startTile);
+
+        if (!FindTile(goal, out GameTile goalTile))
+            return int.MaxValue;
 
         return goalTile.CostByLand(startTile);
     }
@@ -105,26 +107,26 @@ public class GameMap : MonoBehaviour
     {
         ValidateAdjacentTiles(start,
             goal,
-            out GameTile startTile,
-            out GameTile goalTile);
+            out GameTile startTile);
+
+        if (!FindTile(goal, out GameTile goalTile))
+            return int.MaxValue;
 
         return goalTile.CostBySea(startTile);
     }
 
-    // Ensures that the given hexes are adjacent and both exist, and puts
-    // corresponding tiles into startTile and goalTile output parameters
-    // Throws ArgumentException if hexes aren't adjacent or if either do not
-    // exist on the map
+    // Ensures that the given hexes are adjacent and the start tile exists, and
+    // puts corresponding tiles into startTile output parameter
+    // Throws ArgumentException if hexes aren't adjacent or if start does not exist
+    // on the map
     void ValidateAdjacentTiles(HexCoordinateOffset start,
         HexCoordinateOffset goal, 
-        out GameTile startTile, 
-        out GameTile goalTile)
+        out GameTile startTile)
     {
         if (!HexUtilities.AreAdjacent(start, goal))
             throw new ArgumentException("Attempted to calculate cost between non-adjacent tiles");
 
-        if (!FindTile(start, out startTile) ||
-            !FindTile(goal, out goalTile))
+        if (!FindTile(start, out startTile))
         {
             throw new ArgumentException("Attempted to calculate cost between invalid tiles");
         }

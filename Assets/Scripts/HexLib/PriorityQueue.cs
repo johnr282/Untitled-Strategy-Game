@@ -37,6 +37,12 @@ where TPriority : IComparable
 
     public int Count { get => _set.Count; }
 
+    // Returns whether the queue is empty
+    public bool Empty()
+    {
+        return Count == 0;
+    }
+
     // Removes and returns the element with the lowest priority
     public TElement Dequeue()
     {

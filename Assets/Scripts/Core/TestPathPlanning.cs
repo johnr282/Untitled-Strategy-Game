@@ -11,6 +11,7 @@ public class TestPathPlanning : MonoBehaviour
 
     HexCoordinateOffset _start;
     bool _startSelected = false;
+    bool _highlightingPath = false;
 
     void Start()
     {
@@ -19,8 +20,12 @@ public class TestPathPlanning : MonoBehaviour
 
     void OnTileSelected(TileSelectedEvent tileSelectedEvent)
     {
+        if (_highlightingPath)
+            return;
+
         if (_startSelected)
         {
+            _highlightingPath = true;
             HexCoordinateOffset goal = HexUtilities.ConvertToHexCoordinateOffset(
                 tileSelectedEvent.Coordinate);
 
@@ -28,7 +33,16 @@ public class TestPathPlanning : MonoBehaviour
             List<HexCoordinateOffset> path = HexUtilities.FindShortestPath(_start, 
                 goal, 
                 _gameMap.CostByLand);
+
+            Debug.Log("Path found");
+            
+            foreach (HexCoordinateOffset hex in path)
+            {
+                _mapVisuals.SelectTile(hex.ConvertToVector3Int());
+            }
+
             _startSelected = false;
+            _highlightingPath = false;
         }
         else
         {

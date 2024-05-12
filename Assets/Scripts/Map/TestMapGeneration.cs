@@ -15,11 +15,5 @@ public class TestMapGeneration : MonoBehaviour
     {
         _mapGenerator.GenerateRandomSeed();
         EventBus.Publish(new GenerateMapEvent(_mapGenerator.GetMapSeed()));
-
-        HexCoordinateOffset start = new HexCoordinateOffset(7, 0);
-        HexCoordinateOffset goal = new HexCoordinateOffset(1, 1);
-        List<HexCoordinateOffset> path = HexUtilities.FindShortestPath(start,
-            goal,
-            HexUtilities.DistanceBetween);
     }
 }

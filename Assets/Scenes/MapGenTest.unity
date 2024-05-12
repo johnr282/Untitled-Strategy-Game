@@ -308,6 +308,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _mapVisuals: {fileID: 1679178103}
+  _gameMap: {fileID: 1679178101}
 --- !u!4 &713922442
 Transform:
   m_ObjectHideFlags: 0

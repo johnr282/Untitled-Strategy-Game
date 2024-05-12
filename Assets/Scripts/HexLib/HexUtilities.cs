@@ -21,16 +21,16 @@ public static class HexUtilities
         southeast
     }
 
-    // Converts given Vector3Int to a HexCoordinateOffset of the form (y, x)
+    // Converts given Vector3Int to a HexCoordinateOffset of the form (x, y)
     public static HexCoordinateOffset ConvertToHexCoordinateOffset(Vector3Int coordinate)
     {
-        return new HexCoordinateOffset(coordinate.y, coordinate.x);
+        return new HexCoordinateOffset(coordinate.x, coordinate.y);
     }
 
-    // Converts given Vector2Int to a HexCoordinateOffset of the form (y, x)
+    // Converts given Vector2Int to a HexCoordinateOffset of the form (x, y)
     public static HexCoordinateOffset ConvertToHexCoordinateOffset(Vector2Int coordinate)
     {
-        return new HexCoordinateOffset(coordinate.y, coordinate.x);
+        return new HexCoordinateOffset(coordinate.x, coordinate.y);
     }
 
     // Given two offset hex coordinates, returns the distance in hexes 
