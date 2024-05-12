@@ -38,35 +38,37 @@ public class GameTile
         return ContinentID != -1;
     }
 
-    // Returns true if this tile is traversable by a land unit
-    public bool TraversableByLand()
+    // Returns the cost for a land unit to travel into this tile from the 
+    // given adjacent start tile
+    public int CostByLand(GameTile start)
     {
         switch (TileTerrain)
         {
             case Terrain.sea:
-                return false;
+                return int.MaxValue;
 
             case Terrain.land:
-                return true;
+                return 1;
 
             default:
-                throw new RuntimeException("");
+                throw new RuntimeException("TileTerrain of GameTile not valid");
         }
     }
 
-    // Returns true if this tile is traversable by a naval unit
-    public bool TraversableBySea()
+    // Returns the cost for a sea unit to travel into this tile from the 
+    // given adjacent start tile
+    public int CostBySea(GameTile start)
     {
         switch (TileTerrain)
         {
             case Terrain.sea:
-                return true;
+                return 1;
 
             case Terrain.land:
-                return false;
+                return int.MaxValue;
 
             default:
-                return true;
+                throw new RuntimeException("TileTerrain of GameTile not valid");
         }
     }
 }

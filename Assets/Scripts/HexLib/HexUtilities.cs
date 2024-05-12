@@ -56,6 +56,20 @@ public static class HexUtilities
             Mathf.Abs(diffZ));
     }
 
+    // Returns whether the given hexes are adjacent
+    public static bool AreAdjacent(HexCoordinateOffset a, 
+        HexCoordinateOffset b)
+    {
+        return DistanceBetween(a, b) == 1;
+    }
+
+    // Returns whether the given hexes are adjacent
+    public static bool AreAdjacent(HexCoordinateAxial a,
+        HexCoordinateAxial b)
+    {
+        return DistanceBetween(a, b) == 1;
+    }
+
     // Returns the shortest path between given start and goal as a list of hexes; 
     // costFunc should be a function that returns the cost to travel between two 
     // adjacent hexes

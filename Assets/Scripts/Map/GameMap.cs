@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -80,24 +81,52 @@ public class GameMap : MonoBehaviour
         return adjacentTiles;
     }
 
-    // Returns true if tile at given hex is traversable by a land unit; 
-    // returns false if not, or if no tile exists at hex
-    public bool TraversableByLand(HexCoordinateOffset hex)
+    // Returns the cost for a land unit to travel from the given start tile to
+    // the given goal tile
+    // Throws ArgumentException if start and goal are not adjacent or if start 
+    // or goal do not exist on the map
+    public int CostByLand(HexCoordinateOffset start, 
+        HexCoordinateOffset goal)
     {
-        if (!FindTile(hex, out GameTile tile))
-            return false;
+        ValidateAdjacentTiles(start, 
+            goal, 
+            out GameTile startTile, 
+            out GameTile goalTile);
 
-        return tile.TraversableByLand();
+        return goalTile.CostByLand(startTile);
     }
 
-    // Returns true if tile at given hex traversable by a naval unit;
-    // returns false if not, or if no tile exists at hex
-    public bool TraversableBySea(HexCoordinateOffset hex)
+    // Returns the cost for a land unit to travel from the given start tile to
+    // the given goal tile
+    // Throws ArgumentException if start and goal are not adjacent or if start 
+    // or goal do not exist on the map
+    public int CostBySea(HexCoordinateOffset start,
+        HexCoordinateOffset goal)
     {
-        if (!FindTile(hex, out GameTile tile))
-            return false;
+        ValidateAdjacentTiles(start,
+            goal,
+            out GameTile startTile,
+            out GameTile goalTile);
 
-        return tile.TraversableBySea();
+        return goalTile.CostBySea(startTile);
     }
 
+    // Ensures that the given hexes are adjacent and both exist, and puts
+    // corresponding tiles into startTile and goalTile output parameters
+    // Throws ArgumentException if hexes aren't adjacent or if either do not
+    // exist on the map
+    void ValidateAdjacentTiles(HexCoordinateOffset start,
+        HexCoordinateOffset goal, 
+        out GameTile startTile, 
+        out GameTile goalTile)
+    {
+        if (!HexUtilities.AreAdjacent(start, goal))
+            throw new ArgumentException("Attempted to calculate cost between non-adjacent tiles");
+
+        if (!FindTile(start, out startTile) ||
+            !FindTile(goal, out goalTile))
+        {
+            throw new ArgumentException("Attempted to calculate cost between invalid tiles");
+        }
+    }
 }

@@ -33,15 +33,15 @@ where TPriority : IComparable
         }
     }
 
-    SortedSet<Element> set = new SortedSet<Element>(new PriorityComparer());
+    SortedSet<Element> _set = new SortedSet<Element>(new PriorityComparer());
 
-    public int Count { get => set.Count; }
+    public int Count { get => _set.Count; }
 
     // Removes and returns the element with the lowest priority
     public TElement Dequeue()
     {
-        Element minElement = set.Min;
-        set.Remove(minElement);
+        Element minElement = _set.Min;
+        _set.Remove(minElement);
         return minElement.Value;
     }
 
@@ -51,7 +51,7 @@ where TPriority : IComparable
     public void Enqueue(TElement element, 
         TPriority priority)
     {
-        if (!set.Add(new Element(element, priority)))
+        if (!_set.Add(new Element(element, priority)))
             throw new ArgumentException(
                 "Attempted to add duplicate element and priority to PriorityQueue");
     }

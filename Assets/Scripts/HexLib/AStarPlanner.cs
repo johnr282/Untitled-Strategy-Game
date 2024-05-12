@@ -21,27 +21,27 @@ public class AStarPlanner
 
     // Contains vertices that still need to be explored; priority of each vertex
     // is its f score
-    PriorityQueue<Vertex, int> openList = new();
+    PriorityQueue<Vertex, int> _openList = new();
 
     // Contains vertices that have been explored already
-    HashSet<Vertex> closedList = new();
+    HashSet<Vertex> _closedList = new();
 
-    HexCoordinateOffset start;
-    HexCoordinateOffset goal;
+    HexCoordinateOffset _start;
+    HexCoordinateOffset _goal;
 
     // Function that returns the cost to travel between two given adjacent hexes
-    Func<HexCoordinateOffset, HexCoordinateOffset, int> costFunc;
+    Func<HexCoordinateOffset, HexCoordinateOffset, int> _costFunc;
 
     public AStarPlanner(Func<HexCoordinateOffset, HexCoordinateOffset, int> costFuncIn)
     {
-        costFunc = costFuncIn;
+        _costFunc = costFuncIn;
     }
 
     public List<HexCoordinateOffset> FindPath(HexCoordinateOffset startIn, 
         HexCoordinateOffset goalIn)
     {
-        start = startIn; 
-        goal = goalIn;
+        _start = startIn; 
+        _goal = goalIn;
 
         return new();
     }
