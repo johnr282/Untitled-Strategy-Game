@@ -124,6 +124,4 @@ public class HexCoordinateAxial: HexCoordinate<HexCoordinateAxial>
     {
         return (-X) - Y;
     }
-
-    
 }
