@@ -65,7 +65,7 @@ public class AStarPlanner
     // if necessary
     void UpdateNeighbors(HexCoordinateOffset hex)
     {
-        HexCoordinateOffset[] neighbors = hex.AdjacentHexes();
+        HexCoordinateOffset[] neighbors = hex.Neighbors();
         foreach (HexCoordinateOffset neighbor in neighbors)
         {
             int newGScore = _gScores[hex] + _costFunc(hex, neighbor);

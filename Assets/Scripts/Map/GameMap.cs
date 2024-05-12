@@ -70,7 +70,7 @@ public class GameMap : MonoBehaviour
     public List<GameTile> AdjacentTiles(GameTile tile)
     {
         List<GameTile> adjacentTiles = new();
-        HexCoordinateOffset[] adjacentHexes = tile.Coordinate.AdjacentHexes();
+        HexCoordinateOffset[] adjacentHexes = tile.Coordinate.Neighbors();
 
         foreach (HexCoordinateOffset adjacentHex in adjacentHexes)
         {

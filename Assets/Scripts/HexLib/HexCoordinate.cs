@@ -12,10 +12,10 @@ public interface HexCoordinate<HexCoordinateType>
     // Returns an array of the 6 adjacent hex coordinates to this hex
     // The first coordinate in array is the hex directly to the east, 
     // and the rest continue counter-clockwise 
-    public HexCoordinateType[] AdjacentHexes();
+    public HexCoordinateType[] Neighbors();
 
     // Returns the hex coordinate adjacent to this hex in the given direction
-    public HexCoordinateType AdjacentHex(HexUtilities.HexDirection direction);
+    public HexCoordinateType Neighbor(HexUtilities.HexDirection direction);
 
     // Returns all hexes exactly n steps away from this hex
     public List<HexCoordinateType> HexesExactlyNAway(int n);

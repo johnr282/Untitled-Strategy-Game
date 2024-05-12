@@ -46,7 +46,7 @@ public class HexCoordinateAxial: HexCoordinate<HexCoordinateAxial>
     // Returns an array of the 6 adjacent hex coordinates to this hex
     // The first coordinate in array is the hex directly to the east, 
     // and the rest continue counter-clockwise 
-    public HexCoordinateAxial[] AdjacentHexes()
+    public HexCoordinateAxial[] Neighbors()
     {
         HexCoordinateAxial[] offsets = new HexCoordinateAxial[6]
             {
@@ -68,9 +68,9 @@ public class HexCoordinateAxial: HexCoordinate<HexCoordinateAxial>
     }
 
     // Returns the hex coordinate adjacent to this hex in the given direction
-    public HexCoordinateAxial AdjacentHex(HexUtilities.HexDirection direction)
+    public HexCoordinateAxial Neighbor(HexUtilities.HexDirection direction)
     {
-        return AdjacentHexes()[(int)direction];
+        return Neighbors()[(int)direction];
     }
 
     // Returns all hexes exactly n steps away from this hex
@@ -88,7 +88,7 @@ public class HexCoordinateAxial: HexCoordinate<HexCoordinateAxial>
             for(int i = 0; i < n; i++)
             {
                 hexesNAway.Add(this + offset);
-                offset = offset.AdjacentHex(direction);
+                offset = offset.Neighbor(direction);
             }
         }
 

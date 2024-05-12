@@ -48,51 +48,23 @@ public class HexCoordinateOffset : HexCoordinate<HexCoordinateOffset>
     // Returns an array of the 6 adjacent hex coordinates to this hex
     // The first coordinate in array is the hex directly to the right, 
     // and the rest continue counter-clockwise 
-    public HexCoordinateOffset[] AdjacentHexes()
+    public HexCoordinateOffset[] Neighbors()
     {
-        // Offsets are different for odd and even rows
-        HexCoordinateOffset[] offsets = new HexCoordinateOffset[6];
-        bool evenRow = (Row % 2) == 0;
+        HexCoordinateAxial[] axialNeighbors = OffsetToAxial().Neighbors();
+        HexCoordinateOffset[] neighbors = new HexCoordinateOffset[6];
 
-        if (evenRow)
-        {
-            offsets = new HexCoordinateOffset[6]
-                {
-                    new HexCoordinateOffset(1, 0),
-                    new HexCoordinateOffset(0, -1),
-                    new HexCoordinateOffset(-1, -1),
-                    new HexCoordinateOffset(-1, 0),
-                    new HexCoordinateOffset(-1, 1),
-                    new HexCoordinateOffset(0, 1)
-                };
-        }
-        else
-        {
-            offsets = new HexCoordinateOffset[6]
-                {
-                    new HexCoordinateOffset(1, 0),
-                    new HexCoordinateOffset(1, -1),
-                    new HexCoordinateOffset(0, -1),
-                    new HexCoordinateOffset(-1, 0),
-                    new HexCoordinateOffset(0, 1),
-                    new HexCoordinateOffset(1, 1)
-                };
-        }
-
-        // Add each offset to this hex to get the adjacent hexes
-        HexCoordinateOffset[] adjacentHexes = new HexCoordinateOffset[6];
         for (int i = 0; i < 6; i++)
         {
-            adjacentHexes[i] = this + offsets[i];
+            neighbors[i] = axialNeighbors[i].AxialToOffset();
         }
 
-        return adjacentHexes;
+        return neighbors;
     }
 
     // Returns the hex coordinate adjacent to this hex in the given direction
-    public HexCoordinateOffset AdjacentHex(HexUtilities.HexDirection direction)
+    public HexCoordinateOffset Neighbor(HexUtilities.HexDirection direction)
     {
-        return AdjacentHexes()[(int)direction];
+        return Neighbors()[(int)direction];
     }
 
     // Returns all hexes exactly n steps away from this hex
