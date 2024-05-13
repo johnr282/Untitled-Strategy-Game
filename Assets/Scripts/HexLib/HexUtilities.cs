@@ -80,7 +80,15 @@ public static class HexUtilities
         Func<HexCoordinateOffset, HexCoordinateOffset, int> costFunc,
         Predicate<HexCoordinateOffset> traversableFunc)
     {
-        AStarPlanner planner = new AStarPlanner(costFunc, traversableFunc);
+        Func<HexCoordinateOffset, HexCoordinateOffset[]> neighborsFunc = (hex)
+            => hex.Neighbors();
+        Func<HexCoordinateOffset, int> heuristicFunc = (hex)
+            => DistanceBetween(hex, goal);
+
+        AStarPlanner<HexCoordinateOffset> planner = new(neighborsFunc,
+            costFunc,
+            heuristicFunc,
+            traversableFunc);
         return planner.FindPath(start, goal);
     }
 }
