@@ -32,12 +32,22 @@ public class TestPathPlanning : MonoBehaviour
             Predicate<HexCoordinateOffset> traversableFunc = (hex)
                 => _gameMap.Traversable(UnitType.land, hex);
 
+            List<HexCoordinateOffset> path;
+            try
+            {
+                path = HexUtilities.FindShortestPath(_start,
+                    goal,
+                    costFunc,
+                    traversableFunc);
 
-            List<HexCoordinateOffset> path = HexUtilities.FindShortestPath(_start,
-                goal,
-                costFunc,
-                traversableFunc);
-
+            }
+            catch (RuntimeException e)
+            {
+                Debug.LogError(e.Message);
+                _startSelected = false;
+                return;
+            }
+            
             Debug.Log("Path found");
 
             List<Vector3Int> vectorPath = new()

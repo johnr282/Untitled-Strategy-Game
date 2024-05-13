@@ -36,6 +36,8 @@ public class AStarPlanner
         _traversableFunc = traversableFuncIn;
     }
 
+    // Returns the shortest path between the given start and goal
+    // Throws a RuntimeException if no valid path is found
     public List<HexCoordinateOffset> FindPath(HexCoordinateOffset startIn, 
         HexCoordinateOffset goalIn)
     {

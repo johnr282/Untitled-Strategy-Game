@@ -74,6 +74,7 @@ public static class HexUtilities
     // costFunc should be a function that returns the cost to travel between two 
     // adjacent hexes
     // validFunc should be a predicate that returns whether a given hex is valid
+    // Throws a RuntimeException if no valid path is found
     public static List<HexCoordinateOffset> FindShortestPath(HexCoordinateOffset start,
         HexCoordinateOffset goal,
         Func<HexCoordinateOffset, HexCoordinateOffset, int> costFunc,

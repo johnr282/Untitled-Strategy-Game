@@ -92,13 +92,11 @@ public class GameMap : MonoBehaviour
     }
 
     // Returns whether the given hex is traversable by a unit of the given type
-    // Throws ArgumentException if unitType is invalid or no tile exists at the
-    // given hex
     public bool Traversable(UnitType unitType, 
         HexCoordinateOffset hex)
     {
         if (!FindTile(hex, out GameTile tile))
-            throw new ArgumentException("No GameTile exists at given hex");
+            return false;
 
         return tile.CostToTraverse(unitType) != ImpassableCost;
     }

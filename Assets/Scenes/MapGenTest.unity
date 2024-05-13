@@ -880,36 +880,152 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4567755852912404877, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
+      propertyPath: _continentColors.Array.data[0].b
+      value: 0.9056604
+      objectReference: {fileID: 0}
+    - target: {fileID: 4567755852912404877, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
+      propertyPath: _continentColors.Array.data[0].g
+      value: 0.5245995
+      objectReference: {fileID: 0}
+    - target: {fileID: 4567755852912404877, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
+      propertyPath: _continentColors.Array.data[0].r
+      value: 0.8708664
+      objectReference: {fileID: 0}
+    - target: {fileID: 4567755852912404877, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
       propertyPath: _continentColors.Array.data[1].a
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4567755852912404877, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
+      propertyPath: _continentColors.Array.data[1].b
+      value: 0.06849409
+      objectReference: {fileID: 0}
+    - target: {fileID: 4567755852912404877, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
+      propertyPath: _continentColors.Array.data[1].g
+      value: 0.82067776
+      objectReference: {fileID: 0}
+    - target: {fileID: 4567755852912404877, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
+      propertyPath: _continentColors.Array.data[1].r
+      value: 0.9811321
       objectReference: {fileID: 0}
     - target: {fileID: 4567755852912404877, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
       propertyPath: _continentColors.Array.data[2].a
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4567755852912404877, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
+      propertyPath: _continentColors.Array.data[2].b
+      value: 0.19020998
+      objectReference: {fileID: 0}
+    - target: {fileID: 4567755852912404877, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
+      propertyPath: _continentColors.Array.data[2].g
+      value: 0.735849
+      objectReference: {fileID: 0}
+    - target: {fileID: 4567755852912404877, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
+      propertyPath: _continentColors.Array.data[2].r
+      value: 0.59616464
+      objectReference: {fileID: 0}
+    - target: {fileID: 4567755852912404877, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
       propertyPath: _continentColors.Array.data[3].a
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4567755852912404877, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
+      propertyPath: _continentColors.Array.data[3].b
+      value: 0.022321086
+      objectReference: {fileID: 0}
+    - target: {fileID: 4567755852912404877, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
+      propertyPath: _continentColors.Array.data[3].g
+      value: 0.5377358
+      objectReference: {fileID: 0}
+    - target: {fileID: 4567755852912404877, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
+      propertyPath: _continentColors.Array.data[3].r
+      value: 0.19501355
       objectReference: {fileID: 0}
     - target: {fileID: 4567755852912404877, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
       propertyPath: _continentColors.Array.data[4].a
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4567755852912404877, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
+      propertyPath: _continentColors.Array.data[4].b
+      value: 0.6176575
+      objectReference: {fileID: 0}
+    - target: {fileID: 4567755852912404877, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
+      propertyPath: _continentColors.Array.data[4].g
+      value: 0.990566
+      objectReference: {fileID: 0}
+    - target: {fileID: 4567755852912404877, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
+      propertyPath: _continentColors.Array.data[4].r
+      value: 0.031772807
+      objectReference: {fileID: 0}
+    - target: {fileID: 4567755852912404877, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
       propertyPath: _continentColors.Array.data[5].a
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4567755852912404877, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
+      propertyPath: _continentColors.Array.data[5].b
+      value: 0.117693104
+      objectReference: {fileID: 0}
+    - target: {fileID: 4567755852912404877, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
+      propertyPath: _continentColors.Array.data[5].g
+      value: 0.1664871
+      objectReference: {fileID: 0}
+    - target: {fileID: 4567755852912404877, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
+      propertyPath: _continentColors.Array.data[5].r
+      value: 0.7169812
       objectReference: {fileID: 0}
     - target: {fileID: 4567755852912404877, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
       propertyPath: _continentColors.Array.data[6].a
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4567755852912404877, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
+      propertyPath: _continentColors.Array.data[6].b
+      value: 0.025062274
+      objectReference: {fileID: 0}
+    - target: {fileID: 4567755852912404877, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
+      propertyPath: _continentColors.Array.data[6].g
+      value: 0.36202115
+      objectReference: {fileID: 0}
+    - target: {fileID: 4567755852912404877, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
+      propertyPath: _continentColors.Array.data[6].r
+      value: 0.6037736
+      objectReference: {fileID: 0}
+    - target: {fileID: 4567755852912404877, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
       propertyPath: _continentColors.Array.data[7].a
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4567755852912404877, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
+      propertyPath: _continentColors.Array.data[7].b
+      value: 0.49056602
+      objectReference: {fileID: 0}
+    - target: {fileID: 4567755852912404877, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
+      propertyPath: _continentColors.Array.data[7].g
+      value: 0.062014937
+      objectReference: {fileID: 0}
+    - target: {fileID: 4567755852912404877, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
+      propertyPath: _continentColors.Array.data[7].r
+      value: 0.41342628
       objectReference: {fileID: 0}
     - target: {fileID: 7202985711429058582, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
       propertyPath: m_Name
       value: GameMap
+      objectReference: {fileID: 0}
+    - target: {fileID: 8565934242504865814, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
+      propertyPath: _seed
+      value: -2060413982
+      objectReference: {fileID: 0}
+    - target: {fileID: 8565934242504865814, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
+      propertyPath: _numContinents
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8565934242504865814, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
+      propertyPath: _randomlyGenerateSeed
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8565934242504865814, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
+      propertyPath: _stdDevContinentRadius
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8565934242504865814, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
+      propertyPath: _averageContinentRadius
+      value: 20
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
