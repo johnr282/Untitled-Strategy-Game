@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 // ------------------------------------------------------------------
 // Contains an A-Star search algorithm implementation used to find the
@@ -23,8 +22,8 @@ public class AStarPlanner<TNode>
     TNode _start;
     TNode _goal;
 
-    // Function that returns an array containing all of the given node's neighbors
-    Func<TNode, TNode[]> _neighborsFunc;
+    // Function that returns a list of the given node's traversable neighbors
+    Func<TNode, List<TNode>> _traversableNeighborsFunc;
 
     // Function that returns the cost to travel between two given adjacent nodes
     Func<TNode, TNode, int> _costFunc;
@@ -34,18 +33,13 @@ public class AStarPlanner<TNode>
     // the optimal path, this heuristic must never overestimate the cost of this path
     Func<TNode, int> _heuristicFunc;
 
-    // Function that returns whether the given node is traversable
-    Predicate<TNode> _traversableFunc;
-
-    public AStarPlanner(Func<TNode, TNode[]> neighborsFuncIn,
+    public AStarPlanner(Func<TNode, List<TNode>> traversableNeighborsFuncIn,
         Func<TNode, TNode, int> costFuncIn,
-        Func<TNode, int> heuristicFuncIn,
-        Predicate<TNode> traversableFuncIn)
+        Func<TNode, int> heuristicFuncIn)
     {
-        _neighborsFunc = neighborsFuncIn;
+        _traversableNeighborsFunc = traversableNeighborsFuncIn;
         _costFunc = costFuncIn;
         _heuristicFunc = heuristicFuncIn;
-        _traversableFunc = traversableFuncIn;
     }
 
     // Returns the shortest path between the given start and goal
@@ -62,10 +56,7 @@ public class AStarPlanner<TNode>
         {
             TNode minNode = _frontier.Dequeue();
             if (minNode.Equals(_goal))
-            {
-                Debug.Log("Path found with a cost of " + _gScores[minNode].ToString());
                 return ReconstructPath();
-            }   
 
             UpdateNeighbors(minNode);
         }
@@ -85,12 +76,9 @@ public class AStarPlanner<TNode>
     // if necessary
     void UpdateNeighbors(TNode node)
     {
-        TNode[] neighbors = _neighborsFunc(node);
-        foreach (TNode neighbor in neighbors)
+        List<TNode> traversableNeighbors = _traversableNeighborsFunc(node);
+        foreach (TNode neighbor in traversableNeighbors)
         {
-            if (!_traversableFunc(neighbor))
-                continue;
-
             int newGScore = _gScores[node] + _costFunc(node, neighbor);
             bool neighborUnexplored = !_gScores.ContainsKey(neighbor);
 

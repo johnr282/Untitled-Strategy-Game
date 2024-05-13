@@ -409,7 +409,7 @@ public class MapGeneration : MonoBehaviour
 
         // If tile is an island, i.e. not adjacent to any other tiles from the 
         // same continent, don't include it
-        List<GameTile> adjacentTiles = _gameMap.AdjacentTiles(tile);
+        List<GameTile> adjacentTiles = _gameMap.Neighbors(tile);
         bool connectedToContinent = false;
 
         foreach (GameTile adjacentTile in adjacentTiles)
