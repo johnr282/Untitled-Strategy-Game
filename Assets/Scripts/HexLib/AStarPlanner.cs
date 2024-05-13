@@ -51,6 +51,7 @@ public class AStarPlanner
             HexCoordinateOffset minHex = _frontier.Dequeue();
             if (minHex == _goal)
             {
+                Debug.Log("Path found with a cost of " + _gScores[minHex].ToString());
                 return ReconstructPath();
             }   
 
@@ -86,11 +87,7 @@ public class AStarPlanner
             {
                 _gScores[neighbor] = newGScore;
                 _cameFrom[neighbor] = hex;
-
-                // Ensure that no dupliate hexes and priorities exist in the frontier
-                int newFScore = CalculateFScore(neighbor);
-                _frontier.TryRemove(neighbor, newFScore);
-                _frontier.Enqueue(neighbor, newFScore);
+                _frontier.Enqueue(neighbor, CalculateFScore(neighbor));
             }
         }
     }

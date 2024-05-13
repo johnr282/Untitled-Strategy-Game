@@ -33,9 +33,9 @@ where TPriority : IComparable
         }
     }
 
-    SortedSet<Element> _set = new SortedSet<Element>(new PriorityComparer());
+    List<Element> _list = new();
 
-    public int Count { get => _set.Count; }
+    public int Count { get => _list.Count; }
 
     // Returns whether the queue is empty
     public bool Empty()
@@ -46,10 +46,11 @@ where TPriority : IComparable
     // Removes and returns the element with the lowest priority
     public TElement Dequeue()
     {
-        Element minElement = _set.Min;
-        _set.Remove(minElement);
+        Element minElement = _list[0];
+        _list.Remove(minElement);
         return minElement.Value;
     }
+
 
     // Adds the given element with the given priority to the queue
     // Throws an ArgumentException if an element with the same priority
@@ -57,23 +58,7 @@ where TPriority : IComparable
     public void Enqueue(TElement element, 
         TPriority priority)
     {
-        if (!_set.Add(new Element(element, priority)))
-            throw new ArgumentException(
-                "Attempted to add duplicate element and priority to PriorityQueue");
-    }
-
-    // Returns whether the queue contains the given element with given priority
-    public bool Contains(TElement element, 
-        TPriority priority)
-    {
-        return _set.Contains(new Element(element, priority));
-    }
-
-    // Attempts to remove the given element with given priority from the queue
-    // Returns true if it was successfully found and removed, false if not
-    public bool TryRemove(TElement element,
-        TPriority priority)
-    {
-        return _set.Remove(new Element(element, priority));
+        _list.Add(new Element(element, priority));
+        _list.Sort(new PriorityComparer());
     }
 }

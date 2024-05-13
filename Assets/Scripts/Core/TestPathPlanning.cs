@@ -25,7 +25,8 @@ public class TestPathPlanning : MonoBehaviour
             HexCoordinateOffset goal = HexUtilities.ConvertToHexCoordinateOffset(
                 tileSelectedEvent.Coordinate);
 
-            Debug.Log("Finding path between " + _start.ToString() + " and " + goal.ToString());
+            Debug.Log("Finding path between " + _start.ToString() + " and " + goal.ToString() + 
+                ", distance of " + HexUtilities.DistanceBetween(_start, goal).ToString());
 
             Func<HexCoordinateOffset, HexCoordinateOffset, int> costFunc = (startHex, goalHex) 
                 => _gameMap.CostToTraverse(UnitType.land, startHex, goalHex);
