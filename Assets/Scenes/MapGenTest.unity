@@ -309,8 +309,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _mapVisuals: {fileID: 1679178103}
   _gameMap: {fileID: 1679178101}
-  _unitType: 2
-  _findAllPaths: 0
+  _unitType: 0
+  _findAllPaths: 1
 --- !u!4 &713922442
 Transform:
   m_ObjectHideFlags: 0
@@ -1015,7 +1015,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8565934242504865814, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
       propertyPath: _numContinents
-      value: 8
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8565934242504865814, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
       propertyPath: _randomlyGenerateSeed
@@ -1023,11 +1023,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8565934242504865814, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
       propertyPath: _stdDevContinentRadius
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8565934242504865814, guid: a70df181ca7d3b944a4342c1dc7ec958, type: 3}
       propertyPath: _averageContinentRadius
-      value: 2.5
+      value: 20
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

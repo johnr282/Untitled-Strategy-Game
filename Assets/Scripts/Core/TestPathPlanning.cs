@@ -49,19 +49,10 @@ public class TestPathPlanning : MonoBehaviour
         Debug.Log("Finding path between " + start.ToString() + " and " + goal.ToString() +
                 ", distance of " + HexUtilities.DistanceBetween(start, goal).ToString());
 
-        Func<HexCoordinateOffset, HexCoordinateOffset, int> costFunc = (startHex, goalHex)
-            => _gameMap.CostToTraverse(_unitType, startHex, goalHex);
-        Predicate<HexCoordinateOffset> traversableFunc = (hex)
-            => _gameMap.Traversable(_unitType, hex);
-
-        List<HexCoordinateOffset> path;
+        List<GameTile> path;
         try
         {
-            path = HexUtilities.FindShortestPath(start,
-                goal,
-                costFunc,
-                traversableFunc);
-
+            path = _gameMap.FindShortestPath(_unitType, start, goal);
         }
         catch (RuntimeException e)
         {
@@ -76,9 +67,9 @@ public class TestPathPlanning : MonoBehaviour
             start.ConvertToVector3Int()
         };
 
-        foreach (HexCoordinateOffset hex in path)
+        foreach (GameTile tile in path)
         {
-            vectorPath.Add(hex.ConvertToVector3Int());
+            vectorPath.Add(tile.Coordinate.ConvertToVector3Int());
         }
         _mapVisuals.HighlightPath(vectorPath);
     }

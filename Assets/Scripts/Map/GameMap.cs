@@ -129,4 +129,39 @@ public class GameMap : MonoBehaviour
             action(pair.Value);
         }
     }
+
+    // Returns the shortest path between the given start and goal hexes for the 
+    // given unit type
+    // Throws an ArgumentException if start or goal don't exist in the map
+    // Throws a RuntimeException if no valid path was found between start and goal
+    // or if an invalid hex is found in the returned path, which should never happen
+    public List<GameTile> FindShortestPath(UnitType unitType,
+        HexCoordinateOffset start, 
+        HexCoordinateOffset goal)
+    {
+        if (!TileExists(start) ||
+            !TileExists(goal))
+            throw new ArgumentException("Attempted to find path between invalid tiles");
+
+        Func<HexCoordinateOffset, HexCoordinateOffset, int> costFunc = (startHex, goalHex)
+            => CostToTraverse(unitType, startHex, goalHex);
+        Predicate<HexCoordinateOffset> traversableFunc = (hex)
+            => Traversable(unitType, hex);
+
+        List<HexCoordinateOffset> hexPath = HexUtilities.FindShortestPath(start,
+            goal,
+            costFunc,
+            traversableFunc);
+
+        List<GameTile> tilePath = new();
+        foreach (HexCoordinateOffset hex in hexPath)
+        {
+            if (!FindTile(hex, out GameTile tile))
+                throw new RuntimeException("Invalid hex found in path");
+
+            tilePath.Add(tile);
+        }
+
+        return tilePath;
+    }
 }
