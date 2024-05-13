@@ -120,4 +120,13 @@ public class GameMap : MonoBehaviour
 
         return goalTile.CostToTraverse(unitType, startTile);
     }
+
+    // Executes the given action on every tile in the map
+    public void ExecuteOnAllTiles(Action<GameTile> action)
+    {
+        foreach (KeyValuePair<HexCoordinateOffset, GameTile> pair in _gameMap)
+        {
+            action(pair.Value);
+        }
+    }
 }
