@@ -19,6 +19,8 @@ public class MapVisuals : MonoBehaviour
     Vector3Int _currentlyHighlightedTile = new Vector3Int(-1, -1, -1);
     Vector3Int _currentlySelectedTile = new Vector3Int(-1, -1, -1);
 
+    List<Vector3Int> _currentlyHighlightedPath = new();
+
     [SerializeField] float _tileSaturationFactor;
 
     [SerializeField] List<Color> _continentColors = new();
@@ -118,6 +120,23 @@ public class MapVisuals : MonoBehaviour
         EventBus.Publish(new NewTileHighlightedEvent(tilePos));
     }
 
+    // Highlights every tile in the given path
+    public void HighlightPath(List<Vector3Int> path)
+    {
+        // Un-highlight previous path
+        foreach (Vector3Int tilePos in _currentlyHighlightedPath)
+        {
+            AdjustTileSaturation(tilePos, 1 / _tileSaturationFactor);
+        }
+
+        foreach (Vector3Int tilePos in path)
+        {
+            AdjustTileSaturation(tilePos, _tileSaturationFactor);
+        }
+
+        _currentlyHighlightedPath = path;
+    }
+
     // Selects tile at given world position; does nothing if no tile exists
     public void SelectTile(Vector3 tileWorldPos)
     {
@@ -126,12 +145,6 @@ public class MapVisuals : MonoBehaviour
             _currentlySelectedTile == tilePos)
             return;
 
-        SelectTile(tilePos);
-    }
-
-    // Selects tile at given position; does nothing if no tile exists
-    public void SelectTile(Vector3Int tilePos)
-    {
         // New selected tile needs to be highlighted
         AdjustTileSaturation(tilePos, _tileSaturationFactor);
 
@@ -141,10 +154,6 @@ public class MapVisuals : MonoBehaviour
 
         _currentlySelectedTile = tilePos;
         EventBus.Publish(new TileSelectedEvent(tilePos));
-
-        // Debugging purposes only
-        HexCoordinateOffset selectedHexCoord = new HexCoordinateOffset(
-            _currentlySelectedTile.x, _currentlySelectedTile.y);
     }
 
     // Multiplies saturation value of tile's color at tilePos by saturation 

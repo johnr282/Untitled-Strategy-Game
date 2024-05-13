@@ -73,11 +73,13 @@ public static class HexUtilities
     // Returns the shortest path between given start and goal as a list of hexes; 
     // costFunc should be a function that returns the cost to travel between two 
     // adjacent hexes
+    // validFunc should be a predicate that returns whether a given hex is valid
     public static List<HexCoordinateOffset> FindShortestPath(HexCoordinateOffset start,
         HexCoordinateOffset goal,
-        Func<HexCoordinateOffset, HexCoordinateOffset, int> costFunc)
+        Func<HexCoordinateOffset, HexCoordinateOffset, int> costFunc,
+        Predicate<HexCoordinateOffset> traversableFunc)
     {
-        AStarPlanner planner = new AStarPlanner(costFunc);
+        AStarPlanner planner = new AStarPlanner(costFunc, traversableFunc);
         return planner.FindPath(start, goal);
     }
 }

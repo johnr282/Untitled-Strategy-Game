@@ -26,9 +26,14 @@ public class AStarPlanner
     // Function that returns the cost to travel between two given adjacent hexes
     Func<HexCoordinateOffset, HexCoordinateOffset, int> _costFunc;
 
-    public AStarPlanner(Func<HexCoordinateOffset, HexCoordinateOffset, int> costFuncIn)
+    // Function that returns whether the given hex is traversable
+    Predicate<HexCoordinateOffset> _traversableFunc;
+
+    public AStarPlanner(Func<HexCoordinateOffset, HexCoordinateOffset, int> costFuncIn,
+        Predicate<HexCoordinateOffset> traversableFuncIn)
     {
         _costFunc = costFuncIn;
+        _traversableFunc = traversableFuncIn;
     }
 
     public List<HexCoordinateOffset> FindPath(HexCoordinateOffset startIn, 
@@ -68,6 +73,9 @@ public class AStarPlanner
         HexCoordinateOffset[] neighbors = hex.Neighbors();
         foreach (HexCoordinateOffset neighbor in neighbors)
         {
+            if (!_traversableFunc(neighbor))
+                continue;
+
             int newGScore = _gScores[hex] + _costFunc(hex, neighbor);
             bool neighborUnexplored = !_gScores.ContainsKey(neighbor);
             int currentGScore = neighborUnexplored ? int.MaxValue : _gScores[neighbor];
@@ -76,15 +84,11 @@ public class AStarPlanner
             {
                 _gScores[neighbor] = newGScore;
                 _cameFrom[neighbor] = hex;
-                try
-                {
-                    _frontier.Enqueue(neighbor, CalculateFScore(neighbor));
-                }
-                catch (ArgumentException)
-                {
-                    // Simply continue if an element with the same hex and f score
-                    // already exists in _frontier
-                }
+
+                // Ensure that no dupliate hexes and priorities exist in the frontier
+                int newFScore = CalculateFScore(neighbor);
+                _frontier.TryRemove(neighbor, newFScore);
+                _frontier.Enqueue(neighbor, newFScore);
             }
         }
     }
@@ -94,12 +98,17 @@ public class AStarPlanner
     {
         List<HexCoordinateOffset> path = new();
         HexCoordinateOffset current = _goal;
+        int maxPathSize = 100;
 
-        while (current != _start)
+        while (_cameFrom.ContainsKey(current) &&
+            path.Count < maxPathSize)
         {
             path.Add(current);
             current = _cameFrom[current];
         }
+
+        if (current != _start)
+            throw new RuntimeException("Failed to reconstruct valid path");
 
         path.Reverse();
         return path;

@@ -19,6 +19,37 @@ public class HexCoordinateAxial: HexCoordinate<HexCoordinateAxial>
         Y = yIn;
     }
 
+    // Addition operator overload
+    public static HexCoordinateAxial operator +(HexCoordinateAxial lhs,
+        HexCoordinateAxial rhs)
+    {
+        return new HexCoordinateAxial(lhs.X + rhs.X,
+            lhs.Y + rhs.Y);
+    }
+
+    // Subtraction operator overload
+    public static HexCoordinateAxial operator -(HexCoordinateAxial lhs,
+        HexCoordinateAxial rhs)
+    {
+        return new HexCoordinateAxial(lhs.X - rhs.X,
+            lhs.Y - rhs.Y);
+    }
+
+    // == operator overload
+    public static bool operator ==(HexCoordinateAxial lhs,
+        HexCoordinateAxial rhs)
+    {
+        return (lhs.X == rhs.X) &&
+            (lhs.Y == rhs.Y);
+    }
+
+    // != operator overload
+    public static bool operator !=(HexCoordinateAxial lhs,
+        HexCoordinateAxial rhs)
+    {
+        return !(lhs == rhs);
+    }
+
     public override string ToString()
     {
         return "X: " + X.ToString() + ", Y: " + Y.ToString();
@@ -39,7 +70,7 @@ public class HexCoordinateAxial: HexCoordinate<HexCoordinateAxial>
         else
         {
             HexCoordinateAxial hex = (HexCoordinateAxial)obj;
-            return (X == hex.X) && (Y == hex.Y);
+            return this == hex;
         }
     }
 
@@ -93,22 +124,6 @@ public class HexCoordinateAxial: HexCoordinate<HexCoordinateAxial>
         }
 
         return hexesNAway;
-    }
-
-    // Addition operator overload
-    public static HexCoordinateAxial operator +(HexCoordinateAxial lhs,
-        HexCoordinateAxial rhs)
-    {
-        return new HexCoordinateAxial(lhs.X + rhs.X,
-            lhs.Y + rhs.Y);
-    }
-
-    // Subtraction operator overload
-    public static HexCoordinateAxial operator -(HexCoordinateAxial lhs,
-        HexCoordinateAxial rhs)
-    {
-        return new HexCoordinateAxial(lhs.X - rhs.X,
-            lhs.Y - rhs.Y);
     }
 
     // Converts this axial coordinate to the offset coordinate system

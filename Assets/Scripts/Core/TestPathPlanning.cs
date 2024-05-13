@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,7 +12,6 @@ public class TestPathPlanning : MonoBehaviour
 
     HexCoordinateOffset _start;
     bool _startSelected = false;
-    bool _highlightingPath = false;
 
     void Start()
     {
@@ -20,29 +20,38 @@ public class TestPathPlanning : MonoBehaviour
 
     void OnTileSelected(TileSelectedEvent tileSelectedEvent)
     {
-        if (_highlightingPath)
-            return;
-
         if (_startSelected)
         {
-            _highlightingPath = true;
             HexCoordinateOffset goal = HexUtilities.ConvertToHexCoordinateOffset(
                 tileSelectedEvent.Coordinate);
 
             Debug.Log("Finding path between " + _start.ToString() + " and " + goal.ToString());
-            List<HexCoordinateOffset> path = HexUtilities.FindShortestPath(_start, 
-                goal, 
-                _gameMap.CostByLand);
+
+            Func<HexCoordinateOffset, HexCoordinateOffset, int> costFunc = (startHex, goalHex) 
+                => _gameMap.CostToTraverse(UnitType.land, startHex, goalHex);
+            Predicate<HexCoordinateOffset> traversableFunc = (hex)
+                => _gameMap.Traversable(UnitType.land, hex);
+
+
+            List<HexCoordinateOffset> path = HexUtilities.FindShortestPath(_start,
+                goal,
+                costFunc,
+                traversableFunc);
 
             Debug.Log("Path found");
-            
+
+            List<Vector3Int> vectorPath = new()
+            {
+                _start.ConvertToVector3Int()
+            };
+
             foreach (HexCoordinateOffset hex in path)
             {
-                _mapVisuals.SelectTile(hex.ConvertToVector3Int());
+                vectorPath.Add(hex.ConvertToVector3Int());
             }
 
+            _mapVisuals.HighlightPath(vectorPath);
             _startSelected = false;
-            _highlightingPath = false;
         }
         else
         {

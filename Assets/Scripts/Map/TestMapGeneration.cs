@@ -15,14 +15,5 @@ public class TestMapGeneration : MonoBehaviour
     {
         _mapGenerator.GenerateRandomSeed();
         EventBus.Publish(new GenerateMapEvent(_mapGenerator.GetMapSeed()));
-
-        HexCoordinateOffset hex = new HexCoordinateOffset(0, 0);
-        HexCoordinateOffset[] neighbors = hex.Neighbors();
-        foreach(HexCoordinateOffset neighbor in neighbors)
-        {
-            Debug.Log("Distance between neighbor and hex: " + 
-                HexUtilities.DistanceBetween(hex, neighbor));
-            //Debug.Assert(HexUtilities.AreAdjacent(hex, neighbor));
-        }
     }
 }

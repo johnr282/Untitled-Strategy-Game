@@ -13,56 +13,66 @@ public class GameMap : MonoBehaviour
     // Keys are coordinates of tiles in the map, value is the tile itself
     Dictionary<HexCoordinateOffset, GameTile> _gameMap = new();
 
-    // Returns true if HexTile exists at given coordinate and gets HexTile 
-    // at that location; returns false otherwise
-    public bool FindTile(HexCoordinateOffset coordinate, 
-        out GameTile tile)
+    // A value big enough to be larger than any possible A* g score, but not large 
+    // enough that it could overflow and become negative
+    public const int ImpassableCost = int.MaxValue / 2;
+
+    // Returns whether a GameTile exists with the given hex
+    public bool TileExists(HexCoordinateOffset hex)
     {
-        return _gameMap.TryGetValue(coordinate, out tile);
+        return _gameMap.ContainsKey(hex);
     }
 
-    // Adds given HexTile at given coordinate to map
-    public void AddTile(HexCoordinateOffset coordinate, 
+    // Returns true if GameTile exists at given coordinate and gets GameTile 
+    // at that location; returns false otherwise
+    public bool FindTile(HexCoordinateOffset hex, 
+        out GameTile tile)
+    {
+        return _gameMap.TryGetValue(hex, out tile);
+    }
+
+    // Adds given GameTile at given coordinate to map
+    public void AddTile(HexCoordinateOffset hex, 
         GameTile newTile)
     {
-        _gameMap.Add(coordinate, newTile);
+        _gameMap.Add(hex, newTile);
     }
 
     // Sets GameTile at given coordinate to given GameTile; returns false if no
     // tile exists at given coordinate, returns true otherwise
-    public bool SetTile(HexCoordinateOffset coordinate, 
+    public bool SetTile(HexCoordinateOffset hex, 
         GameTile newTile)
     {
-        if (!FindTile(coordinate, out GameTile tile))
+        if (!FindTile(hex, out GameTile tile))
             return false;
 
-        _gameMap[coordinate] = newTile;
+        _gameMap[hex] = newTile;
         return true;
     }
 
     // Changes terrain of GameTile at given coordinate to given TerrainType; 
     // returns false if no tile exists at given coordinate, returns true otherwise
-    public bool ChangeTerrain(HexCoordinateOffset coordinate, 
+    public bool ChangeTerrain(HexCoordinateOffset hex, 
         Terrain newTerrain)
     {
-        if (!FindTile(coordinate, out GameTile tile))
+        if (!FindTile(hex, out GameTile tile))
             return false;
 
         tile.TileTerrain = newTerrain;
-        _gameMap[coordinate] = tile;
+        _gameMap[hex] = tile;
         return true;
     }
 
     // Sets continent ID of GameTile at given coordinate to given ID; returns false
     // if no tile exists at given coordinate, returns true otherwise
-    public bool SetContinentID(HexCoordinateOffset coordinate, 
+    public bool SetContinentID(HexCoordinateOffset hex, 
         int newContinentID)
     {
-        if (!FindTile(coordinate, out GameTile tile))
+        if (!FindTile(hex, out GameTile tile))
             return false;
 
         tile.ContinentID = newContinentID;
-        _gameMap[coordinate] = tile;
+        _gameMap[hex] = tile;
         return true;
     }
 
@@ -81,54 +91,35 @@ public class GameMap : MonoBehaviour
         return adjacentTiles;
     }
 
-    // Returns the cost for a land unit to travel from the given start tile to
-    // the given goal tile
-    // Throws ArgumentException if start and goal are not adjacent or if start 
-    // or goal do not exist on the map
-    public int CostByLand(HexCoordinateOffset start, 
-        HexCoordinateOffset goal)
+    // Returns whether the given hex is traversable by a unit of the given type
+    // Throws ArgumentException if unitType is invalid or no tile exists at the
+    // given hex
+    public bool Traversable(UnitType unitType, 
+        HexCoordinateOffset hex)
     {
-        ValidateAdjacentTiles(start, 
-            goal, 
-            out GameTile startTile);
+        if (!FindTile(hex, out GameTile tile))
+            throw new ArgumentException("No GameTile exists at given hex");
 
-        if (!FindTile(goal, out GameTile goalTile))
-            return int.MaxValue;
-
-        return goalTile.CostByLand(startTile);
+        return tile.CostToTraverse(unitType) != ImpassableCost;
     }
 
-    // Returns the cost for a land unit to travel from the given start tile to
-    // the given goal tile
-    // Throws ArgumentException if start and goal are not adjacent or if start 
-    // or goal do not exist on the map
-    public int CostBySea(HexCoordinateOffset start,
+    // Returns the cost for a unit of the given UnitType to traverse from start 
+    // to goal
+    // Throws an ArgumentException if unitType is invalid, start or goal don't 
+    // exist in the map, or start and goal aren't adjacent
+    public int CostToTraverse(UnitType unitType, 
+        HexCoordinateOffset start,
         HexCoordinateOffset goal)
-    {
-        ValidateAdjacentTiles(start,
-            goal,
-            out GameTile startTile);
-
-        if (!FindTile(goal, out GameTile goalTile))
-            return int.MaxValue;
-
-        return goalTile.CostBySea(startTile);
-    }
-
-    // Ensures that the given hexes are adjacent and the start tile exists, and
-    // puts corresponding tiles into startTile output parameter
-    // Throws ArgumentException if hexes aren't adjacent or if start does not exist
-    // on the map
-    void ValidateAdjacentTiles(HexCoordinateOffset start,
-        HexCoordinateOffset goal, 
-        out GameTile startTile)
     {
         if (!HexUtilities.AreAdjacent(start, goal))
-            throw new ArgumentException("Attempted to calculate cost between non-adjacent tiles");
+            throw new ArgumentException(
+                "Attempted to calculate cost between non-adjacent tiles");
 
-        if (!FindTile(start, out startTile))
-        {
-            throw new ArgumentException("Attempted to calculate cost between invalid tiles");
-        }
+        if (!FindTile(start, out GameTile startTile) ||
+            !FindTile(goal, out GameTile goalTile))
+            throw new ArgumentException(
+                "Attempted to calculate cost between nonexistent tiles");
+
+        return goalTile.CostToTraverse(unitType, startTile);
     }
 }

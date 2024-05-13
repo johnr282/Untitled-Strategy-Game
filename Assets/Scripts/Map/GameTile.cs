@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,6 +13,14 @@ public enum Terrain
     sea,
     land
 }
+
+public enum UnitType
+{ 
+    land, 
+    naval,
+    air
+}
+
 
 public class GameTile
 {
@@ -38,37 +47,60 @@ public class GameTile
         return ContinentID != -1;
     }
 
-    // Returns the cost for a land unit to travel into this tile from the 
-    // given adjacent start tile
-    public int CostByLand(GameTile start)
+    // Returns the cost for a unit of the given UnitType to traverse into this
+    // tile from the given adjacent start tile
+    // Start is null and ignored by default; if start is given, assumes it is
+    // adjacent to this tile
+    // Throws an ArgumentException if unitType is invalid or this tile's terrain
+    // is invalid
+    public int CostToTraverse(UnitType unitType, 
+        GameTile start = null)
     {
-        switch (TileTerrain)
-        {
-            case Terrain.sea:
-                return int.MaxValue;
+        string invalidTerrainMsg = "TileTerrain of GameTile not valid";
 
-            case Terrain.land:
-                return 1;
+        switch (unitType)
+        {
+            case UnitType.land:
+                switch (TileTerrain)
+                {
+                    case Terrain.sea:
+                        return GameMap.ImpassableCost;
+
+                    case Terrain.land:
+                        return 1;
+
+                    default:
+                        throw new RuntimeException(invalidTerrainMsg);
+                }
+
+            case UnitType.naval:
+                switch (TileTerrain)
+                {
+                    case Terrain.sea:
+                        return 1;
+
+                    case Terrain.land:
+                        return GameMap.ImpassableCost;
+
+                    default:
+                        throw new RuntimeException(invalidTerrainMsg);
+                }
+
+            case UnitType.air:
+                switch (TileTerrain)
+                {
+                    case Terrain.sea:
+                        return 1;
+
+                    case Terrain.land:
+                        return 1;
+
+                    default:
+                        throw new RuntimeException(invalidTerrainMsg);
+                }
 
             default:
-                throw new RuntimeException("TileTerrain of GameTile not valid");
-        }
-    }
-
-    // Returns the cost for a sea unit to travel into this tile from the 
-    // given adjacent start tile
-    public int CostBySea(GameTile start)
-    {
-        switch (TileTerrain)
-        {
-            case Terrain.sea:
-                return 1;
-
-            case Terrain.land:
-                return int.MaxValue;
-
-            default:
-                throw new RuntimeException("TileTerrain of GameTile not valid");
+                throw new ArgumentException("Invalid unit type");
         }
     }
 }

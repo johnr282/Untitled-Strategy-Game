@@ -21,6 +21,37 @@ public class HexCoordinateOffset : HexCoordinate<HexCoordinateOffset>
         Row = rowIn;
     }
 
+    // Addition operator overload
+    public static HexCoordinateOffset operator +(HexCoordinateOffset lhs,
+        HexCoordinateOffset rhs)
+    {
+        return new HexCoordinateOffset(lhs.Col + rhs.Col,
+            lhs.Row + rhs.Row);
+    }
+
+    // Subtraction operator overload
+    public static HexCoordinateOffset operator -(HexCoordinateOffset lhs,
+        HexCoordinateOffset rhs)
+    {
+        return new HexCoordinateOffset(lhs.Col - rhs.Col,
+            lhs.Row - rhs.Row);
+    }
+
+    // == operator overload
+    public static bool operator ==(HexCoordinateOffset lhs,
+        HexCoordinateOffset rhs)
+    {
+        return (lhs.Col == rhs.Col) &&
+            (lhs.Row == rhs.Row);
+    }
+
+    // != operator overload
+    public static bool operator !=(HexCoordinateOffset lhs,
+        HexCoordinateOffset rhs)
+    {
+        return !(lhs == rhs);
+    }
+
     public override string ToString()
     {
         return "Col: " + Col.ToString() + ", Row: " + Row.ToString();
@@ -41,7 +72,7 @@ public class HexCoordinateOffset : HexCoordinate<HexCoordinateOffset>
         else
         {
             HexCoordinateOffset hex = (HexCoordinateOffset)obj;
-            return (Col == hex.Col) && (Row == hex.Row);
+            return this == hex;
         }
     }
 
@@ -81,22 +112,6 @@ public class HexCoordinateOffset : HexCoordinate<HexCoordinateOffset>
         }
 
         return hexesNAway;
-    }
-
-    // Addition operator overload
-    public static HexCoordinateOffset operator +(HexCoordinateOffset lhs,
-        HexCoordinateOffset rhs)
-    {
-        return new HexCoordinateOffset(lhs.Col + rhs.Col,
-            lhs.Row + rhs.Row);
-    }
-
-    // Subtraction operator overload
-    public static HexCoordinateOffset operator -(HexCoordinateOffset lhs,
-        HexCoordinateOffset rhs)
-    {
-        return new HexCoordinateOffset(lhs.Col - rhs.Col,
-            lhs.Row - rhs.Row);
     }
 
     // Converts this coordinate to a Vector2Int of the form (Col, Row)
