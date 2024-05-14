@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Priority_Queue;
 
 // ------------------------------------------------------------------
 // Contains an A-Star search algorithm implementation used to find the
@@ -11,7 +12,7 @@ public class AStarPlanner<TNode>
 {
     // Contains nodes that still need to be explored; priority of each node
     // is its f score, which is the sum of its g score and heuristic
-    PriorityQueue<TNode, int> _frontier = new();
+    SimplePriorityQueue<TNode, int> _frontier = new();
 
     // Stores current cost from the start to each node
     Dictionary<TNode, int> _gScores = new();
@@ -52,7 +53,7 @@ public class AStarPlanner<TNode>
 
         AddStartNode();
 
-        while (!_frontier.Empty())
+        while (_frontier.Count != 0)
         {
             TNode minNode = _frontier.Dequeue();
             if (minNode.Equals(_goal))
