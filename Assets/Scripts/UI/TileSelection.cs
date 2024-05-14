@@ -1,15 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 // ------------------------------------------------------------------
 // Component allowing tiles in tilemap to be highlighted and selected
 // ------------------------------------------------------------------
 
 [RequireComponent(typeof(MapVisuals))]
+[RequireComponent(typeof(Tilemap))]
 public class TileSelection : MonoBehaviour
 {
     MapVisuals _mapVisuals;
+    Tilemap _tilemap;
 
     // Infinite plane parallel to tilemap; used for detecting mouse location
     // on tilemap
@@ -18,6 +21,7 @@ public class TileSelection : MonoBehaviour
     void Awake()
     {
         _mapVisuals = GetComponent<MapVisuals>();
+        _tilemap = GetComponent<Tilemap>();
         _tilemapPlane = new Plane(Vector3.up, Vector3.zero);
     }
 

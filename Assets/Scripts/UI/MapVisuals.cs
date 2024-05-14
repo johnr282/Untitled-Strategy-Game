@@ -36,12 +36,12 @@ public class MapVisuals : MonoBehaviour
         int height,
         int width)
     {
-        InitializeVisuals(height, width);
+        InitializeTilemap(height, width);
         UpdateVisuals(gameMap);
     }
 
     // Initializes tilemap with given height and width
-    void InitializeVisuals(int height,
+    void InitializeTilemap(int height,
         int width)
     {
         // Pointed-top hexagons are indexed (col, row) instead of (row, col)
@@ -69,35 +69,23 @@ public class MapVisuals : MonoBehaviour
     // Updates all tiles in _tilemap based on terrain of HexTiles in given GameMap
     void UpdateVisuals(GameMap gameMap)
     {
-        int width = _tilemap.cellBounds.size.x;
-        int height = _tilemap.cellBounds.size.y;
-
-        for (int row = 0; row < height; row++)
-        {
-            for (int col = 0; col < width; col++)
-            {
-                HexCoordinateOffset coordinate = new HexCoordinateOffset(col, row);
-                GameTile gameTile;
-
-                if (gameMap.FindTile(coordinate, out gameTile))
-                    UpdateTile(coordinate.ConvertToVector3Int(), gameTile);
-                else
-                    Debug.LogWarning("Tile at " + coordinate.ToString() + " not found in gameMap");
-            }
-        }
+        gameMap.ExecuteOnAllTiles(UpdateTile);
     }
 
-    // Sets tile in tilemap at given coordinate to TileBase object corresponding to
-    // terrain of given GameTile
-    void UpdateTile(Vector3Int coordinate, GameTile gameTile)
+    // Sets tile in tilemap at coordinate of given gameTile to TileBase object
+    // corresponding to terrain of given GameTile
+    void UpdateTile(GameTile gameTile)
     {
-        Terrain terrain = gameTile.TileTerrain;
-        TileBase correspondingTile = _tileLibrary.GetCorrespondingTile(terrain);
-        _tilemap.SetTile(coordinate, correspondingTile);
+        TileBase correspondingTile = 
+            _tileLibrary.GetCorrespondingTile(gameTile.TileTerrain);
+
+        Vector3Int tilemapCoord = gameTile.Coordinate.ConvertToVector3Int();
+        _tilemap.SetTile(tilemapCoord, correspondingTile);
+
         if (gameTile.InContinent())
         {
             Color continentColor = _continentColors[gameTile.ContinentID];
-            SetTileColor(coordinate, continentColor);
+            SetTileColor(tilemapCoord, continentColor);
         }
     }
 
