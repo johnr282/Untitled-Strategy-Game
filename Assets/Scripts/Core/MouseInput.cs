@@ -58,7 +58,7 @@ public class MouseInput : MonoBehaviour
         }
 
         // If no HoverableObject was found, then try highlighting a tile from the map
-        _tileSelection.TryHighlightTile();
+        _tileSelection.TryHoverOverTile();
 
         return false;
     }

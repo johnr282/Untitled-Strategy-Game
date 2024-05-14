@@ -12,12 +12,12 @@ using UnityEngine;
 public class DisplayCoordinate : MonoBehaviour
 {
     TextMeshProUGUI _coordinateDisplay;
-    Subscription<NewTileHighlightedEvent> _tileHighlightedSub;
+    Subscription<NewTileHoveredOverEvent> _tileHighlightedSub;
 
     void Awake()
     {
         _coordinateDisplay = GetComponent<TextMeshProUGUI>();
-        _tileHighlightedSub = EventBus.Subscribe<NewTileHighlightedEvent>(ChangeDisplayCoordinate);    
+        _tileHighlightedSub = EventBus.Subscribe<NewTileHoveredOverEvent>(ChangeDisplayCoordinate);    
     }
 
     void OnDestroy()
@@ -25,7 +25,7 @@ public class DisplayCoordinate : MonoBehaviour
         EventBus.Unsubscribe(_tileHighlightedSub);    
     }
 
-    void ChangeDisplayCoordinate(NewTileHighlightedEvent tileHighlightedEvent)
+    void ChangeDisplayCoordinate(NewTileHoveredOverEvent tileHighlightedEvent)
     {
         _coordinateDisplay.text = tileHighlightedEvent.Coordinate.ToString();
     }

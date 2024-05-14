@@ -4,14 +4,12 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 
 // ------------------------------------------------------------------
-// Component allowing tiles in tilemap to be highlighted and selected
+// Component allowing tiles in tilemap to be hovered over and selected
 // ------------------------------------------------------------------
 
-[RequireComponent(typeof(MapVisuals))]
 [RequireComponent(typeof(Tilemap))]
 public class TileSelection : MonoBehaviour
 {
-    MapVisuals _mapVisuals;
     Tilemap _tilemap;
 
     // Infinite plane parallel to tilemap; used for detecting mouse location
@@ -20,33 +18,38 @@ public class TileSelection : MonoBehaviour
 
     void Awake()
     {
-        _mapVisuals = GetComponent<MapVisuals>();
         _tilemap = GetComponent<Tilemap>();
         _tilemapPlane = new Plane(Vector3.up, Vector3.zero);
     }
 
-    // Highlights the tile that the mouse is currently on, or does nothing if
+    // Hovers over the tile that the mouse is currently on, or does nothing if
     // mouse is outside the map
-    public void TryHighlightTile()
+    public void TryHoverOverTile()
     {
-        _mapVisuals.HighlightTile(MousePositionOnTilemap());
+        Vector3Int tilePos = MousePositionToTile();
+        if (_tilemap.HasTile(tilePos))
+            EventBus.Publish(new NewTileHoveredOverEvent(tilePos));
     }
 
     // Selects the tile that the mouse is currently on, or does nothing if
     // mouse is outside the map
     public void TrySelectTile()
     {
-        _mapVisuals.SelectTile(MousePositionOnTilemap());
+        Vector3Int tilePos = MousePositionToTile();
+        if (_tilemap.HasTile(tilePos))
+            EventBus.Publish(new TileSelectedEvent(tilePos));
     }
 
-    // Returns the point on the tilemap that the mouse is hovering over
-    Vector3 MousePositionOnTilemap()
+    // Returns the tile coordinate on the tilemap corresponding to the current
+    // mouse location
+    Vector3Int MousePositionToTile()
     {
         Ray rayTowardsMousePos = UnityUtilities.RayTowardsMouse();
 
         if (!_tilemapPlane.Raycast(rayTowardsMousePos, out float distance))
-            return Vector3.zero;
+            return new Vector3Int(-1, -1, 0);
 
-        return rayTowardsMousePos.GetPoint(distance);
+        Vector3 mousePositionOnTilePlane = rayTowardsMousePos.GetPoint(distance);
+        return _tilemap.WorldToCell(mousePositionOnTilePlane);
     }
 }

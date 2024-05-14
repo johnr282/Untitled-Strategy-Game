@@ -25,10 +25,18 @@ public class MapVisuals : MonoBehaviour
 
     [SerializeField] List<Color> _continentColors = new();
 
+    Subscription<NewTileHoveredOverEvent> _tileHoveredSubscription;
+    Subscription<TileSelectedEvent> _tileSelectedSubscription;
+
     void Awake()
     {
         _tilemap = GetComponent<Tilemap>();
         _tileLibrary = GetComponent<TileLibrary>();
+
+        _tileHoveredSubscription = 
+            EventBus.Subscribe<NewTileHoveredOverEvent>(OnTileHovered);
+        _tileSelectedSubscription =
+            EventBus.Subscribe<TileSelectedEvent>(OnTileSelected);
     }
 
     // Generates tilemap using given height and width and game map
@@ -89,59 +97,56 @@ public class MapVisuals : MonoBehaviour
         }
     }
 
-    // Highlights tile at given world position; does nothing if no tile exists
-    public void HighlightTile(Vector3 tileWorldPos)
+    // Highlights tile at given tile position; assumes tile exists at given position
+    public void OnTileHovered(NewTileHoveredOverEvent tileHoveredEvent)
     {
-        Vector3Int tilePos = _tilemap.WorldToCell(tileWorldPos);
-        if (!_tilemap.HasTile(tilePos) ||
-            _currentlyHighlightedTile == tilePos)
+        Vector3Int tilePos = tileHoveredEvent.Coordinate;
+        if (_currentlyHighlightedTile == tilePos)
             return;
 
-        // New tile needs to be highlighted
-        AdjustTileSaturation(tilePos, _tileSaturationFactor);
-
-        // Previous tile needs to be un-highlighted
-        AdjustTileSaturation(_currentlyHighlightedTile,
-            1 / _tileSaturationFactor);
-
+        HighlightTile(tilePos);
+        UnHighlightTile(_currentlyHighlightedTile);
         _currentlyHighlightedTile = tilePos;
-        EventBus.Publish(new NewTileHighlightedEvent(tilePos));
     }
 
     // Highlights every tile in the given path
     public void HighlightPath(List<Vector3Int> path)
     {
-        // Un-highlight previous path
         foreach (Vector3Int tilePos in _currentlyHighlightedPath)
         {
-            AdjustTileSaturation(tilePos, 1 / _tileSaturationFactor);
+            UnHighlightTile(tilePos);
         }
 
         foreach (Vector3Int tilePos in path)
         {
-            AdjustTileSaturation(tilePos, _tileSaturationFactor);
+            HighlightTile(tilePos);
         }
 
         _currentlyHighlightedPath = path;
     }
 
     // Selects tile at given world position; does nothing if no tile exists
-    public void SelectTile(Vector3 tileWorldPos)
+    public void OnTileSelected(TileSelectedEvent tileSelectedEvent)
     {
-        Vector3Int tilePos = _tilemap.WorldToCell(tileWorldPos);
-        if (!_tilemap.HasTile(tilePos) ||
-            _currentlySelectedTile == tilePos)
+        Vector3Int tilePos = tileSelectedEvent.Coordinate;
+        if (_currentlySelectedTile == tilePos)
             return;
 
-        // New selected tile needs to be highlighted
-        AdjustTileSaturation(tilePos, _tileSaturationFactor);
-
-        // Previously selected tile needs to be un-highlighted
-        AdjustTileSaturation(_currentlySelectedTile,
-            1 / _tileSaturationFactor);
-
+        HighlightTile(tilePos);
+        UnHighlightTile(_currentlySelectedTile);
         _currentlySelectedTile = tilePos;
-        EventBus.Publish(new TileSelectedEvent(tilePos));
+    }
+
+    // Highlights the tile at the given position
+    void HighlightTile(Vector3Int tilePos)
+    {
+        AdjustTileSaturation(tilePos, _tileSaturationFactor);
+    }
+
+    // Un-highlights the tile at the given position
+    void UnHighlightTile(Vector3Int tilePos)
+    {
+        AdjustTileSaturation(tilePos, 1 / _tileSaturationFactor);
     }
 
     // Multiplies saturation value of tile's color at tilePos by saturation 

@@ -7,12 +7,12 @@ using UnityEngine;
 // Contains Event definitions used with EventBus system
 // ------------------------------------------------------------------
 
-// Published on a client when a new tile is highlighted
-public class NewTileHighlightedEvent
+// Published on a client when a new tile is hovered over
+public class NewTileHoveredOverEvent
 {
     public Vector3Int Coordinate { get; }
 
-    public NewTileHighlightedEvent(Vector3Int coordinateIn)
+    public NewTileHoveredOverEvent(Vector3Int coordinateIn)
     {
         Coordinate = coordinateIn;
     }
