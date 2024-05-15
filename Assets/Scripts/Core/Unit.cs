@@ -3,12 +3,57 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // ------------------------------------------------------------------
-// Base class that all other units derive from
+// Class representing a single unit
 // ------------------------------------------------------------------
 
-public class Unit : MonoBehaviour
+/*
+ * Data files for each unit type: 
+ * Unit Type Attributes
+ *      strength
+ *      capacity
+ *      movement points
+ *      attack points
+ *      unit category
+ * 
+ * Data file for each unit category:
+ * Unit Category Attributes
+ *      Costs to traverse each type of terrain
+ *          sea
+ *          land
+ *      
+ */
+
+public enum UnitCategory
+{ 
+
+}
+
+// TODO: make these the categories instead
+public enum UnitType
 {
-    [SerializeField] int _strength;
-    [SerializeField] int _size;
-    [SerializeField] UnitType _type;
+    land, 
+    naval, 
+    air
+}
+
+public class Unit 
+{
+    public int Strength {  get; }
+    public int Capacity { get; }
+    public UnitType Type { get; }
+    public List<Terrain> TraversableTerrains { get; }
+    public GameTile CurrentLocation { get; set; }
+
+    public Unit(UnitType typeIn, 
+        GameTile currentLocationIn)
+    {
+        Type = typeIn;
+        CurrentLocation = currentLocationIn;
+    }
+
+    // Moves this unit to the given tile
+    public void Move(GameTile newLocation)
+    {
+        CurrentLocation = newLocation;
+    }
 }

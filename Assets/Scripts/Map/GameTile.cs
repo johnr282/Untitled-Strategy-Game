@@ -14,18 +14,10 @@ public enum Terrain
     land
 }
 
-public enum UnitType
-{ 
-    land, 
-    naval,
-    air
-}
-
-
 public class GameTile
 {
     // Location of tile in game map
-    public HexCoordinateOffset Coordinate { get; }
+    public HexCoordinateOffset Hex { get; }
 
     public Terrain TileTerrain { get; set; }
 
@@ -36,7 +28,7 @@ public class GameTile
         Terrain terrainIn, 
         int contintentIDIn = -1)
     {
-        Coordinate = coordinateIn;
+        Hex = coordinateIn;
         TileTerrain = terrainIn;
         ContinentID = contintentIDIn;
     }
@@ -53,12 +45,12 @@ public class GameTile
     // adjacent to this tile
     // Throws an ArgumentException if unitType is invalid or this tile's terrain
     // is invalid
-    public int CostToTraverse(UnitType unitType, 
+    public int CostToTraverse(Unit unit, 
         GameTile start = null)
     {
         string invalidTerrainMsg = "TileTerrain of GameTile not valid";
 
-        switch (unitType)
+        switch (unit.Type)
         {
             case UnitType.land:
                 switch (TileTerrain)

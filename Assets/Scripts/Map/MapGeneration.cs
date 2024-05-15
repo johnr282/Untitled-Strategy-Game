@@ -362,7 +362,6 @@ public class MapGeneration : MonoBehaviour
         int radius)
     {
         float perlinOffset = Random.Range(0.0f, _parameters.MaxPerlinOffset);
-        Debug.Log("Perlin offset: " + perlinOffset.ToString());
         _gameMap.SetContinentID(centralCoordinate, continentID);
 
         int currentRadius = 0;
@@ -388,9 +387,6 @@ public class MapGeneration : MonoBehaviour
         {
             if (IncludeTile(hex, continentID, offset))
             {
-                Debug.Log("Adding hex " + hex.ToString() + " to continent " + 
-                    continentID.ToString());
-
                 _gameMap.SetTile(hex, 
                     new GameTile(hex, Terrain.land, continentID));
             }
@@ -438,8 +434,6 @@ public class MapGeneration : MonoBehaviour
         float y = (offset + hex.Row) / (hex.Row + 1) *
             _parameters.PerlinCoordinateScalingFactor;
         float val = Mathf.PerlinNoise(x, y);
-        Debug.Log("Hex: " + hex.ToString() + ", x: " + x.ToString() + ", y: "
-            + y.ToString() + ", val: " + val.ToString());
         return Mathf.Clamp(val, 0.0f, 1.0f);
     }
 }

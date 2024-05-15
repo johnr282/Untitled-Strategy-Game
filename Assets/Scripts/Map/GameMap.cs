@@ -81,7 +81,7 @@ public class GameMap : MonoBehaviour
     public List<GameTile> Neighbors(GameTile tile)
     {
         List<GameTile> neighborTiles = new();
-        HexCoordinateOffset[] neighborHexes = tile.Coordinate.Neighbors();
+        HexCoordinateOffset[] neighborHexes = tile.Hex.Neighbors();
 
         foreach (HexCoordinateOffset neighborHex in neighborHexes)
         {
@@ -93,18 +93,18 @@ public class GameMap : MonoBehaviour
     }
 
     // Returns whether the given hex is traversable by a unit of the given type
-    public bool Traversable(UnitType unitType, 
+    public bool Traversable(Unit unit, 
         HexCoordinateOffset hex)
     {
         if (!FindTile(hex, out GameTile tile))
             return false;
 
-        return tile.CostToTraverse(unitType) != ImpassableCost;
+        return tile.CostToTraverse(unit) != ImpassableCost;
     }
 
     // Returns list of tiles adjacent to the given tile that can be traversed by
     // the given unit type
-    public List<GameTile> TraversableNeighbors(UnitType unitType, 
+    public List<GameTile> TraversableNeighbors(Unit unit, 
         GameTile tile)
     {
         List<GameTile> neighbors = Neighbors(tile);
@@ -112,7 +112,7 @@ public class GameMap : MonoBehaviour
 
         foreach (GameTile neighbor in neighbors)
         {
-            if (Traversable(unitType, neighbor.Coordinate))
+            if (Traversable(unit, neighbor.Hex))
                 traversableNeighbors.Add(neighbor);
         }
 
@@ -123,7 +123,7 @@ public class GameMap : MonoBehaviour
     // to goal
     // Throws an ArgumentException if unitType is invalid, start or goal don't 
     // exist in the map, or start and goal aren't adjacent
-    public int CostToTraverse(UnitType unitType, 
+    public int CostToTraverse(Unit unit, 
         HexCoordinateOffset start,
         HexCoordinateOffset goal)
     {
@@ -136,7 +136,7 @@ public class GameMap : MonoBehaviour
             throw new ArgumentException(
                 "Attempted to calculate cost between nonexistent tiles");
 
-        return goalTile.CostToTraverse(unitType, startTile);
+        return goalTile.CostToTraverse(unit, startTile);
     }
 
     // Executes the given action on every tile in the map
@@ -148,24 +148,16 @@ public class GameMap : MonoBehaviour
         }
     }
 
-    // Returns the shortest path between the given start and goal hexes for the 
-    // given unit type
-    // Throws an ArgumentException if start or goal don't exist in the map
+    // Returns the shortest path between the given start and goal tiles for the 
+    // given unit 
     // Throws a RuntimeException if no valid path was found between start and goal
     // or if an invalid hex is found in the returned path, which should never happen
-    public List<GameTile> FindShortestPath(UnitType unitType,
-        HexCoordinateOffset start, 
-        HexCoordinateOffset goal)
+    public List<GameTile> FindPath(Unit unit,
+        GameTile start, 
+        GameTile goal)
     {
-        if (!TileExists(start) ||
-            !TileExists(goal))
-            throw new ArgumentException(
-                "Attempted to find path between invalid tiles");
-
         Func<HexCoordinateOffset, HexCoordinateOffset, int> costFunc = (startHex, goalHex)
-            => CostToTraverse(unitType, startHex, goalHex);
-        Predicate<HexCoordinateOffset> traversableFunc = (hex)
-            => Traversable(unitType, hex);
+            => CostToTraverse(unit, startHex, goalHex);
 
         Func<HexCoordinateOffset, List<HexCoordinateOffset>> traversableNeighborsFunc = (hex) =>
         {
@@ -173,18 +165,18 @@ public class GameMap : MonoBehaviour
                 throw new ArgumentException(
                     "Attempted to calculate neighbors of invalid tile");
 
-            List<GameTile> traversableNeighborTiles = TraversableNeighbors(unitType, tile);
+            List<GameTile> traversableNeighborTiles = TraversableNeighbors(unit, tile);
             List<HexCoordinateOffset> traversableNeighborHexes = new();
 
             foreach (GameTile neighborTile in traversableNeighborTiles)
             {
-                traversableNeighborHexes.Add(neighborTile.Coordinate);
+                traversableNeighborHexes.Add(neighborTile.Hex);
             }
             return traversableNeighborHexes;
         };
 
-        List<HexCoordinateOffset> hexPath = HexUtilities.FindShortestPath(start,
-            goal,
+        List<HexCoordinateOffset> hexPath = HexUtilities.FindShortestPath(start.Hex,
+            goal.Hex,
             traversableNeighborsFunc,
             costFunc); 
 

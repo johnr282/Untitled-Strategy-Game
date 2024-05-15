@@ -39,6 +39,12 @@ public class MapVisuals : MonoBehaviour
             EventBus.Subscribe<TileSelectedEvent>(OnTileSelected);
     }
 
+    void OnDestroy()
+    {
+        EventBus.Unsubscribe(_tileHoveredSubscription);
+        EventBus.Unsubscribe(_tileSelectedSubscription);
+    }
+
     // Generates tilemap using given height and width and game map
     public void GenerateVisuals(GameMap gameMap,
         int height,
@@ -87,7 +93,7 @@ public class MapVisuals : MonoBehaviour
         TileBase correspondingTile = 
             _tileLibrary.GetCorrespondingTile(gameTile.TileTerrain);
 
-        Vector3Int tilemapCoord = gameTile.Coordinate.ConvertToVector3Int();
+        Vector3Int tilemapCoord = gameTile.Hex.ConvertToVector3Int();
         _tilemap.SetTile(tilemapCoord, correspondingTile);
 
         if (gameTile.InContinent())

@@ -8,11 +8,11 @@ using UnityEngine;
 
 public class TestMapGeneration : MonoBehaviour
 {
-    [SerializeField] MapGeneration _mapGenerator;
-    [SerializeField] GameMap _gameMap;
+    MapGeneration _mapGenerator;
 
     void Start()
     {
+        _mapGenerator = ProjectUtilities.FindComponent<MapGeneration>("GameMap");
         _mapGenerator.GenerateRandomSeed();
         EventBus.Publish(new GenerateMapEvent(_mapGenerator.GetMapSeed()));
     }
