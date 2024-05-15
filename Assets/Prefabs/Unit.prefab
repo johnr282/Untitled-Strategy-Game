@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 5563791679564141210}
   - component: {fileID: 7776170410906669446}
   - component: {fileID: 1714012956717109458}
+  - component: {fileID: 7045650602569507615}
   m_Layer: 0
   m_Name: Unit
   m_TagString: Untagged
@@ -69,7 +70,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73f31d83761b2ef4bb7769cada443561, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _unitManager: {fileID: 0}
 --- !u!114 &7776170410906669446
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -82,7 +82,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9eb48c062cbc40448869d8dff7c10038, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _tilemap: {fileID: 0}
 --- !u!114 &1714012956717109458
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -95,6 +94,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ec3aa3f23a66a442ac50a78790fc457, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &7045650602569507615
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2584624186207267819}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 320007bec4dc5704d96d30df963013ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _heightAboveTilemap: 0.5
 --- !u!1 &5679430433154791774
 GameObject:
   m_ObjectHideFlags: 0
@@ -107,7 +119,7 @@ GameObject:
   - component: {fileID: 7793346356485022443}
   - component: {fileID: 8115461539198630092}
   m_Layer: 0
-  m_Name: Sphere
+  m_Name: Visuals
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -123,7 +135,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 0.1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2611986910248459991}
@@ -135,7 +147,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5679430433154791774}
-  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+  m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!23 &8115461539198630092
 MeshRenderer:
   m_ObjectHideFlags: 0

@@ -24,11 +24,18 @@ public class TestUnitMovement : MonoBehaviour
         CreateUnitObject(_unitType, _initialTile);
     }
 
+    // Spawns a UnitObject onto the tilemap at the given tile and requests the 
+    // unit manager to create a new unit of the given type at the hex corresponding
+    // to the given tile
+    // Throws a RuntimeException if the unit prefab is missing necessary components
     void CreateUnitObject(UnitType unitType, 
         Vector3Int initialTile)
     {
-        Vector3 spawnLocation = _tilemap.CellToWorld(initialTile) +
-            0.5f * Vector3.up;
+        SpawnableObject spawnable = _unitPrefab.GetComponent<SpawnableObject>() ??
+            throw new RuntimeException(
+                "Failed to get SpawnableObject component from unit prefab");
+
+        Vector3 spawnLocation = _tilemap.CellToWorld(initialTile) + spawnable.YOffset;
         GameObject newUnitObject = Instantiate(_unitPrefab,
             spawnLocation,
             Quaternion.identity);
