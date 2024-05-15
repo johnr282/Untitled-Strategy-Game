@@ -129,7 +129,11 @@ public class MapGeneration : MonoBehaviour
             Debug.Log("Generating continent " + continentID.ToString() + 
                 " with radius " + continentRadius.ToString() + 
                 " and central tile " + centralCoordinates[i].ToString());
-            GenerateContinent(centralCoordinates[i], continentID, continentRadius);
+            List<GameTile> continentTiles = 
+                GenerateContinent(centralCoordinates[i], continentID, continentRadius);
+
+            GameMap.Continent newContinent = new(continentTiles);
+            _gameMap.AddContinent(continentID, newContinent);
         }
     }
 
@@ -356,11 +360,13 @@ public class MapGeneration : MonoBehaviour
         return adjacentCoords;
     }
 
-    // Generates continent around given central coordinate with given ID and radius
-    void GenerateContinent(HexCoordinateOffset centralCoordinate, 
+    // Generates continent around given central coordinate with given ID and radius;
+    // returns list of tiles in the continent
+    List<GameTile> GenerateContinent(HexCoordinateOffset centralCoordinate, 
         int continentID, 
         int radius)
     {
+        List<GameTile> continentTiles = new();
         float perlinOffset = Random.Range(0.0f, _parameters.MaxPerlinOffset);
         _gameMap.SetContinentID(centralCoordinate, continentID);
 
@@ -371,15 +377,20 @@ public class MapGeneration : MonoBehaviour
             GenerateContinentRing(centralCoordinate, 
                 continentID, 
                 currentRadius, 
-                perlinOffset);
+                perlinOffset,
+                ref continentTiles);
         }
+
+        return continentTiles;
     }
 
-    // Generates the nth ring of the continent with given central coordinate and ID
+    // Generates the nth ring of the continent with given central coordinate and ID; 
+    // updates includedTiles as the ring is generated
     void GenerateContinentRing(HexCoordinateOffset centralCoordinate,
         int continentID, 
         int n, 
-        float offset)
+        float offset,
+        ref List<GameTile> includedTiles)
     {
         List<HexCoordinateOffset> ring = centralCoordinate.HexesExactlyNAway(n);
         
@@ -387,8 +398,10 @@ public class MapGeneration : MonoBehaviour
         {
             if (IncludeTile(hex, continentID, offset))
             {
+                GameTile newTile = new(hex, Terrain.land, continentID);
                 _gameMap.SetTile(hex, 
-                    new GameTile(hex, Terrain.land, continentID));
+                    newTile);
+                includedTiles.Add(newTile);
             }
         }
     }

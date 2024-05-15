@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -149,5 +150,23 @@ public static class UnityUtilities
         float stdDev)
     {
         return (int)Mathf.Round(NormalDistribution(mean, stdDev));
+    }
+
+    // Returns a list containing the sequence of integers [a, a + n)
+    public static List<int> SequentialList(int a, 
+        int n)
+    {
+        List<int> sequentialList = new();
+        for (int i = 0; i < n; i++)
+        {
+            sequentialList.Add(a + i);
+        }
+        return sequentialList;
+    }
+
+    // Returns a random index into the given list
+    public static int RandomIndex<T>(List<T> list)
+    {
+        return UnityEngine.Random.Range(0, list.Count);
     }
 }

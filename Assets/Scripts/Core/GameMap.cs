@@ -13,6 +13,21 @@ public class GameMap : MonoBehaviour
     // Keys are coordinates of tiles in the map, value is the tile itself
     Dictionary<HexCoordinateOffset, GameTile> _gameMap = new();
 
+    public struct Continent
+    {
+        public List<GameTile> ContinentTiles { get; }
+
+        public Continent(List<GameTile> continentTilesIn)
+        {
+            ContinentTiles = continentTilesIn;
+        }
+    }
+
+    // Map from continent IDs to continents
+    Dictionary<int,  Continent> _continents = new();
+
+    public int NumContinents { get => _continents.Count; }
+
     // A value big enough to be larger than any possible A* g score, but not large 
     // enough that it could overflow and become negative
     public const int ImpassableCost = int.MaxValue / 2;
@@ -74,6 +89,13 @@ public class GameMap : MonoBehaviour
         tile.ContinentID = newContinentID;
         _gameMap[hex] = tile;
         return true;
+    }
+
+    // Adds given continentID and continent to _continents
+    public void AddContinent(int continentID, 
+        Continent continent)
+    {
+        _continents[continentID] = continent;
     }
 
     // Returns list of tiles adjacent to given tile
@@ -190,5 +212,34 @@ public class GameMap : MonoBehaviour
         }
 
         return tilePath;
+    }
+
+    // Returns a list of n unique starting tiles; each tile is guaranteed to be
+    // on land, and if possible, each tile will be on a different continent
+    public List<GameTile> GenerateStartingTiles(int n)
+    {
+        List<GameTile> startingTiles = new();
+        List<int> availableContinents = ContinentIDList();
+
+        for (int i = 0; i < n; i++)
+        {
+            if (availableContinents.Count == 0)
+                availableContinents = ContinentIDList();
+
+            int continentIndex = UnityUtilities.RandomIndex(availableContinents);
+            Continent continent = _continents[availableContinents[continentIndex]];
+
+            int tileIndex = UnityUtilities.RandomIndex(continent.ContinentTiles);
+            GameTile startingTile = continent.ContinentTiles[tileIndex];
+            startingTiles.Add(startingTile);
+        }
+
+        return startingTiles;
+    }
+
+    // Returns a list of every valid continent ID
+    List<int> ContinentIDList()
+    {
+        return UnityUtilities.SequentialList(0, NumContinents);
     }
 }
