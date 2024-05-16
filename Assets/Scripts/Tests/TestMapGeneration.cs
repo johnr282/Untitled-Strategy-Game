@@ -14,6 +14,6 @@ public class TestMapGeneration : MonoBehaviour
     {
         _mapGenerator = ProjectUtilities.FindComponent<MapGeneration>("GameMap");
         _mapGenerator.GenerateRandomSeed();
-        EventBus.Publish(new GenerateMapEvent(_mapGenerator.GetMapSeed()));
+        EventBus.Publish(new GenerateMapEvent(_mapGenerator.MapSeed));
     }
 }

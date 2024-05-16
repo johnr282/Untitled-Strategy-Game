@@ -9,33 +9,43 @@ using UnityEngine;
 
 public class ServerMessages : NetworkBehaviour
 {
-    // Called by server to send a client their player ID
+    // Called once all players join to notify a client that the game has started
     [Rpc]
-    public static void RPC_SendPlayerID(NetworkRunner runner,
-        [RpcTarget] PlayerRef player, 
-        int playerID)
+    public static void RPC_GameStart(NetworkRunner runner,
+        [RpcTarget] PlayerRef player,
+        GameStartData gameStartData)
     {
-        Debug.Log("Calling RPC_SendPlayerID");
-        EventBus.Publish(new PlayerIDReceivedEvent(playerID));
+        Debug.Log("RPC_GameStart called on player " + 
+            gameStartData.PlayerID.ToString());
+        EventBus.Publish(new PlayerIDReceivedEvent(gameStartData.PlayerID));
+
+        // If the game mode is either host or server, the map has already been 
+        // generated in PlayerManager.OnAllPlayersJoined(), so we don't want to
+        // generate it again
+        if (runner.GameMode == GameMode.Client)
+            EventBus.Publish(new GenerateMapEvent(gameStartData.MapSeed));
+
+        EventBus.Publish(new StartingLocationReceivedEvent(
+            gameStartData.StartLocation));
     }
 
-    // Called by server to send map seed to all clients so each client can
-    // generate the map
-    [Rpc]
-    public static void RPC_GenerateMap(NetworkRunner runner, 
-        int mapSeed) 
-    {
-        Debug.Log("Calling RPC_GenerateMap");
-        EventBus.Publish(new GenerateMapEvent(mapSeed));
-    }
-
-    // Called by server to notify a player that it's their turn
+    // Notifies a client that it's their turn
     [Rpc]
     public static void RPC_NotifyPlayerTurn(NetworkRunner runner,
         [RpcTarget] PlayerRef player, 
         TurnStartData turnStartData)
     {
-        Debug.Log("Calling RPC_NotifyPlayerTurn");
         EventBus.Publish(new PlayerTurnEvent(turnStartData));
+    }
+
+    // Notifies a client about the success of their create unit request; success
+    // is true if the unit was successfuly created, false if not
+    [Rpc]
+    public static void RPC_CreateUnitResponse(NetworkRunner runner,
+        [RpcTarget] PlayerRef player, 
+        CreateUnitRequest createUnitRequest,
+        bool success)
+    {
+        EventBus.Publish(new CreateUnitResponseEvent(createUnitRequest, success));
     }
 }

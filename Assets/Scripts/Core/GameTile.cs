@@ -21,22 +21,43 @@ public class GameTile
 
     public Terrain TileTerrain { get; set; }
 
+    // ID of this tile's continent; -1 if not part of any continent
     public int ContinentID { get; set; }
+
+    // Player ID of this tile's current owner; -1 if not owned by any player
+    public int OwnerID { get; set; }
 
     // Constructor
     public GameTile(HexCoordinateOffset coordinateIn, 
         Terrain terrainIn, 
-        int contintentIDIn = -1)
+        int contintentIDIn = -1, 
+        int ownerIDIn = -1)
     {
         Hex = coordinateIn;
         TileTerrain = terrainIn;
         ContinentID = contintentIDIn;
+        OwnerID = ownerIDIn;
     }
 
     // Returns true if this tile is in a continent, false otherwise
     public bool InContinent()
     {
         return ContinentID != -1;
+    }
+
+    // Returns whether the given player ID either has or can claim ownership over
+    // this tile
+    public bool Available(int playerID)
+    {
+        bool unclaimedTile = OwnerID == -1;
+        return unclaimedTile ||
+            (OwnerID == playerID);
+    }
+
+    // Sets the owner of this tile to the given player ID
+    public void Claim(int playerID)
+    {
+        OwnerID = playerID;
     }
 
     // Returns the cost for a unit of the given UnitType to traverse into this

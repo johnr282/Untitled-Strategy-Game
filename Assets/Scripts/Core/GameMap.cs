@@ -215,9 +215,13 @@ public class GameMap : MonoBehaviour
     }
 
     // Returns a list of n unique starting tiles; each tile is guaranteed to be
-    // on land, and if possible, each tile will be on a different continent
+    // on land and on a different continent
+    // Throws an ArgumentException if n is greater than the number of continents
     public List<GameTile> GenerateStartingTiles(int n)
     {
+        if (n > NumContinents)
+            throw new ArgumentException("n cannot be greater than NumContinents");
+
         List<GameTile> startingTiles = new();
         List<int> availableContinents = ContinentIDList();
 
@@ -228,6 +232,7 @@ public class GameMap : MonoBehaviour
 
             int continentIndex = UnityUtilities.RandomIndex(availableContinents);
             Continent continent = _continents[availableContinents[continentIndex]];
+            availableContinents.Remove(continentIndex);
 
             int tileIndex = UnityUtilities.RandomIndex(continent.ContinentTiles);
             GameTile startingTile = continent.ContinentTiles[tileIndex];

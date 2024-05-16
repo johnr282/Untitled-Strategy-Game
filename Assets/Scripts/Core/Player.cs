@@ -11,10 +11,8 @@ public class Player
 {
     // Reference to the client corresponding to this player
     public PlayerRef ClientRef { get; }     
-    public Vector3Int SelectedHex {  get; set; }
     int _playerID;    
     
-
     public Player(PlayerRef playerRefIn, 
         int playerIDIn)
     {

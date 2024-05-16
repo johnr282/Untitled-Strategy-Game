@@ -9,24 +9,21 @@ using UnityEngine;
 
 public class ClientMessages : NetworkBehaviour  
 {
-    // Called by a client to notify server that the player's turn
-    // corresponding to playerID is finished
+    // Called by a client to notify server that the player's turn corresponding
+    // to playerID is finished
     [Rpc]
     public static void RPC_EndTurn(NetworkRunner runner,
         [RpcTarget] PlayerRef player, 
         TurnEndData turnEndData)
     {
-        Debug.Log("Calling RPC_EndTurn");
         EventBus.Publish(new TurnFinishedEventServer(turnEndData));
     }
 
-    // Called by a client to send its selected hex to the server
     [Rpc]
-    public static void RPC_SendSelectedHex(NetworkRunner runner,
+    public static void RPC_CreateUnit(NetworkRunner runner,
         [RpcTarget] PlayerRef player,
-        Vector3Int selectedHex)
+        CreateUnitRequest createUnitRequest)
     {
-        Debug.Log("Calling RPC_SendSelectedHex");
-
+        EventBus.Publish(new CreateUnitRequestEvent(createUnitRequest));
     }
 }

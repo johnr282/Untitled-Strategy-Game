@@ -1,3 +1,4 @@
+using Fusion;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,13 +9,20 @@ using UnityEngine;
 // map
 // ------------------------------------------------------------------
 
-public class UnitManager : MonoBehaviour
+public class UnitManager : NetworkBehaviour
 {
     GameMap _gameMap;
+    PlayerManager _playerManager;
+
+    Subscription<CreateUnitRequestEvent> _createUnitRequestSub;
 
     void Start()
     {
-        _gameMap = ProjectUtilities.FindGameMap();    
+        _gameMap = ProjectUtilities.FindGameMap();
+        _playerManager = ProjectUtilities.FindPlayerManager();
+
+        _createUnitRequestSub =
+            EventBus.Subscribe<CreateUnitRequestEvent>(OnCreateUnitRequest);
     }
 
     // Creates and returns a unit with the given type and initial location
@@ -27,6 +35,47 @@ public class UnitManager : MonoBehaviour
 
         return new Unit(unitType, initialTile);
     }
+
+    void OnCreateUnitRequest(CreateUnitRequestEvent createUnitRequestEvent)
+    {
+        Debug.Log("Received create unit request for player " +
+            createUnitRequestEvent.Request.RequestingPlayerID.ToString() +
+            " at " + createUnitRequestEvent.Request.Location.ToString());
+        bool success = ValidCreateUnitRequest(createUnitRequestEvent.Request, 
+            out PlayerRef playerRef);
+        Debug.Log("Request success: " + success.ToString());
+        ServerMessages.RPC_CreateUnitResponse(Runner,
+            playerRef,
+            createUnitRequestEvent.Request,
+            success);
+    }
+
+    // Returns whether the given create unit request is able to be completed;
+    // if the request is valid, puts the corresponding PlayerRef into playerRef
+    bool ValidCreateUnitRequest(CreateUnitRequest request, 
+        out PlayerRef playerRef)
+    {
+        playerRef = PlayerRef.None;
+        HexCoordinateOffset initialHex = 
+            HexUtilities.ConvertToHexCoordinateOffset(request.Location);
+
+        if (!_gameMap.FindTile(initialHex, out GameTile initialTile) ||
+            !initialTile.Available(request.RequestingPlayerID))
+            return false;
+
+        try
+        {
+            playerRef = _playerManager.GetPlayerRef(request.RequestingPlayerID);
+        }
+        catch (ArgumentException e)
+        {
+            Debug.LogError(e.Message);
+            return false;
+        }
+
+        return true;
+    }
+
 
     // Attempts to move the given unit from its current position to the GameTile
     // corresponding to requestedPos

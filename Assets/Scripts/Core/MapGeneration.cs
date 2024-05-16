@@ -16,6 +16,8 @@ using UnityEngine.Tilemaps;
 [RequireComponent(typeof(MapGenerationParameters))]
 public class MapGeneration : MonoBehaviour
 {
+    public int MapSeed { get => _parameters.Seed; }
+
     MapVisuals _mapVisuals;
     GameMap _gameMap;
     MapGenerationParameters _parameters;
@@ -36,8 +38,8 @@ public class MapGeneration : MonoBehaviour
         EventBus.Unsubscribe(_generateMapSub);
     }
 
-    // Generates random seed to use for map generation
-    public void GenerateRandomSeed()
+    // Generates and returns random seed to use for map generation
+    public int GenerateRandomSeed()
     {
         // If _parameters.RandomlyGenerateSeed is false, simply use the 
         // serialized seed
@@ -45,12 +47,6 @@ public class MapGeneration : MonoBehaviour
             _parameters.Seed = Random.Range(int.MinValue, int.MaxValue);
 
         Debug.Log("Seed: " + _parameters.Seed.ToString());
-    }
-
-    // Returns the map seed used for map generation; should be called 
-    // only after calling GenerateRandomSeed()
-    public int GetMapSeed()
-    {
         return _parameters.Seed;
     }
 
@@ -61,8 +57,9 @@ public class MapGeneration : MonoBehaviour
     }
 
     // Randomly generate the game map based on map generation parameters
-    // and given seed
-    void GenerateMap(int seed)
+    // and given seed; called from GenerateMapCallback on clients, called
+    // from playerManager on server
+    public void GenerateMap(int seed)
     {
         Debug.Log("Generating map with seed " + seed.ToString());
         SeedRandomGeneration(seed);
@@ -112,12 +109,11 @@ public class MapGeneration : MonoBehaviour
     // Generate continents without considering terrain
     void GenerateContinents()
     {
-        // Choose a central tile for each continent
+        // Choose a central tile for each continent 
         List<HexCoordinateOffset> centralCoordinates = ChooseContinentCentralTiles();
 
         for(int i = 0; i < centralCoordinates.Count; i++)
         {
-            _gameMap.ChangeTerrain(centralCoordinates[i], Terrain.land);
             int continentRadius = UnityUtilities.NormalDistributionInt(
                 _parameters.AverageContinentRadius,
                 _parameters.StdDevContinentRadius);
@@ -366,19 +362,24 @@ public class MapGeneration : MonoBehaviour
         int continentID, 
         int radius)
     {
-        List<GameTile> continentTiles = new();
-        float perlinOffset = Random.Range(0.0f, _parameters.MaxPerlinOffset);
-        _gameMap.SetContinentID(centralCoordinate, continentID);
+        GameTile centralTile = new(centralCoordinate,
+            Terrain.land,
+            continentID);
+        _gameMap.SetTile(centralCoordinate, centralTile);
+        List<GameTile> continentTiles = new() { centralTile };
 
-        int currentRadius = 0;
+        float perlinOffset = Random.Range(0.0f, _parameters.MaxPerlinOffset);
+
+        // Current radius is 1, not 0, because each central tile is already set
+        int currentRadius = 1;
         while(currentRadius < radius)
         {
-            currentRadius++;
             GenerateContinentRing(centralCoordinate, 
                 continentID, 
                 currentRadius, 
                 perlinOffset,
                 ref continentTiles);
+            currentRadius++;
         }
 
         return continentTiles;

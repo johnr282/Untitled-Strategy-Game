@@ -8,7 +8,12 @@ using UnityEngine;
 
 public class MouseInput : MonoBehaviour
 {
-    [SerializeField] TileSelection _tileSelection;
+    TileSelection _tileSelection;
+
+    void Start()
+    {
+        _tileSelection = ProjectUtilities.FindTileSelection();    
+    }
 
     void Update()
     {

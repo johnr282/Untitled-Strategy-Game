@@ -12,12 +12,16 @@ using UnityEngine.SceneManagement;
 
 public class SessionManager : MonoBehaviour, INetworkRunnerCallbacks
 {
-    [SerializeField] MapGeneration _mapGenerator;
-    [SerializeField] PlayerManager _playerManager;
     [SerializeField] int _numPlayers;
 
+    PlayerManager _playerManager;
     NetworkRunner _runner;
     int _playersJoined = 0;
+
+    void Start()
+    {
+        _playerManager = ProjectUtilities.FindPlayerManager();
+    }
 
     // Creates buttons to choose whether to host or join
     void OnGUI()
@@ -51,10 +55,6 @@ public class SessionManager : MonoBehaviour, INetworkRunnerCallbacks
             sceneInfo.AddSceneRef(scene, LoadSceneMode.Additive);
         }
 
-        // Only the host should generate the seed
-        if (mode == GameMode.Host)
-            _mapGenerator.GenerateRandomSeed();
-
         StartGameArgs startGameArgs = new StartGameArgs()
         {
             GameMode = mode,
@@ -85,10 +85,7 @@ public class SessionManager : MonoBehaviour, INetworkRunnerCallbacks
 
         if (allPlayersJoined)
         {
-            Debug.Log("All players joined");
-            ServerMessages.RPC_GenerateMap(runner,
-                _mapGenerator.GetMapSeed());
-            _playerManager.NotifyFirstPlayer();
+            _playerManager.OnAllPlayersJoined();
         }
     }
 

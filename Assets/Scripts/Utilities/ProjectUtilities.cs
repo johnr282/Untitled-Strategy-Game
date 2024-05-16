@@ -10,6 +10,9 @@ using UnityEngine.Tilemaps;
 public static class ProjectUtilities
 {
     public const string GameMapObjectName = "GameMap";
+    public const string ClientPlayerDataObjectName = "ClientPlayerData";
+    public const string PlayerManagerObjectName = "PlayerManager";
+    public const string UnitManagerObjectName = "UnitManager";
 
     // Finds and returns component of given type on GameObject of given name 
     // Throws RuntimeException if GameObject or component cannot be found
@@ -34,11 +37,31 @@ public static class ProjectUtilities
 
     public static UnitManager FindUnitManager()
     {
-        return FindComponent<UnitManager>("UnitManager");
+        return FindComponent<UnitManager>(UnitManagerObjectName);
     }
 
     public static Tilemap FindTilemap()
     {
         return FindComponent<Tilemap>(GameMapObjectName);
+    }
+
+    public static TileSelection FindTileSelection()
+    {
+        return FindComponent<TileSelection>(GameMapObjectName);
+    }
+
+    public static ClientPlayerData FindClientPlayerData()
+    {
+        return FindComponent<ClientPlayerData>(ClientPlayerDataObjectName);
+    }
+
+    public static PlayerManager FindPlayerManager()
+    {
+        return FindComponent<PlayerManager>(PlayerManagerObjectName);
+    }
+
+    public static MapGeneration FindMapGeneration()
+    {
+        return FindComponent<MapGeneration>(GameMapObjectName);
     }
 }
