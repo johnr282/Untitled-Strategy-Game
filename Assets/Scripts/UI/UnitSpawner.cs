@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 
 // ------------------------------------------------------------------
-// Component used by clients to spawn UnitObjects into the map
+// Component handling spawning new units onto the map
 // ------------------------------------------------------------------
 
 public class UnitSpawner : NetworkBehaviour
@@ -15,18 +15,23 @@ public class UnitSpawner : NetworkBehaviour
     [SerializeField] UnitType _unitType;
 
     Tilemap _tilemap;
+    UnitManager _unitManager;
     ClientPlayerData _playerData;
 
     Subscription<StartingLocationReceivedEvent> _startingLocationSub;
+    Subscription<CreateUnitRequest> _createUnitRequestSub;
 
     // Start is called before the first frame update
     void Start()
     {
         _tilemap = ProjectUtilities.FindTilemap();
+        _unitManager = ProjectUtilities.FindUnitManager();
         _playerData = ProjectUtilities.FindClientPlayerData();
 
         _startingLocationSub =
             EventBus.Subscribe<StartingLocationReceivedEvent>(OnStartingLocationReceived);
+        _createUnitRequestSub =
+            EventBus.Subscribe<CreateUnitRequest>(OnCreateUnitRequest);
     }
 
     void OnStartingLocationReceived(StartingLocationReceivedEvent locationEvent)
@@ -39,33 +44,35 @@ public class UnitSpawner : NetworkBehaviour
     public void RequestSpawnUnit(UnitType unitType,
         Vector3Int initialTile)
     {
-        //Debug.Log("Is resimulation before rpc call: " + Runner.IsResimulation.ToString());
-
         CreateUnitRequest request = new(unitType,
             initialTile,
             _playerData.PlayerID);
-        var rpcAction = 
-            (Action<NetworkRunner, PlayerRef, CreateUnitRequest>)ClientMessages.RPC_CreateUnit; 
+        var rpcAction = new Action<NetworkRunner, PlayerRef, CreateUnitRequest>(
+            ClientMessages.RPC_CreateUnit); 
         EventBus.Publish(new NetworkInputEvent(request,
             rpcAction,
             Runner));
-
-
-        //while (Runner.IsResimulation) ;
-        //RpcInvokeInfo info = ClientMessages.RPC_CreateUnit(Runner,
-        //    PlayerRef.None,
-        //    new CreateUnitRequest(unitType, 
-        //        initialTile,
-        //        _playerData.PlayerID));
-
-        //Debug.Log("Is resimulation after rpc call: " + Runner.IsResimulation.ToString());
-        //Debug.Log("Called RPC_CreateUnit, invoke info: " + info.ToString());
-        //Debug.Log("RPC send result: " + info.SendResult.Result.ToString());
     }
 
-    // Spawns a UnitObject onto the tilemap at the given tile
+    // If the given create unit request is valid, spawns a new unit object and
+    // creates a new unit; does nothing if the request is invalid
+    void OnCreateUnitRequest(CreateUnitRequest request)
+    {
+        Debug.Log("Received create unit request for player " +
+            request.RequestingPlayerID.ToString() + " at " + 
+            request.Location.ToString());
+
+        if (_unitManager.TryCreateUnit(request, out Unit unit))
+        {
+            Debug.Log("Request successful");
+            SpawnUnitObject(unit, request.Location);
+        }
+    }
+
+    // Spawns a UnitObject onto the tilemap at the given tile with a reference to
+    // the given unit
     // Throws a RuntimeException if the unit prefab is missing necessary components
-    void SpawnUnitObject(UnitType unitType, 
+    void SpawnUnitObject(Unit unit,
         Vector3Int initialTile)
     {
         SpawnableObject spawnable = _unitPrefab.GetComponent<SpawnableObject>() ??
@@ -73,12 +80,14 @@ public class UnitSpawner : NetworkBehaviour
                 "Failed to get SpawnableObject component from unit prefab");
 
         Vector3 spawnLocation = _tilemap.CellToWorld(initialTile) + spawnable.YOffset;
-        GameObject newUnitObject = Instantiate(_unitPrefab,
+        NetworkObject newUnitObject = Runner.Spawn(_unitPrefab,
             spawnLocation,
             Quaternion.identity);
 
         UnitObject newUnit = newUnitObject.GetComponent<UnitObject>() ??
             throw new RuntimeException(
                 "Failed to get UnitObject component from unit prefab");
+
+        newUnit.UnitRef = unit;
     }
 }

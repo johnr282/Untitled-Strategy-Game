@@ -17,14 +17,3 @@ public class TurnFinishedEventServer
         TurnEndInfo = turnEndInfoIn;
     }
 }
-
-// Published when a client requests to create a new unit
-public class CreateUnitRequestEvent
-{
-    public CreateUnitRequest Request { get; }
-
-    public CreateUnitRequestEvent(CreateUnitRequest requestIn)
-    {
-        Request = requestIn;
-    }
-}

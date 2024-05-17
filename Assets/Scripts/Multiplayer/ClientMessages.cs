@@ -25,6 +25,6 @@ public class ClientMessages : NetworkBehaviour
         CreateUnitRequest createUnitRequest)
     {
         Debug.Log("Calling RPC_CreateUnit");
-        EventBus.Publish(new CreateUnitRequestEvent(createUnitRequest));
+        EventBus.Publish(createUnitRequest);
     }
 }
