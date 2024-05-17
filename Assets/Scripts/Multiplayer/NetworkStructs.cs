@@ -53,19 +53,19 @@ public readonly struct TurnEndData : INetworkStruct
     }
 }
 
-// Stores data sent to server when a client requests to create a new unit
-public readonly struct CreateUnitRequest : INetworkStruct
-{
-    public UnitType Type { get; }
-    public Vector3Int Location { get; }
-    public int RequestingPlayerID { get; }
+//// Stores data sent to server when a client requests to create a new unit
+//public readonly struct CreateUnitRequest : INetworkStruct
+//{
+//    public UnitType Type { get; }
+//    public Vector3Int Location { get; }
+//    public int RequestingPlayerID { get; }
 
-    public CreateUnitRequest(UnitType typeIn,
-        Vector3Int locationIn, 
-        int requestingPlayerIDIn)
-    {
-        Type = typeIn;
-        Location = locationIn;
-        RequestingPlayerID = requestingPlayerIDIn;
-    }
-}
+//    public CreateUnitRequest(UnitType typeIn,
+//        Vector3Int locationIn, 
+//        int requestingPlayerIDIn)
+//    {
+//        Type = typeIn;
+//        Location = locationIn;
+//        RequestingPlayerID = requestingPlayerIDIn;
+//    }
+//}

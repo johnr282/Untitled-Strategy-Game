@@ -44,10 +44,10 @@ public class UnitManager : NetworkBehaviour
         bool success = ValidCreateUnitRequest(createUnitRequestEvent.Request, 
             out PlayerRef playerRef);
         Debug.Log("Request success: " + success.ToString());
-        ServerMessages.RPC_CreateUnitResponse(Runner,
-            playerRef,
-            createUnitRequestEvent.Request,
-            success);
+        //ServerMessages.RPC_CreateUnitResponse(Runner,
+        //    playerRef,
+        //    createUnitRequestEvent.Request,
+        //    success);
     }
 
     // Returns whether the given create unit request is able to be completed;

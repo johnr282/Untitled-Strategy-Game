@@ -13,6 +13,7 @@ public static class ProjectUtilities
     public const string ClientPlayerDataObjectName = "ClientPlayerData";
     public const string PlayerManagerObjectName = "PlayerManager";
     public const string UnitManagerObjectName = "UnitManager";
+    public const string NetworkInputManagerObjectName = "NetworkInputManager";
 
     // Finds and returns component of given type on GameObject of given name 
     // Throws RuntimeException if GameObject or component cannot be found
@@ -63,5 +64,10 @@ public static class ProjectUtilities
     public static MapGeneration FindMapGeneration()
     {
         return FindComponent<MapGeneration>(GameMapObjectName);
+    }
+
+    public static NetworkInputManager FindNetworkInputManager()
+    {
+        return FindComponent<NetworkInputManager>(NetworkInputManagerObjectName);
     }
 }

@@ -69,8 +69,10 @@ public class PlayerManager : NetworkBehaviour
                     startingTile));
         }
 
-        NotifyFirstPlayer();
+        //NotifyFirstPlayer();
     }
+
+
 
     // Notifies the first player in _turnOrder that it's their turn
     public void NotifyFirstPlayer()

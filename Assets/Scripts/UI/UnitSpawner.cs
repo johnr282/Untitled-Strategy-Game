@@ -1,4 +1,5 @@
 using Fusion;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,7 +18,6 @@ public class UnitSpawner : NetworkBehaviour
     ClientPlayerData _playerData;
 
     Subscription<StartingLocationReceivedEvent> _startingLocationSub;
-    Subscription<CreateUnitResponseEvent> _createUnitResponseSub;
 
     // Start is called before the first frame update
     void Start()
@@ -25,8 +25,6 @@ public class UnitSpawner : NetworkBehaviour
         _tilemap = ProjectUtilities.FindTilemap();
         _playerData = ProjectUtilities.FindClientPlayerData();
 
-        _createUnitResponseSub =
-            EventBus.Subscribe<CreateUnitResponseEvent>(OnCreateUnitResponse);
         _startingLocationSub =
             EventBus.Subscribe<StartingLocationReceivedEvent>(OnStartingLocationReceived);
     }
@@ -41,24 +39,28 @@ public class UnitSpawner : NetworkBehaviour
     public void RequestSpawnUnit(UnitType unitType,
         Vector3Int initialTile)
     {
-        ClientMessages.RPC_CreateUnit(Runner,
-            PlayerRef.None,
-            new CreateUnitRequest(unitType, 
-                initialTile,
-                _playerData.PlayerID));
-    }
+        //Debug.Log("Is resimulation before rpc call: " + Runner.IsResimulation.ToString());
 
-    // Spawns a UnitObject if the request succeeded
-    void OnCreateUnitResponse(CreateUnitResponseEvent createUnitResponseEvent)
-    {
-        if (!createUnitResponseEvent.Success)
-        {
-            Debug.Log("Unit could not be created");
-            return;
-        }
+        CreateUnitRequest request = new(unitType,
+            initialTile,
+            _playerData.PlayerID);
+        var rpcAction = 
+            (Action<NetworkRunner, PlayerRef, CreateUnitRequest>)ClientMessages.RPC_CreateUnit; 
+        EventBus.Publish(new NetworkInputEvent(request,
+            rpcAction,
+            Runner));
 
-        SpawnUnitObject(createUnitResponseEvent.Request.Type,
-            createUnitResponseEvent.Request.Location);
+
+        //while (Runner.IsResimulation) ;
+        //RpcInvokeInfo info = ClientMessages.RPC_CreateUnit(Runner,
+        //    PlayerRef.None,
+        //    new CreateUnitRequest(unitType, 
+        //        initialTile,
+        //        _playerData.PlayerID));
+
+        //Debug.Log("Is resimulation after rpc call: " + Runner.IsResimulation.ToString());
+        //Debug.Log("Called RPC_CreateUnit, invoke info: " + info.ToString());
+        //Debug.Log("RPC send result: " + info.SendResult.Result.ToString());
     }
 
     // Spawns a UnitObject onto the tilemap at the given tile

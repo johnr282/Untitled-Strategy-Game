@@ -38,14 +38,14 @@ public class ServerMessages : NetworkBehaviour
         EventBus.Publish(new PlayerTurnEvent(turnStartData));
     }
 
-    // Notifies a client about the success of their create unit request; success
-    // is true if the unit was successfuly created, false if not
-    [Rpc]
-    public static void RPC_CreateUnitResponse(NetworkRunner runner,
-        [RpcTarget] PlayerRef player, 
-        CreateUnitRequest createUnitRequest,
-        bool success)
-    {
-        EventBus.Publish(new CreateUnitResponseEvent(createUnitRequest, success));
-    }
+    //// Notifies a client about the success of their create unit request; success
+    //// is true if the unit was successfuly created, false if not
+    //[Rpc]
+    //public static void RPC_CreateUnitResponse(NetworkRunner runner,
+    //    [RpcTarget] PlayerRef player, 
+    //    CreateUnitRequest createUnitRequest,
+    //    bool success)
+    //{
+    //    EventBus.Publish(new CreateUnitResponseEvent(createUnitRequest, success));
+    //}
 }

@@ -24,6 +24,7 @@ public class ClientMessages : NetworkBehaviour
         [RpcTarget] PlayerRef player,
         CreateUnitRequest createUnitRequest)
     {
+        Debug.Log("Calling RPC_CreateUnit");
         EventBus.Publish(new CreateUnitRequestEvent(createUnitRequest));
     }
 }
