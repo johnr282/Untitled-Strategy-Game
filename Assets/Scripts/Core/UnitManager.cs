@@ -12,23 +12,12 @@ using UnityEngine;
 public class UnitManager : NetworkBehaviour
 {
     GameMap _gameMap;
-    PlayerManager _playerManager;
+    Dictionary<int, Unit> _units = new();
+    int _nextUnitID = -1;
 
     void Start()
     {
         _gameMap = ProjectUtilities.FindGameMap();
-        _playerManager = ProjectUtilities.FindPlayerManager();
-    }
-
-    // Creates and returns a unit with the given type and initial location
-    // Throws an ArgumentException if unit could not be created
-    public Unit CreateUnit(UnitType unitType,
-        HexCoordinateOffset initialLocation)
-    {
-        if (!_gameMap.FindTile(initialLocation, out GameTile initialTile))
-            throw new ArgumentException("Attempted to create unit at invalid tile");
-
-        return new Unit(unitType, initialTile);
     }
 
     // If given request is valid, creates a new unit and puts it into the newUnit
@@ -46,22 +35,46 @@ public class UnitManager : NetworkBehaviour
             return false;
         }
 
-        newUnit = new(request.Type, initialTile);
+        newUnit = new(request.Type, 
+            initialTile, 
+            GetNextUnitID());
+        _units[newUnit.UnitID] = newUnit;
+        initialTile.AddUnit(newUnit);
+
         return true;
+    }
+
+    // Returns a unique ID for each new unit
+    int GetNextUnitID()
+    {
+        _nextUnitID++;
+        return _nextUnitID;
+    }
+
+    // Returns the unit corresponding to the given unit ID
+    // Throws an ArgumentException if given ID has no corresponding unit
+    public Unit FindUnit(int unitID)
+    {
+        if (!_units.TryGetValue(unitID, out Unit unit))
+            throw new ArgumentException("No unit exists with the given unit ID");
+
+        return unit;
     }
 
     // Attempts to move the given unit from its current position to the GameTile
     // corresponding to requestedPos
     // If the unit was successfully moved, returns true and populates the pathTaken
     // parameter; returns false otherwise
-    // Throws an ArgumentException if no GameTile corresponding to requestedHex 
-    // exists
-    public bool TryMoveUnit(Unit unit, 
+    // Throws an ArgumentException if no unit exists with the given ID or no GameTile
+    // corresponding to requestedHex exists
+    public bool TryMoveUnit(int unitID, 
         HexCoordinateOffset requestedHex, 
         out List<HexCoordinateOffset> pathTaken)
     {
         if (!_gameMap.FindTile(requestedHex, out GameTile requestedTile))
             throw new ArgumentException("Requested to move unit to invalid tile");
+
+        Unit unit = FindUnit(unitID);
 
         List<GameTile> path;
         try
@@ -82,7 +95,17 @@ public class UnitManager : NetworkBehaviour
             pathTaken.Add(tile.Hex);
         }
 
-        unit.Move(requestedTile);
+        MoveUnit(unit, requestedTile);
         return true;
+    }
+
+    // Moves the given unit to the given new tile
+    public void MoveUnit(Unit unit,
+        GameTile newTile)
+    {
+        GameTile oldTile = unit.CurrentLocation;
+        oldTile.RemoveUnit(unit);
+        newTile.AddUnit(unit);
+        unit.CurrentLocation = newTile;
     }
 }

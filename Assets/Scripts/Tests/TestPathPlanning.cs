@@ -28,7 +28,8 @@ public class TestPathPlanning : MonoBehaviour
 
         _tileSelectedSub = EventBus.Subscribe<TileSelectedEvent>(OnTileSelected);
         _dummyUnit = new Unit(_unitType,
-            new GameTile(new HexCoordinateOffset(1, 1), Terrain.land));
+            new GameTile(new HexCoordinateOffset(1, 1), Terrain.land), 
+            0);
     }
 
     void OnDestroy()

@@ -595,7 +595,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1073283734}
-  - component: {fileID: 1073283733}
   - component: {fileID: 1073283732}
   - component: {fileID: 1073283731}
   m_Layer: 0
@@ -635,24 +634,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5620cc155a39dcb438bcff1a30c7ab77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1073283733
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1073283730}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 26a43900000c9014bb59a56cdf4441b9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _runner: {fileID: 0}
-  _object: {fileID: 0}
-  InvokeRpc: 0
-  ObjectIndex: 0
-  WordOffset: 0
-  WordCount: 0
 --- !u!4 &1073283734
 Transform:
   m_ObjectHideFlags: 0
@@ -1030,7 +1011,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff3ab48b28bfa384fa98cd6519f26cba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _numPlayers: 3
+  _numPlayers: 1
 --- !u!4 &1726182346
 Transform:
   m_ObjectHideFlags: 0

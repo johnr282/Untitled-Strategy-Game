@@ -43,17 +43,14 @@ public class Unit
     public UnitType Type { get; }
     public List<Terrain> TraversableTerrains { get; }
     public GameTile CurrentLocation { get; set; }
+    public int UnitID { get; }
 
     public Unit(UnitType typeIn, 
-        GameTile currentLocationIn)
+        GameTile currentLocationIn,
+        int unitIDIn)
     {
         Type = typeIn;
         CurrentLocation = currentLocationIn;
-    }
-
-    // Moves this unit to the given tile
-    public void Move(GameTile newLocation)
-    {
-        CurrentLocation = newLocation;
+        UnitID = unitIDIn;
     }
 }

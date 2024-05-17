@@ -72,6 +72,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73f31d83761b2ef4bb7769cada443561, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _UnitID: 0
 --- !u!114 &7776170410906669446
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -126,6 +127,8 @@ MonoBehaviour:
   Flags: 262145
   NestedObjects: []
   NetworkedBehaviours:
+  - {fileID: 5563791679564141210}
+  - {fileID: 1714012956717109458}
   - {fileID: 479315668171315496}
 --- !u!114 &479315668171315496
 MonoBehaviour:

@@ -27,6 +27,11 @@ public class GameTile
     // Player ID of this tile's current owner; -1 if not owned by any player
     public int OwnerID { get; set; }
 
+    // Map from unit IDs to units of all the units currently on this tile
+    Dictionary<int, Unit> _unitsOnTile = new();
+
+    public int Capacity { get; private set; }
+
     // Constructor
     public GameTile(HexCoordinateOffset coordinateIn, 
         Terrain terrainIn, 
@@ -58,6 +63,21 @@ public class GameTile
     public void Claim(int playerID)
     {
         OwnerID = playerID;
+    }
+
+    // Adds the given unit to this tile
+    // Throws an ArgumentException if given a unit that already exists in this tile
+    public void AddUnit(Unit unit)
+    {
+        _unitsOnTile.Add(unit.UnitID, unit);
+    }
+
+    // Removes the given unit from this tile
+    // Throws an ArgumentException if given unit doesn't exist in this tile
+    public void RemoveUnit(Unit unit)
+    {
+        if (!_unitsOnTile.Remove(unit.UnitID))
+            throw new ArgumentException("Unit does not exist in this tile");
     }
 
     // Returns the cost for a unit of the given UnitType to traverse into this

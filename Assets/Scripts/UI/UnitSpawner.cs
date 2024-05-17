@@ -65,14 +65,13 @@ public class UnitSpawner : NetworkBehaviour
         if (_unitManager.TryCreateUnit(request, out Unit unit))
         {
             Debug.Log("Request successful");
-            SpawnUnitObject(unit, request.Location);
+            SpawnUnitObject(unit.UnitID, request.Location);
         }
     }
 
-    // Spawns a UnitObject onto the tilemap at the given tile with a reference to
-    // the given unit
+    // Spawns a UnitObject onto the tilemap at the given tile with the given unit ID
     // Throws a RuntimeException if the unit prefab is missing necessary components
-    void SpawnUnitObject(Unit unit,
+    void SpawnUnitObject(int unitID,
         Vector3Int initialTile)
     {
         SpawnableObject spawnable = _unitPrefab.GetComponent<SpawnableObject>() ??
@@ -88,6 +87,6 @@ public class UnitSpawner : NetworkBehaviour
             throw new RuntimeException(
                 "Failed to get UnitObject component from unit prefab");
 
-        newUnit.UnitRef = unit;
+        newUnit.UnitID = unitID;
     }
 }

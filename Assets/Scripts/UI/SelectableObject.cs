@@ -1,3 +1,4 @@
+using Fusion;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,7 +9,7 @@ using UnityEngine;
 // ------------------------------------------------------------------
 
 [RequireComponent(typeof(Collider))]
-public class SelectableObject : MonoBehaviour
+public class SelectableObject : NetworkBehaviour
 {
     public virtual void OnSelect()
     {
