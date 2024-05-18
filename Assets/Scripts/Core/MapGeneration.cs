@@ -371,15 +371,15 @@ public class MapGeneration : MonoBehaviour
         float perlinOffset = Random.Range(0.0f, _parameters.MaxPerlinOffset);
 
         // Current radius is 1, not 0, because each central tile is already set
-        int currentRadius = 1;
+        int currentRadius = 0;
         while(currentRadius < radius)
         {
+            currentRadius++;
             GenerateContinentRing(centralCoordinate, 
                 continentID, 
                 currentRadius, 
                 perlinOffset,
                 ref continentTiles);
-            currentRadius++;
         }
 
         return continentTiles;
