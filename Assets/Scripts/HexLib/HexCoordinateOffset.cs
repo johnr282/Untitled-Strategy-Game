@@ -1,3 +1,4 @@
+using Fusion;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,7 +9,7 @@ using UnityEngine;
 // pushed outward)
 // ------------------------------------------------------------------
 
-public class HexCoordinateOffset : HexCoordinate<HexCoordinateOffset>
+public struct HexCoordinateOffset : IHexCoordinate<HexCoordinateOffset>, INetworkStruct
 {
     public int Col { get; }
     public int Row { get; }

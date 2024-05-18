@@ -6,7 +6,7 @@ using System.Collections.Generic;
 // map using axial coordinates 
 // ------------------------------------------------------------------
 
-public class HexCoordinateAxial: HexCoordinate<HexCoordinateAxial>
+public class HexCoordinateAxial: IHexCoordinate<HexCoordinateAxial>
 {
     public int X { get; }
     public int Y { get; }

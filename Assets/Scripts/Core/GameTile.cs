@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Fusion;
 
 // ------------------------------------------------------------------
 // Class representing a single hexagonal tile in the game map; not
@@ -14,8 +15,13 @@ public enum Terrain
     land
 }
 
-public class GameTile
+public struct GameTile : INetworkStruct
 {
+    // Update this constant to match the number of Terrain types
+    public const int TerrainTypeCount = 2;
+
+    public const int MaxTileUnitCapacity = 12;
+
     // Location of tile in game map
     public HexCoordinateOffset Hex { get; }
 
@@ -28,7 +34,8 @@ public class GameTile
     public int OwnerID { get; set; }
 
     // Map from unit IDs to units of all the units currently on this tile
-    Dictionary<int, Unit> _unitsOnTile = new();
+    [Capacity(MaxTileUnitCapacity)]
+    NetworkDictionary<int, Unit> UnitsOnTile { get; }
 
     public int Capacity { get; private set; }
 
@@ -42,6 +49,8 @@ public class GameTile
         TileTerrain = terrainIn;
         ContinentID = contintentIDIn;
         OwnerID = ownerIDIn;
+        UnitsOnTile = new();
+        Capacity = 0;
     }
 
     // Returns true if this tile is in a continent, false otherwise
@@ -69,25 +78,23 @@ public class GameTile
     // Throws an ArgumentException if given a unit that already exists in this tile
     public void AddUnit(Unit unit)
     {
-        _unitsOnTile.Add(unit.UnitID, unit);
+        UnitsOnTile.Add(unit.UnitID, unit);
     }
 
     // Removes the given unit from this tile
     // Throws an ArgumentException if given unit doesn't exist in this tile
     public void RemoveUnit(Unit unit)
     {
-        if (!_unitsOnTile.Remove(unit.UnitID))
+        if (!UnitsOnTile.Remove(unit.UnitID))
             throw new ArgumentException("Unit does not exist in this tile");
     }
 
-    // Returns the cost for a unit of the given UnitType to traverse into this
-    // tile from the given adjacent start tile
-    // Start is null and ignored by default; if start is given, assumes it is
-    // adjacent to this tile
+    // Returns the cost for a unit of the given Unit to traverse into this
+    // tile from its current location
+    // Assumes the unit's current location is adjacent to this tile
     // Throws an ArgumentException if unitType is invalid or this tile's terrain
     // is invalid
-    public int CostToTraverse(Unit unit, 
-        GameTile start = null)
+    public int CostToTraverse(Unit unit)
     {
         string invalidTerrainMsg = "TileTerrain of GameTile not valid";
 

@@ -2,14 +2,22 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Fusion;
 
 // ------------------------------------------------------------------
 // Component representing the entire game map composed of a grid of 
 // GameTiles; not used for visual rendering
 // ------------------------------------------------------------------
 
-public class GameMap : MonoBehaviour
+public class GameMap : NetworkBehaviour
 {
+    const int MaxHeight = 100;
+    const int MaxWidth = 100;
+
+    [Networked]
+    [Capacity(MaxHeight * MaxWidth)]
+    NetworkArray<GameTile> Map { get; }
+
     // Keys are coordinates of tiles in the map, value is the tile itself
     Dictionary<HexCoordinateOffset, GameTile> _gameMap = new();
 
@@ -158,7 +166,7 @@ public class GameMap : MonoBehaviour
             throw new ArgumentException(
                 "Attempted to calculate cost between nonexistent tiles");
 
-        return goalTile.CostToTraverse(unit, startTile);
+        return goalTile.CostToTraverse(unit);
     }
 
     // Executes the given action on every tile in the map

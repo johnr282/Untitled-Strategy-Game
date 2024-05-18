@@ -7,7 +7,7 @@ using UnityEngine;
 // Interface representing the location of a tile in a hexagonal map
 // ------------------------------------------------------------------
 
-public interface HexCoordinate<HexCoordinateType> 
+public interface IHexCoordinate<HexCoordinateType> 
 {
     // Returns an array of the 6 adjacent hex coordinates to this hex
     // The first coordinate in array is the hex directly to the east, 

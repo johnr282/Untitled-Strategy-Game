@@ -31,7 +31,7 @@ public class UnitManager : NetworkBehaviour
         if (!_gameMap.FindTile(initialHex, out GameTile initialTile) ||
             !initialTile.Available(request.RequestingPlayerID))
         {
-            newUnit = null;
+            newUnit = default;
             return false;
         }
 
