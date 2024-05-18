@@ -4,10 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//using StaticRPC = System.Action<Fusion.NetworkRunner, 
-//    Fusion.PlayerRef, 
-//    Fusion.INetworkStruct>;
-
 // ------------------------------------------------------------------
 // Contains the NetworkInputEvent class, which is used to represent all
 // possible actions a client can take and their corresponding RPCs;
@@ -41,7 +37,7 @@ public class NetworkInputEvent
     }
 }
 
-// Represents a client request to create a new unit
+// A client request to create a new unit
 public struct CreateUnitRequest : INetworkStruct
 {
     public UnitType Type { get; }
@@ -53,6 +49,23 @@ public struct CreateUnitRequest : INetworkStruct
         int requestingPlayerIDIn)
     {
         Type = typeIn;
+        Location = locationIn;
+        RequestingPlayerID = requestingPlayerIDIn;
+    }
+}
+
+// A client request to move a unit 
+public struct MoveUnitRequest : INetworkStruct
+{
+    public int UnitID { get; }
+    public Vector3Int Location { get; }
+    public int RequestingPlayerID { get; }
+
+    public MoveUnitRequest(int unitIDIn,
+        Vector3Int locationIn,
+        int requestingPlayerIDIn)
+    {
+        UnitID = unitIDIn;
         Location = locationIn;
         RequestingPlayerID = requestingPlayerIDIn;
     }

@@ -19,12 +19,23 @@ public class ClientMessages : NetworkBehaviour
         EventBus.Publish(new TurnFinishedEventServer(turnEndData));
     }
 
+    // Requests the server to create a new unit
     [Rpc]
     public static void RPC_CreateUnit(NetworkRunner runner,
         [RpcTarget] PlayerRef player,
-        CreateUnitRequest createUnitRequest)
+        CreateUnitRequest request)
     {
         Debug.Log("Calling RPC_CreateUnit");
-        EventBus.Publish(createUnitRequest);
+        EventBus.Publish(request);
+    }
+
+    // Requests the server to move a unit
+    [Rpc]
+    public static void RPC_MoveUnit(NetworkRunner runner,
+        [RpcTarget] PlayerRef player,
+        MoveUnitRequest request)
+    {
+        Debug.Log("Calling RPC_MoveUnit");
+        EventBus.Publish(request);
     }
 }
