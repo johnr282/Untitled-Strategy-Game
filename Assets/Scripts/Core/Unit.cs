@@ -46,8 +46,8 @@ public struct Unit : INetworkStruct
     public int UnitID { get; }
     public GameTile CurrentLocation { get; set; }
 
-    [Capacity(GameTile.TerrainTypeCount)]
-    public NetworkLinkedList<Terrain> TraversableTerrains { get; }
+    [Networked, Capacity(GameTile.TerrainTypeCount)]
+    public NetworkArray<Terrain> TraversableTerrains => default;
 
     public Unit(UnitType typeIn, 
         GameTile currentLocationIn,
@@ -58,6 +58,5 @@ public struct Unit : INetworkStruct
         Type = typeIn;
         CurrentLocation = currentLocationIn;
         UnitID = unitIDIn;
-        TraversableTerrains = new();
     }
 }

@@ -19,7 +19,6 @@ public struct GameTile : INetworkStruct
 {
     // Update this constant to match the number of Terrain types
     public const int TerrainTypeCount = 2;
-
     public const int MaxTileUnitCapacity = 12;
 
     // Location of tile in game map
@@ -32,14 +31,12 @@ public struct GameTile : INetworkStruct
 
     // Player ID of this tile's current owner; -1 if not owned by any player
     public int OwnerID { get; set; }
-
-    // Map from unit IDs to units of all the units currently on this tile
-    [Capacity(MaxTileUnitCapacity)]
-    NetworkDictionary<int, Unit> UnitsOnTile { get; }
-
     public int Capacity { get; private set; }
 
-    // Constructor
+    // List of unit IDs of all the units currently on this tile
+    [Networked, Capacity(MaxTileUnitCapacity)]
+    NetworkLinkedList<int> UnitsOnTile => default;
+
     public GameTile(HexCoordinateOffset coordinateIn, 
         Terrain terrainIn, 
         int contintentIDIn = -1, 
@@ -49,7 +46,7 @@ public struct GameTile : INetworkStruct
         TileTerrain = terrainIn;
         ContinentID = contintentIDIn;
         OwnerID = ownerIDIn;
-        UnitsOnTile = new();
+        //UnitsOnTile = new();
         Capacity = 0;
     }
 
@@ -78,7 +75,7 @@ public struct GameTile : INetworkStruct
     // Throws an ArgumentException if given a unit that already exists in this tile
     public void AddUnit(Unit unit)
     {
-        UnitsOnTile.Add(unit.UnitID, unit);
+        UnitsOnTile.Add(unit.UnitID);
     }
 
     // Removes the given unit from this tile

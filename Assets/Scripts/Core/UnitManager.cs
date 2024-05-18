@@ -11,8 +11,12 @@ using UnityEngine;
 
 public class UnitManager : NetworkBehaviour
 {
+    const int MaxUnits = GameTile.MaxTileUnitCapacity * 
+        GameMap.MaxWidth * GameMap.MaxHeight;
+    [Networked, Capacity(MaxUnits)]
+    NetworkDictionary<int, Unit> Units { get; }
+
     GameMap _gameMap;
-    Dictionary<int, Unit> _units = new();
     int _nextUnitID = -1;
 
     void Start()
@@ -38,7 +42,7 @@ public class UnitManager : NetworkBehaviour
         newUnit = new(request.Type, 
             initialTile, 
             GetNextUnitID());
-        _units[newUnit.UnitID] = newUnit;
+        Units.Add(newUnit.UnitID, newUnit);
         initialTile.AddUnit(newUnit);
 
         return true;
@@ -55,10 +59,10 @@ public class UnitManager : NetworkBehaviour
     // Throws an ArgumentException if given ID has no corresponding unit
     public Unit FindUnit(int unitID)
     {
-        if (!_units.TryGetValue(unitID, out Unit unit))
+        if (!Units.TryGet(unitID, out Unit unit))
             throw new ArgumentException("No unit exists with the given unit ID");
 
-        return unit;
+        return Units.Get(unitID);
     }
 
     // Attempts to move the given unit from its current position to the GameTile

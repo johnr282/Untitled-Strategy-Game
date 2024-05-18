@@ -6,16 +6,15 @@ using Fusion;
 
 // ------------------------------------------------------------------
 // Component representing the entire game map composed of a grid of 
-// GameTiles; not used for visual rendering
+// GameTiles
 // ------------------------------------------------------------------
 
 public class GameMap : NetworkBehaviour
 {
-    const int MaxHeight = 100;
-    const int MaxWidth = 100;
+    public const int MaxHeight = 100;
+    public const int MaxWidth = 100;
 
-    [Networked]
-    [Capacity(MaxHeight * MaxWidth)]
+    [Networked, Capacity(MaxHeight * MaxWidth)]
     NetworkArray<GameTile> Map { get; }
 
     // Keys are coordinates of tiles in the map, value is the tile itself
