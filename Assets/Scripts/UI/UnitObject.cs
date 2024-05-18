@@ -14,7 +14,9 @@ public class UnitObject : SelectableObject
     [Networked] public int UnitID { get; set; } = -1;
 
     UnitManager _unitManager;
+    GameMap _gameMap;
     MoveableObject _moveable;
+    MapVisuals _mapVisuals;
 
     Subscription<TileSelectedEvent> _tileSelectedSub;
     Subscription<NewTileHoveredOverEvent> _tileHoveredSub;
@@ -25,7 +27,10 @@ public class UnitObject : SelectableObject
         base.Start();
 
         _unitManager = ProjectUtilities.FindUnitManager();
+        _gameMap = ProjectUtilities.FindGameMap();
         _moveable = GetComponent<MoveableObject>();
+        _mapVisuals = 
+            ProjectUtilities.FindComponent<MapVisuals>(ProjectUtilities.GameMapObjectName);
 
         _moveUnitRequestSub = 
             EventBus.Subscribe<MoveUnitRequest>(OnMoveUnitRequest);
@@ -52,6 +57,7 @@ public class UnitObject : SelectableObject
     void OnTileSelected(TileSelectedEvent tileSelectedEvent)
     {
         _selectedByOwner = false;
+        _mapVisuals.UnHighlightCurrentPath();
         EventBus.Unsubscribe(_tileSelectedSub);
         EventBus.Unsubscribe(_tileHoveredSub);
 
@@ -68,7 +74,32 @@ public class UnitObject : SelectableObject
 
     void OnTileHovered(NewTileHoveredOverEvent tileHoveredEvent)
     {
+        Unit thisUnit = _unitManager.FindUnit(UnitID);
+        HexCoordinateOffset goalHex = 
+            HexUtilities.ConvertToHexCoordinateOffset(tileHoveredEvent.Coordinate);
 
+        if (!_gameMap.FindTile(goalHex, out GameTile goalTile))
+            throw new ArgumentException("Invalid goal tile");
+
+        List<GameTile> path;
+        try
+        {
+            path = _gameMap.FindPath(thisUnit,
+                thisUnit.CurrentLocation,
+                goalTile);
+        }
+        catch (RuntimeException)
+        {
+            return;
+        }
+
+        List<Vector3Int> pathToHighlight = new();
+        foreach (GameTile tile in path)
+        {
+            pathToHighlight.Add(tile.Hex.ConvertToVector3Int());
+        }
+
+        _mapVisuals.HighlightPath(pathToHighlight);
     }
 
     // Called on the server when it receives a MoveUnitRequest

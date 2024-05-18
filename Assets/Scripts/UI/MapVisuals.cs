@@ -35,8 +35,8 @@ public class MapVisuals : MonoBehaviour
 
         _tileHoveredSubscription = 
             EventBus.Subscribe<NewTileHoveredOverEvent>(OnTileHovered);
-        _tileSelectedSubscription =
-            EventBus.Subscribe<TileSelectedEvent>(OnTileSelected);
+        //_tileSelectedSubscription =
+        //    EventBus.Subscribe<TileSelectedEvent>(OnTileSelected);
     }
 
     void OnDestroy()
@@ -118,10 +118,7 @@ public class MapVisuals : MonoBehaviour
     // Highlights every tile in the given path
     public void HighlightPath(List<Vector3Int> path)
     {
-        foreach (Vector3Int tilePos in _currentlyHighlightedPath)
-        {
-            UnHighlightTile(tilePos);
-        }
+        UnHighlightCurrentPath();
 
         foreach (Vector3Int tilePos in path)
         {
@@ -129,6 +126,22 @@ public class MapVisuals : MonoBehaviour
         }
 
         _currentlyHighlightedPath = path;
+    }
+
+    // Unhighlights the currently highlighted path
+    public void UnHighlightCurrentPath()
+    {
+        UnHighlightPath(_currentlyHighlightedPath);
+        _currentlyHighlightedPath.Clear();
+    }
+
+    // Unhighlights every tile in the given path
+    void UnHighlightPath(List<Vector3Int> path)
+    {
+        foreach (Vector3Int tilePos in path)
+        {
+            UnHighlightTile(tilePos);
+        }
     }
 
     // Selects tile at given world position; does nothing if no tile exists
