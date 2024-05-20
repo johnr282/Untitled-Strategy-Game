@@ -170,4 +170,10 @@ public static class UnityUtilities
     {
         return UnityEngine.Random.Range(0, list.Count);
     }
+
+    // Returns a random element from the given list
+    public static T RandomElement<T>(List<T> list)
+    {
+        return list[RandomIndex(list)];
+    }
 }

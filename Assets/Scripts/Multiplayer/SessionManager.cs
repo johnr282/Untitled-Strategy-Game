@@ -14,6 +14,7 @@ using UnityEngine.SceneManagement;
 public class SessionManager : MonoBehaviour, INetworkRunnerCallbacks
 {
     [SerializeField] int _numPlayers;
+    [SerializeField] NetworkObject _gameMapGridPrefab;
 
     PlayerManager _playerManager;
     NetworkRunner _runner;
@@ -86,8 +87,31 @@ public class SessionManager : MonoBehaviour, INetworkRunnerCallbacks
 
         if (allPlayersJoined)
         {
-            _playerManager.OnAllPlayersJoined();
+            InitializeSession();
         }
+    }
+
+    // Does all necessary work to initialize the session
+    void InitializeSession()
+    {
+        NetworkObject gameMapGrid = _runner.Spawn(_gameMapGridPrefab,
+            Vector3.zero,
+            Quaternion.identity);
+
+        if (gameMapGrid.transform.childCount != 1)
+            throw new RuntimeException(
+                "GameMapGrid prefab has incorrect number of children");
+
+        GameObject gameMap = gameMapGrid.transform.GetChild(0).gameObject;
+        MapGeneration mapGenerator = gameMap.GetComponent<MapGeneration>() ??
+            throw new RuntimeException(
+                "Could not get MapGeneration component from GameMap child");
+
+        mapGenerator.GenerateMap(mapGenerator.GenerateRandomSeed());
+        List<GameTile> startingTiles = 
+            mapGenerator.GenerateStartingTiles(_numPlayers);
+
+        _playerManager.NotifyGameStart(startingTiles);
     }
 
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) 

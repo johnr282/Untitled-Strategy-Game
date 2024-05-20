@@ -33,12 +33,13 @@ public class MoveableObject : NetworkBehaviour
             transform.position = _positionUpdates.Dequeue();
     }
 
-    // Move this object to given position on the tilemap
+    // Move this object to given hex on the map
     // More accurately, queues a position update to occur in FixedUpdateNetwork
     // as NetworkTransform updates don't work unless they are done there
-    public void MoveTo(Vector3Int tilePos)
+    public void MoveTo(HexCoordinateOffset hex)
     {
-        Vector3 newPos = _tilemap.CellToWorld(tilePos) + _spawnable.YOffset;
+        Vector3 newPos = _tilemap.CellToWorld(hex.ConvertToVector3Int()) 
+            + _spawnable.YOffset;
         _positionUpdates.Enqueue(newPos);
     }
 }

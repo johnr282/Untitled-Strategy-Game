@@ -9,43 +9,36 @@ using UnityEngine.Tilemaps;
 // Component handling spawning new units onto the map
 // ------------------------------------------------------------------
 
+[RequireComponent(typeof(Tilemap))]
+[RequireComponent(typeof(UnitManager))]
 public class UnitSpawner : NetworkBehaviour
 {
-    [SerializeField] GameObject _unitPrefab;
+    [SerializeField] NetworkObject _unitPrefab;
     [SerializeField] UnitType _unitType;
 
     Tilemap _tilemap;
     UnitManager _unitManager;
     ClientPlayerData _playerData;
 
-    Subscription<StartingLocationReceivedEvent> _startingLocationSub;
     Subscription<CreateUnitRequest> _createUnitRequestSub;
 
     // Start is called before the first frame update
     void Start()
     {
-        _tilemap = ProjectUtilities.FindTilemap();
-        _unitManager = ProjectUtilities.FindUnitManager();
+        _tilemap = GetComponent<Tilemap>();
+        _unitManager = GetComponent<UnitManager>();
         _playerData = ProjectUtilities.FindClientPlayerData();
 
-        _startingLocationSub =
-            EventBus.Subscribe<StartingLocationReceivedEvent>(OnStartingLocationReceived);
         _createUnitRequestSub =
             EventBus.Subscribe<CreateUnitRequest>(OnCreateUnitRequest);
     }
 
-    void OnStartingLocationReceived(StartingLocationReceivedEvent locationEvent)
-    {
-        Debug.Log("Requesting to spawn unit at " + locationEvent.Location.ToString());
-        RequestSpawnUnit(_unitType, locationEvent.Location);
-    }
-
     // Requests the server to create a new unit of the given type at the given tile
     public void RequestSpawnUnit(UnitType unitType,
-        Vector3Int initialTile)
+        HexCoordinateOffset initialHex)
     {
         CreateUnitRequest request = new(unitType,
-            initialTile,
+            initialHex,
             _playerData.PlayerID);
         var rpcAction = new Action<NetworkRunner, PlayerRef, CreateUnitRequest>(
             ClientMessages.RPC_CreateUnit); 
@@ -71,17 +64,19 @@ public class UnitSpawner : NetworkBehaviour
         }
     }
 
-    // Spawns a UnitObject onto the tilemap at the given tile with the given unit ID
+    // Spawns a UnitObject onto the tilemap at the given hex with the given unit ID
     // Throws a RuntimeException if the unit prefab is missing necessary components
     void SpawnUnitObject(int unitID, 
         int ownerID,
-        Vector3Int initialTile)
+        HexCoordinateOffset hex)
     {
         SpawnableObject spawnable = _unitPrefab.GetComponent<SpawnableObject>() ??
             throw new RuntimeException(
                 "Failed to get SpawnableObject component from unit prefab");
 
-        Vector3 spawnLocation = _tilemap.CellToWorld(initialTile) + 
+        Vector3Int tilemapLocation = hex.ConvertToVector3Int();
+
+        Vector3 spawnLocation = _tilemap.CellToWorld(tilemapLocation) + 
             spawnable.YOffset;
         NetworkObject newUnitObject = Runner.Spawn(_unitPrefab,
             spawnLocation,

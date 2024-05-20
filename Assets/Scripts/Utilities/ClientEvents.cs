@@ -10,9 +10,9 @@ using UnityEngine;
 // Published when a new tile is hovered over
 public class NewTileHoveredOverEvent
 {
-    public Vector3Int Coordinate { get; }
+    public HexCoordinateOffset Coordinate { get; }
 
-    public NewTileHoveredOverEvent(Vector3Int coordinateIn)
+    public NewTileHoveredOverEvent(HexCoordinateOffset coordinateIn)
     {
         Coordinate = coordinateIn;
     }
@@ -21,9 +21,9 @@ public class NewTileHoveredOverEvent
 // Published when a tile is selected
 public class TileSelectedEvent
 {
-    public Vector3Int Coordinate { get; }
+    public HexCoordinateOffset Coordinate { get; }
 
-    public TileSelectedEvent(Vector3Int coordinateIn)
+    public TileSelectedEvent(HexCoordinateOffset coordinateIn)
     {
         Coordinate = coordinateIn;
     }

@@ -11,15 +11,12 @@ using UnityEngine;
 public readonly struct GameStartData : INetworkStruct
 {
     public int PlayerID { get; }
-    public int MapSeed { get; }
-    public Vector3Int StartLocation { get; }
+    public GameTile StartLocation { get; }
 
     public GameStartData(int playerIDIn, 
-        int mapSeedIn,
-        Vector3Int startLocationIn)
+        GameTile startLocationIn)
     {
         PlayerID = playerIDIn;
-        MapSeed = mapSeedIn;
         StartLocation = startLocationIn;
     }
 }

@@ -9,10 +9,12 @@ using UnityEngine;
 // map
 // ------------------------------------------------------------------
 
+[RequireComponent(typeof(GameMap))]
 public class UnitManager : NetworkBehaviour
 {
     const int MaxUnits = GameTile.MaxTileUnitCapacity * 
         GameMap.MaxWidth * GameMap.MaxHeight;
+
     [Networked, Capacity(MaxUnits)]
     NetworkDictionary<int, Unit> Units { get; }
 
@@ -21,19 +23,21 @@ public class UnitManager : NetworkBehaviour
 
     void Start()
     {
-        _gameMap = ProjectUtilities.FindGameMap();
+        _gameMap = GetComponent<GameMap>();
     }
 
     // If given request is valid, creates a new unit and puts it into the newUnit
     // parameter; returns false if given request is invalid
+    // Throws a RuntimeException if there are MaxUnits units
     public bool TryCreateUnit(CreateUnitRequest request,
         out Unit newUnit)
     {
-        HexCoordinateOffset initialHex =
-            HexUtilities.ConvertToHexCoordinateOffset(request.Location);
+        if (Units.Count >= MaxUnits)
+            throw new RuntimeException("Exceeding maximum number of units");
 
-        if (!_gameMap.FindTile(initialHex, out GameTile initialTile) ||
-            !initialTile.Available(request.RequestingPlayerID))
+        GameTile initialTile = _gameMap.GetTile(request.Location);
+
+        if (!initialTile.Available(request.RequestingPlayerID))
         {
             newUnit = default;
             return false;
@@ -57,7 +61,7 @@ public class UnitManager : NetworkBehaviour
 
     // Returns the unit corresponding to the given unit ID
     // Throws an ArgumentException if given ID has no corresponding unit
-    public Unit FindUnit(int unitID)
+    public Unit GetUnit(int unitID)
     {
         if (!Units.TryGet(unitID, out Unit unit))
             throw new ArgumentException("No unit exists with the given unit ID");
@@ -75,16 +79,13 @@ public class UnitManager : NetworkBehaviour
         HexCoordinateOffset requestedHex, 
         out List<HexCoordinateOffset> pathTaken)
     {
-        if (!_gameMap.FindTile(requestedHex, out GameTile requestedTile))
-            throw new ArgumentException("Requested to move unit to invalid tile");
-
-        Unit unit = FindUnit(unitID);
+        GameTile requestedTile = _gameMap.GetTile(requestedHex);
+        Unit unit = GetUnit(unitID);
 
         List<GameTile> path;
         try
         {
             path = _gameMap.FindPath(unit,
-                unit.CurrentLocation,
                 requestedTile);
         }
         catch (RuntimeException)

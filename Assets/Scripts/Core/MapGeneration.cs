@@ -1,11 +1,8 @@
-using Fusion.Photon.Realtime;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Analytics;
-using UnityEngine.Networking.PlayerConnection;
-using UnityEngine.Tilemaps;
+using Random = UnityEngine.Random;
 
 // ------------------------------------------------------------------
 // Component for handling procedural map generation
@@ -26,7 +23,7 @@ public class MapGeneration : MonoBehaviour
 
     void Start()
     {
-         _mapVisuals = GetComponent<MapVisuals>();   
+        _mapVisuals = GetComponent<MapVisuals>();
         _gameMap = GetComponent<GameMap>();
         _parameters = GetComponent<MapGenerationParameters>();
 
@@ -64,9 +61,10 @@ public class MapGeneration : MonoBehaviour
         Debug.Log("Generating map with seed " + seed.ToString());
         SeedRandomGeneration(seed);
         CalculateMapDimensions();
+        ValidateParameters();
         InitializeEveryTileToSea();
         GenerateContinents();
-        _mapVisuals.GenerateVisuals(_gameMap, 
+        _mapVisuals.GenerateVisuals(_gameMap,
             _parameters.MapHeight,
             _parameters.MapWidth);
     }
@@ -86,10 +84,33 @@ public class MapGeneration : MonoBehaviour
             _parameters.ContinentDiameterToGridCellSizeRatio *
             _parameters.NumContinents);
 
-        _parameters.MapHeight = Mathf.FloorToInt(_parameters.MapWidth * _parameters.WidthToHeightRatio);
+        _parameters.MapHeight = Mathf.FloorToInt(_parameters.MapWidth *
+            _parameters.WidthToHeightRatio);
 
         Debug.Log("Map width: " + _parameters.MapWidth.ToString());
         Debug.Log("Map height: " + _parameters.MapHeight.ToString());
+    }
+
+    // Ensure that no map parameters are greater than their corresponding max
+    // constants; must be called after CalculateMapDimensions()
+    // Throws a RuntimeException if any parameters are too large or if map
+    // dimensions haven't been calculated yet
+    void ValidateParameters()
+    {
+        if (_parameters.MapHeight == -1 ||
+            _parameters.MapWidth == -1)
+        {
+            throw new RuntimeException(
+                "Attempted to validate parameters before dimensions were calculated");
+        }
+
+        if (_parameters.MapHeight > GameMap.MaxHeight ||
+            _parameters.MapWidth > GameMap.MaxHeight || 
+            _parameters.NumContinents > GameMap.MaxContinents)
+        {
+            throw new RuntimeException(
+                "Map parameter greater than its maximum value");
+        }
     }
 
     // Initialize every tile in _gameMap to sea
@@ -125,10 +146,9 @@ public class MapGeneration : MonoBehaviour
             Debug.Log("Generating continent " + continentID.ToString() + 
                 " with radius " + continentRadius.ToString() + 
                 " and central tile " + centralCoordinates[i].ToString());
-            List<GameTile> continentTiles = 
+            Continent newContinent = 
                 GenerateContinent(centralCoordinates[i], continentID, continentRadius);
 
-            GameMap.Continent newContinent = new(continentTiles);
             _gameMap.AddContinent(continentID, newContinent);
         }
     }
@@ -358,7 +378,7 @@ public class MapGeneration : MonoBehaviour
 
     // Generates continent around given central coordinate with given ID and radius;
     // returns list of tiles in the continent
-    List<GameTile> GenerateContinent(HexCoordinateOffset centralCoordinate, 
+    Continent GenerateContinent(HexCoordinateOffset centralCoordinate, 
         int continentID, 
         int radius)
     {
@@ -366,7 +386,8 @@ public class MapGeneration : MonoBehaviour
             Terrain.land,
             continentID);
         _gameMap.SetTile(centralCoordinate, centralTile);
-        List<GameTile> continentTiles = new() { centralTile };
+        Continent newContinent = new();
+        newContinent.AddTile(centralTile);
 
         float perlinOffset = Random.Range(0.0f, _parameters.MaxPerlinOffset);
 
@@ -379,19 +400,19 @@ public class MapGeneration : MonoBehaviour
                 continentID, 
                 currentRadius, 
                 perlinOffset,
-                ref continentTiles);
+                ref newContinent);
         }
 
-        return continentTiles;
+        return newContinent;
     }
 
     // Generates the nth ring of the continent with given central coordinate and ID; 
-    // updates includedTiles as the ring is generated
+    // updates continent as the ring is generated
     void GenerateContinentRing(HexCoordinateOffset centralCoordinate,
         int continentID, 
         int n, 
         float offset,
-        ref List<GameTile> includedTiles)
+        ref Continent continent)
     {
         List<HexCoordinateOffset> ring = centralCoordinate.HexesExactlyNAway(n);
         
@@ -402,7 +423,7 @@ public class MapGeneration : MonoBehaviour
                 GameTile newTile = new(hex, Terrain.land, continentID);
                 _gameMap.SetTile(hex, 
                     newTile);
-                includedTiles.Add(newTile);
+                continent.AddTile(newTile);
             }
         }
     }
@@ -413,9 +434,16 @@ public class MapGeneration : MonoBehaviour
         int continentID, 
         float offset)
     {
-        bool tileOutOfBounds = !_gameMap.FindTile(hex, out GameTile tile);
-        if (tileOutOfBounds || tile.InContinent())
+        GameTile tile;
+        try
+        {
+            tile = _gameMap.GetTile(hex);
+        }
+        catch (ArgumentException)
+        {
+            // Hex must be outside the map bounds
             return false;
+        }
 
         // If tile is an island, i.e. not adjacent to any other tiles from the 
         // same continent, don't include it
@@ -449,5 +477,33 @@ public class MapGeneration : MonoBehaviour
             _parameters.PerlinCoordinateScalingFactor;
         float val = Mathf.PerlinNoise(x, y);
         return Mathf.Clamp(val, 0.0f, 1.0f);
+    }
+
+    // Returns a list of n unique starting tiles; each tile is guaranteed to be
+    // on land and on a different continent
+    // Throws an ArgumentException if n is greater than the number of continents
+    public List<GameTile> GenerateStartingTiles(int n)
+    {
+        if (n > _gameMap.NumContinents)
+            throw new ArgumentException("n cannot be greater than NumContinents");
+
+        List<GameTile> startingTiles = new();
+        List<int> availableContinents = _gameMap.ContinentIDList();
+
+        for (int i = 0; i < n; i++)
+        {
+            if (availableContinents.Count == 0)
+                availableContinents = _gameMap.ContinentIDList();
+
+            int continentID = UnityUtilities.RandomElement(availableContinents);
+            Continent continent = _gameMap.GetContinent(continentID);
+            availableContinents.Remove(continentID);
+
+            int tileIndex = Random.Range(0, _gameMap.NumContinents);
+            GameTile startingTile = continent.ContinentTiles[tileIndex];
+            startingTiles.Add(startingTile);
+        }
+
+        return startingTiles;
     }
 }

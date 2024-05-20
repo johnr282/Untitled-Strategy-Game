@@ -27,9 +27,6 @@ public class TestPathPlanning : MonoBehaviour
         _gameMap = ProjectUtilities.FindGameMap();
 
         _tileSelectedSub = EventBus.Subscribe<TileSelectedEvent>(OnTileSelected);
-        _dummyUnit = new Unit(_unitType,
-            new GameTile(new HexCoordinateOffset(1, 1), Terrain.land), 
-            0);
     }
 
     void OnDestroy()
@@ -41,39 +38,42 @@ public class TestPathPlanning : MonoBehaviour
     {
         if (_startSelected)
         {
-            HexCoordinateOffset goal = HexUtilities.ConvertToHexCoordinateOffset(
-                tileSelectedEvent.Coordinate);
-            FindPath(_start, goal);
+            HexCoordinateOffset goal = tileSelectedEvent.Coordinate;
+            Unit dummyUnit = new(_unitType,
+                _gameMap.GetTile(_start),
+                0);
+            FindPath(dummyUnit, goal);
             _startSelected = false;
         }
         else
         {
-            _start = HexUtilities.ConvertToHexCoordinateOffset(
-                tileSelectedEvent.Coordinate);
+            _start = tileSelectedEvent.Coordinate;
             _startSelected = true;
 
             if (_findAllPaths)
             {
-                FindAllPaths(_start);
+                Unit dummyUnit = new(_unitType,
+                    _gameMap.GetTile(_start),
+                    0);
+                FindAllPaths(dummyUnit);
                 _startSelected = false;
             }
         }
     }
 
-    public void FindPath(HexCoordinateOffset start, 
+    public void FindPath(Unit unit, 
         HexCoordinateOffset goal)
     {
+        HexCoordinateOffset start = unit.CurrentLocation.Hex;
         Debug.Log("Finding path between " + start.ToString() + " and " + goal.ToString() +
                 ", distance of " + HexUtilities.DistanceBetween(start, goal).ToString());
 
-        _gameMap.FindTile(start, out GameTile startTile);
-        _gameMap.FindTile(goal, out GameTile goalTile);
+        GameTile goalTile = _gameMap.GetTile(goal);
 
         List<GameTile> path;
         try
         {
-            path = _gameMap.FindPath(_dummyUnit, 
-                startTile, 
+            path = _gameMap.FindPath(unit, 
                 goalTile);
         }
         catch (RuntimeException e)
@@ -96,12 +96,14 @@ public class TestPathPlanning : MonoBehaviour
         _mapVisuals.HighlightPath(vectorPath);
     }
 
-    public void FindAllPaths(HexCoordinateOffset start)
+    public void FindAllPaths(Unit unit)
     {
+
+
         Action<GameTile> findPathToTile = (tile) =>
         {
-            if (_gameMap.Traversable(_dummyUnit, tile.Hex))
-                FindPath(start, tile.Hex);
+            if (_gameMap.Traversable(unit, tile.Hex))
+                FindPath(unit, tile.Hex);
         };
 
         _gameMap.ExecuteOnAllTiles(findPathToTile);

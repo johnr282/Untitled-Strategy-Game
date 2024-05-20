@@ -21,16 +21,10 @@ public class PlayerManager : NetworkBehaviour
     // Contains an index to _turnOrder
     int _currTurnIndex = 0;
 
-    MapGeneration _mapGenerator;
-    GameMap _gameMap;
-
     Subscription<TurnFinishedEventServer> _turnFinishedSub;
 
     void Start()
     {
-        _mapGenerator = ProjectUtilities.FindMapGeneration();
-        _gameMap = ProjectUtilities.FindGameMap();
-
         _turnFinishedSub = EventBus.Subscribe<TurnFinishedEventServer>(
             TurnFinishedCallback);
     }
@@ -44,28 +38,29 @@ public class PlayerManager : NetworkBehaviour
     // client corresponding to given PlayerRef
     public void AddPlayer(PlayerRef player)
     {
-        int newPlayerID = _players.Count;
+        int newPlayerID = _numPlayers;
         _players.Add(newPlayerID, new Player(player, newPlayerID));
         _turnOrder.Add(newPlayerID);
     }
 
-    public void OnAllPlayersJoined()
+    // Spawns a unit and sends a game start message for each player
+    public void NotifyGameStart(List<GameTile> startingTiles)
     {
         Debug.Log("All players joined");
-        int mapSeed = _mapGenerator.GenerateRandomSeed();
-        _mapGenerator.GenerateMap(mapSeed);
-        List<GameTile> startingTiles = _gameMap.GenerateStartingTiles(_numPlayers);
 
         foreach (KeyValuePair<int, Player> pair in _players)
         {
             int playerID = pair.Key;
             Player player = pair.Value;
-            Vector3Int startingTile = startingTiles[playerID].Hex.ConvertToVector3Int();
+            GameTile startingTile = startingTiles[playerID];
+
+            EventBus.Publish(new CreateUnitRequest(UnitType.land,
+                startingTile.Hex,
+                playerID));
 
             ServerMessages.RPC_GameStart(Runner,
-                player.ClientRef,
+                player.PlayerRef,
                 new GameStartData(playerID,
-                    mapSeed,
                     startingTile));
         }
 
@@ -88,7 +83,7 @@ public class PlayerManager : NetworkBehaviour
             throw new ArgumentException(
                 "Attempted to get PlayerRef of invalid player ID");
 
-        return player.ClientRef;
+        return player.PlayerRef;
     }
 
     // Updates _currTurnIndex and notifies next player that it's their turn
@@ -124,7 +119,7 @@ public class PlayerManager : NetworkBehaviour
         }
 
         ServerMessages.RPC_NotifyPlayerTurn(Runner, 
-            nextPlayer.ClientRef,
+            nextPlayer.PlayerRef,
             turnStartData);
     }
 }

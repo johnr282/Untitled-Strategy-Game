@@ -17,16 +17,8 @@ public class ServerMessages : NetworkBehaviour
     {
         Debug.Log("RPC_GameStart called on player " + 
             gameStartData.PlayerID.ToString());
+
         EventBus.Publish(new PlayerIDReceivedEvent(gameStartData.PlayerID));
-
-        // If the game mode is either host or server, the map has already been 
-        // generated in PlayerManager.OnAllPlayersJoined(), so we don't want to
-        // generate it again
-        if (runner.GameMode == GameMode.Client)
-            EventBus.Publish(new GenerateMapEvent(gameStartData.MapSeed));
-
-        EventBus.Publish(new StartingLocationReceivedEvent(
-            gameStartData.StartLocation));
     }
 
     // Notifies a client that it's their turn

@@ -106,7 +106,7 @@ public class MapVisuals : MonoBehaviour
     // Highlights tile at given tile position; assumes tile exists at given position
     public void OnTileHovered(NewTileHoveredOverEvent tileHoveredEvent)
     {
-        Vector3Int tilePos = tileHoveredEvent.Coordinate;
+        Vector3Int tilePos = tileHoveredEvent.Coordinate.ConvertToVector3Int();
         if (_currentlyHighlightedTile == tilePos)
             return;
 
@@ -147,7 +147,7 @@ public class MapVisuals : MonoBehaviour
     // Selects tile at given world position; does nothing if no tile exists
     public void OnTileSelected(TileSelectedEvent tileSelectedEvent)
     {
-        Vector3Int tilePos = tileSelectedEvent.Coordinate;
+        Vector3Int tilePos = tileSelectedEvent.Coordinate.ConvertToVector3Int();
         if (_currentlySelectedTile == tilePos)
             return;
 

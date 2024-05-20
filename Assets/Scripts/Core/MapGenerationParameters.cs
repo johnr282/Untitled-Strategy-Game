@@ -56,6 +56,6 @@ public class MapGenerationParameters : MonoBehaviour
 
     // MapHeight and MapWidth are calculated based on other parameters, so
     // they aren't serialized
-    public int MapHeight { get; set; }
-    public int MapWidth { get; set; }
+    public int MapHeight { get; set; } = -1;
+    public int MapWidth { get; set; } = -1;
 }

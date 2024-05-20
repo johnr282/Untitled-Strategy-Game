@@ -46,9 +46,9 @@ public static class ProjectUtilities
         return FindComponent<Tilemap>(GameMapObjectName);
     }
 
-    public static TileSelection FindTileSelection()
+    public static Selection FindTileSelection()
     {
-        return FindComponent<TileSelection>(GameMapObjectName);
+        return FindComponent<Selection>(GameMapObjectName);
     }
 
     public static ClientPlayerData FindClientPlayerData()

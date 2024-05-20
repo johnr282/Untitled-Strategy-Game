@@ -61,6 +61,8 @@ public class UnitObject : SelectableObject
         EventBus.Unsubscribe(_tileSelectedSub);
         EventBus.Unsubscribe(_tileHoveredSub);
 
+        HexCoordinateOffset requestedHex = tileSelectedEvent.Coordinate;
+
         MoveUnitRequest request = new(UnitID,
             tileSelectedEvent.Coordinate,
             _playerData.PlayerID);
@@ -74,18 +76,13 @@ public class UnitObject : SelectableObject
 
     void OnTileHovered(NewTileHoveredOverEvent tileHoveredEvent)
     {
-        Unit thisUnit = _unitManager.FindUnit(UnitID);
-        HexCoordinateOffset goalHex = 
-            HexUtilities.ConvertToHexCoordinateOffset(tileHoveredEvent.Coordinate);
-
-        if (!_gameMap.FindTile(goalHex, out GameTile goalTile))
-            throw new ArgumentException("Invalid goal tile");
+        Unit thisUnit = _unitManager.GetUnit(UnitID);
+        GameTile goalTile = _gameMap.GetTile(tileHoveredEvent.Coordinate);
 
         List<GameTile> path;
         try
         {
             path = _gameMap.FindPath(thisUnit,
-                thisUnit.CurrentLocation,
                 goalTile);
         }
         catch (RuntimeException)
@@ -113,8 +110,7 @@ public class UnitObject : SelectableObject
         Debug.Log("Handling move unit request from player " + 
             request.RequestingPlayerID);
 
-        HexCoordinateOffset requestedHex = 
-            HexUtilities.ConvertToHexCoordinateOffset(request.Location);
+        HexCoordinateOffset requestedHex = request.Location;
 
         if (_unitManager.TryMoveUnit(request.UnitID,
             requestedHex,

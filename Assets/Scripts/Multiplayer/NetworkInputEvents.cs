@@ -41,11 +41,11 @@ public class NetworkInputEvent
 public struct CreateUnitRequest : INetworkStruct
 {
     public UnitType Type { get; }
-    public Vector3Int Location { get; }
+    public HexCoordinateOffset Location { get; }
     public int RequestingPlayerID { get; }
 
     public CreateUnitRequest(UnitType typeIn,
-        Vector3Int locationIn,
+        HexCoordinateOffset locationIn,
         int requestingPlayerIDIn)
     {
         Type = typeIn;
@@ -58,11 +58,11 @@ public struct CreateUnitRequest : INetworkStruct
 public struct MoveUnitRequest : INetworkStruct
 {
     public int UnitID { get; }
-    public Vector3Int Location { get; }
+    public HexCoordinateOffset Location { get; }
     public int RequestingPlayerID { get; }
 
     public MoveUnitRequest(int unitIDIn,
-        Vector3Int locationIn,
+        HexCoordinateOffset locationIn,
         int requestingPlayerIDIn)
     {
         UnitID = unitIDIn;

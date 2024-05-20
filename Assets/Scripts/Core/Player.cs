@@ -10,13 +10,13 @@ using UnityEngine;
 public class Player
 {
     // Reference to the client corresponding to this player
-    public PlayerRef ClientRef { get; }     
+    public PlayerRef PlayerRef { get; }     
     int _playerID;    
     
     public Player(PlayerRef playerRefIn, 
         int playerIDIn)
     {
-        ClientRef = playerRefIn;
+        PlayerRef = playerRefIn;
         _playerID = playerIDIn;
     }
 }
