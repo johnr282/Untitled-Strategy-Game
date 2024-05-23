@@ -9,7 +9,7 @@ using Fusion;
 
 public class ClientPlayerData : NetworkBehaviour
 {
-    public int PlayerID { get; private set; }
+    public PlayerID PlayerID { get; private set; }
     public bool MyTurn {  get; private set; }
 
     Subscription<PlayerIDReceivedEvent> _playerIDSub;

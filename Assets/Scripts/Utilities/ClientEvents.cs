@@ -43,9 +43,9 @@ public class GenerateMapEvent
 // Published when this client receives their player ID from the server
 public class PlayerIDReceivedEvent
 {
-    public int PlayerID { get; }
+    public PlayerID PlayerID { get; }
 
-    public PlayerIDReceivedEvent(int playerIDIn)
+    public PlayerIDReceivedEvent(PlayerID playerIDIn)
     {
         PlayerID = playerIDIn;
     }

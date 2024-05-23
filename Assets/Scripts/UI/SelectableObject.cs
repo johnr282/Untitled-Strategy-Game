@@ -11,7 +11,7 @@ using UnityEngine;
 [RequireComponent(typeof(Collider))]
 public abstract class SelectableObject : NetworkBehaviour
 {
-    [Networked] public int OwnerID { get; set; } = -1;
+    [Networked] public PlayerID OwnerID { get; set; }
 
     protected ClientPlayerData _playerData;
     protected bool _selectedByOwner = false;
@@ -36,11 +36,8 @@ public abstract class SelectableObject : NetworkBehaviour
 
         Debug.Log(this.gameObject.name + " selected");
 
-        if (OwnerID == -1)
-            throw new RuntimeException("OwnerID has not been set");
-
-        int selectingPlayerID = _playerData.PlayerID;
-        if (OwnerID == selectingPlayerID)
+        PlayerID selectingPlayerID = _playerData.PlayerID;
+        if (OwnerID.ID == selectingPlayerID.ID)
         {
             _selectedByOwner = true;
             OnSelectedByOwner();

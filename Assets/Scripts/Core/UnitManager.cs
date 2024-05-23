@@ -16,10 +16,10 @@ public class UnitManager : NetworkBehaviour
         GameMap.MaxWidth * GameMap.MaxHeight;
 
     [Networked, Capacity(MaxUnits)]
-    NetworkDictionary<int, Unit> Units { get; }
+    NetworkDictionary<UnitID, Unit> Units { get; }
 
     GameMap _gameMap;
-    int _nextUnitID = -1;
+    ushort _nextUnitID = 0;
 
     void Start()
     {
@@ -53,15 +53,19 @@ public class UnitManager : NetworkBehaviour
     }
 
     // Returns a unique ID for each new unit
-    int GetNextUnitID()
+    UnitID GetNextUnitID()
     {
+        if (_nextUnitID >= ushort.MaxValue)
+            throw new RuntimeException("Ran out of unit IDs");
+
+        UnitID nextID = new(_nextUnitID);
         _nextUnitID++;
-        return _nextUnitID;
+        return nextID;
     }
 
     // Returns the unit corresponding to the given unit ID
     // Throws an ArgumentException if given ID has no corresponding unit
-    public Unit GetUnit(int unitID)
+    public Unit GetUnit(UnitID unitID)
     {
         if (!Units.TryGet(unitID, out Unit unit))
             throw new ArgumentException("No unit exists with the given unit ID");
@@ -75,7 +79,7 @@ public class UnitManager : NetworkBehaviour
     // parameter; returns false otherwise
     // Throws an ArgumentException if no unit exists with the given ID or no GameTile
     // corresponding to requestedHex exists
-    public bool TryMoveUnit(int unitID, 
+    public bool TryMoveUnit(UnitID unitID, 
         HexCoordinateOffset requestedHex, 
         out List<HexCoordinateOffset> pathTaken)
     {

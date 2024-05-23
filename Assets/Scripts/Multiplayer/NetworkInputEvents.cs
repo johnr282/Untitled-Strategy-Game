@@ -42,11 +42,11 @@ public struct CreateUnitRequest : INetworkStruct
 {
     public UnitType Type { get; }
     public HexCoordinateOffset Location { get; }
-    public int RequestingPlayerID { get; }
+    public PlayerID RequestingPlayerID { get; }
 
     public CreateUnitRequest(UnitType typeIn,
         HexCoordinateOffset locationIn,
-        int requestingPlayerIDIn)
+        PlayerID requestingPlayerIDIn)
     {
         Type = typeIn;
         Location = locationIn;
@@ -57,13 +57,13 @@ public struct CreateUnitRequest : INetworkStruct
 // A client request to move a unit 
 public struct MoveUnitRequest : INetworkStruct
 {
-    public int UnitID { get; }
+    public UnitID UnitID { get; }
     public HexCoordinateOffset Location { get; }
-    public int RequestingPlayerID { get; }
+    public PlayerID RequestingPlayerID { get; }
 
-    public MoveUnitRequest(int unitIDIn,
+    public MoveUnitRequest(UnitID unitIDIn,
         HexCoordinateOffset locationIn,
-        int requestingPlayerIDIn)
+        PlayerID requestingPlayerIDIn)
     {
         UnitID = unitIDIn;
         Location = locationIn;

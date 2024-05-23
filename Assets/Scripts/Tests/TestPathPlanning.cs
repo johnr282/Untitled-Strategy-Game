@@ -41,7 +41,7 @@ public class TestPathPlanning : MonoBehaviour
             HexCoordinateOffset goal = tileSelectedEvent.Coordinate;
             Unit dummyUnit = new(_unitType,
                 _gameMap.GetTile(_start),
-                0);
+                new UnitID(0));
             FindPath(dummyUnit, goal);
             _startSelected = false;
         }
@@ -54,7 +54,7 @@ public class TestPathPlanning : MonoBehaviour
             {
                 Unit dummyUnit = new(_unitType,
                     _gameMap.GetTile(_start),
-                    0);
+                    new UnitID(0));
                 FindAllPaths(dummyUnit);
                 _startSelected = false;
             }

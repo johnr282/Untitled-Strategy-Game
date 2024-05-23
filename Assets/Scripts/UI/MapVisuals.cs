@@ -98,7 +98,7 @@ public class MapVisuals : MonoBehaviour
 
         if (gameTile.InContinent())
         {
-            Color continentColor = _continentColors[gameTile.ContinentID];
+            Color continentColor = _continentColors[gameTile.ContinentID.ID];
             SetTileColor(tilemapCoord, continentColor);
         }
     }

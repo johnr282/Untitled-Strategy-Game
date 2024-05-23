@@ -38,12 +38,22 @@ public enum UnitType
     air
 }
 
+public readonly struct UnitID : INetworkStruct
+{
+    public readonly ushort ID { get; }
+
+    public UnitID(ushort idIn)
+    {
+        ID = idIn;
+    }
+}
+
 public struct Unit : INetworkStruct
 {
     public int Strength {  get; }
     public int Capacity { get; }
     public UnitType Type { get; }
-    public int UnitID { get; }
+    public UnitID UnitID { get; }
     public GameTile CurrentLocation { get; set; }
 
     [Networked, Capacity(GameTile.TerrainTypeCount)]
@@ -51,7 +61,7 @@ public struct Unit : INetworkStruct
 
     public Unit(UnitType typeIn, 
         GameTile currentLocationIn,
-        int unitIDIn)
+        UnitID unitIDIn)
     {
         Strength = -1;
         Capacity = -1;

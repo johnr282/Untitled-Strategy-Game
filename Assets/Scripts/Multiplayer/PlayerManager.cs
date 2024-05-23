@@ -8,15 +8,27 @@ using UnityEngine;
 // Used exclusively by the server to manage players and turn order
 // ------------------------------------------------------------------
 
+public struct PlayerID : INetworkStruct
+{
+    public ushort ID { get; }
+
+    public PlayerID (ushort idIn)
+    {
+        ID = idIn;
+    }
+}
+
 public class PlayerManager : NetworkBehaviour
 {
+    // Player ID is index into players list
+    List<Player> _players = new();
+
     // Maps player IDs to players
-    Dictionary<int, Player> _players = new();
+    //Dictionary<int, Player> _players = new();
 
     int _numPlayers { get => _players.Count; }
 
-    // Contains player IDs
-    List<int> _turnOrder = new();
+    List<PlayerID> _turnOrder = new();
 
     // Contains an index to _turnOrder
     int _currTurnIndex = 0;
@@ -38,8 +50,8 @@ public class PlayerManager : NetworkBehaviour
     // client corresponding to given PlayerRef
     public void AddPlayer(PlayerRef player)
     {
-        int newPlayerID = _numPlayers;
-        _players.Add(newPlayerID, new Player(player, newPlayerID));
+        PlayerID newPlayerID = new PlayerID((ushort)_numPlayers);
+        _players.Add(new Player(player, newPlayerID));
         _turnOrder.Add(newPlayerID);
     }
 
@@ -48,19 +60,17 @@ public class PlayerManager : NetworkBehaviour
     {
         Debug.Log("All players joined");
 
-        foreach (KeyValuePair<int, Player> pair in _players)
+        foreach (Player player in _players)
         {
-            int playerID = pair.Key;
-            Player player = pair.Value;
-            GameTile startingTile = startingTiles[playerID];
+            GameTile startingTile = startingTiles[player.PlayerID.ID];
 
             EventBus.Publish(new CreateUnitRequest(UnitType.land,
                 startingTile.Hex,
-                playerID));
+                player.PlayerID));
 
             ServerMessages.RPC_GameStart(Runner,
                 player.PlayerRef,
-                new GameStartData(playerID,
+                new GameStartData(player.PlayerID,
                     startingTile));
         }
 
@@ -75,15 +85,15 @@ public class PlayerManager : NetworkBehaviour
         NotifyNextPlayer(new TurnStartData(true));
     }
 
-    // Returns the PlayerRef corresponding to the given playerID
+    // Returns the Player corresponding to the given playerID
     // Throws an ArgumentException if playerID is invalid
-    public PlayerRef GetPlayerRef(int playerID)
+    public Player GetPlayer(PlayerID playerID)
     {
-        if (!_players.TryGetValue(playerID, out Player player))
+        if (playerID.ID >= _numPlayers)
             throw new ArgumentException(
-                "Attempted to get PlayerRef of invalid player ID");
+                "Invalid player ID");
 
-        return player.PlayerRef;
+        return _players[playerID.ID];
     }
 
     // Updates _currTurnIndex and notifies next player that it's their turn
@@ -105,18 +115,12 @@ public class PlayerManager : NetworkBehaviour
         Debug.Log("Updated curr turn index to : " +  _currTurnIndex);
     }
 
-    // Notifies the next player that it's their turn
+    // Notifies the next player that it's their turns and sends them the given
+    // turn start data
     void NotifyNextPlayer(TurnStartData turnStartData)
     {
-        int nextPlayerID = _turnOrder[_currTurnIndex];
-        bool playerNotFound = !_players.TryGetValue(nextPlayerID, 
-            out Player nextPlayer);
-
-        if (playerNotFound)
-        {
-            Debug.LogError("Player " + nextPlayerID + " not found");
-            return;
-        }
+        PlayerID nextPlayerID = _turnOrder[_currTurnIndex];
+        Player nextPlayer = GetPlayer(nextPlayerID);
 
         ServerMessages.RPC_NotifyPlayerTurn(Runner, 
             nextPlayer.PlayerRef,

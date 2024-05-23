@@ -66,8 +66,8 @@ public class UnitSpawner : NetworkBehaviour
 
     // Spawns a UnitObject onto the tilemap at the given hex with the given unit ID
     // Throws a RuntimeException if the unit prefab is missing necessary components
-    void SpawnUnitObject(int unitID, 
-        int ownerID,
+    void SpawnUnitObject(UnitID unitID, 
+        PlayerID ownerID,
         HexCoordinateOffset hex)
     {
         SpawnableObject spawnable = _unitPrefab.GetComponent<SpawnableObject>() ??

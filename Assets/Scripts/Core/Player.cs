@@ -11,12 +11,12 @@ public class Player
 {
     // Reference to the client corresponding to this player
     public PlayerRef PlayerRef { get; }     
-    int _playerID;    
+    public PlayerID PlayerID { get; }    
     
     public Player(PlayerRef playerRefIn, 
-        int playerIDIn)
+        PlayerID playerIDIn)
     {
         PlayerRef = playerRefIn;
-        _playerID = playerIDIn;
+        PlayerID = playerIDIn;
     }
 }

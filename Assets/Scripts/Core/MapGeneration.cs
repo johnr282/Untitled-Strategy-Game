@@ -122,7 +122,9 @@ public class MapGeneration : MonoBehaviour
             {
                 HexCoordinateOffset coordinate = new HexCoordinateOffset(col, row);
                 _gameMap.AddTile(coordinate, 
-                    new GameTile(coordinate, Terrain.sea));
+                    new GameTile(coordinate, 
+                        Terrain.sea,
+                        new ContinentID(-1)));
             }
         }
     }
@@ -142,7 +144,7 @@ public class MapGeneration : MonoBehaviour
             if (continentRadius <= 0)
                 continentRadius = 1;
 
-            int continentID = i;
+            ContinentID continentID = new((short)i);
             Debug.Log("Generating continent " + continentID.ToString() + 
                 " with radius " + continentRadius.ToString() + 
                 " and central tile " + centralCoordinates[i].ToString());
@@ -379,7 +381,7 @@ public class MapGeneration : MonoBehaviour
     // Generates continent around given central coordinate with given ID and radius;
     // returns list of tiles in the continent
     Continent GenerateContinent(HexCoordinateOffset centralCoordinate, 
-        int continentID, 
+        ContinentID continentID, 
         int radius)
     {
         GameTile centralTile = new(centralCoordinate,
@@ -409,7 +411,7 @@ public class MapGeneration : MonoBehaviour
     // Generates the nth ring of the continent with given central coordinate and ID; 
     // updates continent as the ring is generated
     void GenerateContinentRing(HexCoordinateOffset centralCoordinate,
-        int continentID, 
+        ContinentID continentID, 
         int n, 
         float offset,
         ref Continent continent)
@@ -431,7 +433,7 @@ public class MapGeneration : MonoBehaviour
     // Returns whether given hex should be included in continent specified by
     // given continent ID
     bool IncludeTile(HexCoordinateOffset hex, 
-        int continentID, 
+        ContinentID continentID, 
         float offset)
     {
         GameTile tile;
@@ -452,7 +454,7 @@ public class MapGeneration : MonoBehaviour
 
         foreach (GameTile adjacentTile in adjacentTiles)
         {
-            if (adjacentTile.ContinentID == continentID)
+            if (adjacentTile.ContinentID.ID == continentID.ID)
             {
                 connectedToContinent = true;
                 break;

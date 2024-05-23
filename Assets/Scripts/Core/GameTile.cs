@@ -27,48 +27,52 @@ public struct GameTile : INetworkStruct
     public Terrain TileTerrain { get; set; }
 
     // ID of this tile's continent; -1 if not part of any continent
-    public int ContinentID { get; set; }
+    public ContinentID ContinentID { get; set; }
 
     // Player ID of this tile's current owner; -1 if not owned by any player
-    public int OwnerID { get; set; }
+    public PlayerID OwnerID { get; set; }
     public int Capacity { get; private set; }
 
     // List of unit IDs of all the units currently on this tile
     [Networked, Capacity(MaxTileUnitCapacity)]
-    NetworkLinkedList<int> UnitsOnTile => default;
+    NetworkLinkedList<UnitID> UnitsOnTile => default;
 
+    // Set to true when this tile is claimed by a player, initially false
+    bool _claimed;
+
+    // Pass in -1 for continent ID if tile is not in a continent
     public GameTile(HexCoordinateOffset coordinateIn, 
         Terrain terrainIn, 
-        int contintentIDIn = -1, 
-        int ownerIDIn = -1)
+        ContinentID contintentIDIn)
     {
         Hex = coordinateIn;
         TileTerrain = terrainIn;
         ContinentID = contintentIDIn;
-        OwnerID = ownerIDIn;
-        //UnitsOnTile = new();
+        OwnerID = default;
+
         Capacity = 0;
+        _claimed = false;
     }
 
     // Returns true if this tile is in a continent, false otherwise
     public bool InContinent()
     {
-        return ContinentID != -1;
+        return ContinentID.ID != -1;
     }
 
     // Returns whether the given player ID either has or can claim ownership over
     // this tile
-    public bool Available(int playerID)
+    public bool Available(PlayerID playerID)
     {
-        bool unclaimedTile = OwnerID == -1;
-        return unclaimedTile ||
-            (OwnerID == playerID);
+        return !_claimed ||
+            (OwnerID.ID == playerID.ID);
     }
 
     // Sets the owner of this tile to the given player ID
-    public void Claim(int playerID)
+    public void Claim(PlayerID playerID)
     {
         OwnerID = playerID;
+        _claimed = true;
     }
 
     // Adds the given unit to this tile

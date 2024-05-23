@@ -10,10 +10,10 @@ using UnityEngine;
 // Stores data sent to a client when all players have joined and the game starts
 public readonly struct GameStartData : INetworkStruct
 {
-    public int PlayerID { get; }
+    public PlayerID PlayerID { get; }
     public GameTile StartLocation { get; }
 
-    public GameStartData(int playerIDIn, 
+    public GameStartData(PlayerID playerIDIn, 
         GameTile startLocationIn)
     {
         PlayerID = playerIDIn;

@@ -11,7 +11,7 @@ using System;
 [RequireComponent(typeof(MoveableObject))]
 public class UnitObject : SelectableObject
 {
-    [Networked] public int UnitID { get; set; } = -1;
+    [Networked] public UnitID UnitID { get; set; }
 
     UnitManager _unitManager;
     GameMap _gameMap;
@@ -104,7 +104,7 @@ public class UnitObject : SelectableObject
     // map and moves the requested Unit to its new location
     void OnMoveUnitRequest(MoveUnitRequest request)
     {
-        if (request.UnitID != UnitID)
+        if (request.UnitID.ID != UnitID.ID)
             return;
 
         Debug.Log("Handling move unit request from player " + 

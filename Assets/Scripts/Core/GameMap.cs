@@ -9,6 +9,16 @@ using Fusion;
 // GameTiles
 // ------------------------------------------------------------------
 
+public readonly struct ContinentID : INetworkStruct
+{
+    public readonly short ID { get; }
+
+    public ContinentID(short idIn)
+    {
+        ID = idIn;
+    }
+}
+
 public struct Continent : INetworkStruct
 {
     [Networked, Capacity(GameMap.MaxTilesPerContinent)]
@@ -36,11 +46,11 @@ public class GameMap : NetworkBehaviour
     public const int MaxContinents = 20;
     public const int MaxTilesPerContinent = MaxSize / MaxContinents;
 
-    //// 1D array representing a 2D grid of GameTiles making up the map
-    //[Networked, Capacity(MaxHeight * MaxWidth)]
-    //NetworkArray<GameTile> Map { get; } = new();
-
+    // 1D array representing a 2D grid of GameTiles making up the map
     [Networked, Capacity(MaxHeight * MaxWidth)]
+    NetworkArray<GameTile> MapArray { get; } = new();
+
+    //[Networked, Capacity(MaxHeight * MaxWidth)]
     NetworkDictionary<HexCoordinateOffset, GameTile> Map { get; } = new();
 
     [Networked] public int NumCols { get; set; }
@@ -52,7 +62,7 @@ public class GameMap : NetworkBehaviour
 
     // List of continents in the map, continent ID is the index corresponding
     // to that continent
-    [Networked, Capacity(MaxContinents)]
+    //[Networked, Capacity(MaxContinents)]
     NetworkLinkedList<Continent> Continents { get; } = new();
 
     //// Map from continent IDs to continents
@@ -108,10 +118,10 @@ public class GameMap : NetworkBehaviour
     // Throws an ArgumentException if continent ID doesn't equal the size of 
     // the current continents list or if the number of continents would exceed
     // the max
-    public void AddContinent(int continentID, 
+    public void AddContinent(ContinentID continentID, 
         Continent continent)
     {
-        if (NumContinents != continentID)
+        if (NumContinents != continentID.ID)
             throw new ArgumentException("Continent ID is non-sequential");
 
         if (NumContinents >= MaxContinents)
