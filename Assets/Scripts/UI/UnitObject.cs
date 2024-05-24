@@ -11,7 +11,7 @@ using System;
 [RequireComponent(typeof(MoveableObject))]
 public class UnitObject : SelectableObject
 {
-    [Networked] public UnitID UnitID { get; set; }
+    [Networked] public UnitID UnitID { get; set; } = new(-1);
 
     UnitManager _unitManager;
     GameMap _gameMap;
@@ -46,6 +46,9 @@ public class UnitObject : SelectableObject
 
     public override void OnSelectedByOwner()
     {
+        if (UnitID.ID == -1)
+            throw new RuntimeException("Unit ID not set");
+
         Debug.Log("Unit " + UnitID.ToString() + " selected");
 
         _tileSelectedSub =
@@ -110,14 +113,16 @@ public class UnitObject : SelectableObject
         Debug.Log("Handling move unit request from player " + 
             request.RequestingPlayerID);
 
-        HexCoordinateOffset requestedHex = request.Location;
-
-        if (_unitManager.TryMoveUnit(request.UnitID,
-            requestedHex,
-            out List<HexCoordinateOffset> pathTaken))
+        if (_unitManager.ValidateMoveUnitRequest(request))
         {
-            _moveable.MoveTo(request.Location);
             Debug.Log("Request completed");
+            _moveable.MoveTo(request.Location);
+
+            UnitMoved unitMoved = new(request.UnitID,
+                request.Location);
+            EventBus.Publish(unitMoved);
+            ServerMessages.RPC_UnitMoved(Runner,
+                unitMoved);
         }
         else
         {

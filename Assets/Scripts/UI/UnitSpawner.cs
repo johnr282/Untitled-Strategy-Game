@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 
 // ------------------------------------------------------------------
-// Component handling spawning new units onto the map
+// Component handling spawning new UnitObjects onto the map
 // ------------------------------------------------------------------
 
 [RequireComponent(typeof(Tilemap))]
@@ -20,8 +20,6 @@ public class UnitSpawner : NetworkBehaviour
     UnitManager _unitManager;
     ClientPlayerData _playerData;
 
-    Subscription<CreateUnitRequest> _createUnitRequestSub;
-
     // Start is called before the first frame update
     void Start()
     {
@@ -29,8 +27,7 @@ public class UnitSpawner : NetworkBehaviour
         _unitManager = GetComponent<UnitManager>();
         _playerData = ProjectUtilities.FindClientPlayerData();
 
-        _createUnitRequestSub =
-            EventBus.Subscribe<CreateUnitRequest>(OnCreateUnitRequest);
+        EventBus.Subscribe<CreateUnitRequest>(OnCreateUnitRequest);
     }
 
     // Requests the server to create a new unit of the given type at the given tile
@@ -55,18 +52,19 @@ public class UnitSpawner : NetworkBehaviour
             request.RequestingPlayerID.ToString() + " at " + 
             request.Location.ToString());
 
-        if (_unitManager.TryCreateUnit(request, out Unit unit))
+        if (_unitManager.ValidateCreateUnitRequest(request))
         {
             Debug.Log("Request successful");
-            SpawnUnitObject(unit.UnitID,
-                request.RequestingPlayerID,
-                request.Location);
+            UnitCreated unitCreated = new(request);
+            EventBus.Publish(unitCreated);
+            ServerMessages.RPC_UnitCreated(Runner,
+                unitCreated);
         }
     }
 
     // Spawns a UnitObject onto the tilemap at the given hex with the given unit ID
     // Throws a RuntimeException if the unit prefab is missing necessary components
-    void SpawnUnitObject(UnitID unitID, 
+    public void SpawnUnitObject(UnitID unitID, 
         PlayerID ownerID,
         HexCoordinateOffset hex)
     {

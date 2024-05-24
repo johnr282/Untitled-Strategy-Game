@@ -11,7 +11,7 @@ using UnityEngine;
 [RequireComponent(typeof(Collider))]
 public abstract class SelectableObject : NetworkBehaviour
 {
-    [Networked] public PlayerID OwnerID { get; set; }
+    [Networked] public PlayerID OwnerID { get; set; } = new(-1);
 
     protected ClientPlayerData _playerData;
     protected bool _selectedByOwner = false;
@@ -24,6 +24,9 @@ public abstract class SelectableObject : NetworkBehaviour
     // Called when this object is selected by any player
     public void OnSelect()
     {
+        if (OwnerID.ID == -1)
+            throw new RuntimeException("OwnerID not set");
+
         // Prevents same object being selected multiple times before selection
         // operation is complete, whatever that may be
         // Responsibility of the derived class to set _selectedByOwner to false

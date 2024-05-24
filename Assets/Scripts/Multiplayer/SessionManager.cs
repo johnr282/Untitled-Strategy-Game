@@ -94,9 +94,14 @@ public class SessionManager : MonoBehaviour, INetworkRunnerCallbacks
     // Does all necessary work to initialize the session
     void InitializeSession()
     {
-        NetworkObject gameMapGrid = _runner.Spawn(_gameMapGridPrefab,
-            Vector3.zero,
-            Quaternion.identity);
+        int numMaps = 100;
+        NetworkObject gameMapGrid = null;
+        for (int i = 0; i < numMaps; i++)
+        {
+            gameMapGrid = _runner.Spawn(_gameMapGridPrefab,
+                Vector3.zero,
+                Quaternion.identity);
+        }
 
         if (gameMapGrid.transform.childCount != 1)
             throw new RuntimeException(

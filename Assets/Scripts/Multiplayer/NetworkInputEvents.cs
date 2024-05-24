@@ -37,8 +37,19 @@ public class NetworkInputEvent
     }
 }
 
+// A client request to finish their turn
+public readonly struct FinishTurnRequest : INetworkStruct
+{
+    public PlayerID PlayerID { get; }
+
+    public FinishTurnRequest(PlayerID playerIDIn)
+    {
+        PlayerID = playerIDIn;
+    }
+}
+
 // A client request to create a new unit
-public struct CreateUnitRequest : INetworkStruct
+public readonly struct CreateUnitRequest : INetworkStruct
 {
     public UnitType Type { get; }
     public HexCoordinateOffset Location { get; }
@@ -55,7 +66,7 @@ public struct CreateUnitRequest : INetworkStruct
 }
 
 // A client request to move a unit 
-public struct MoveUnitRequest : INetworkStruct
+public readonly struct MoveUnitRequest : INetworkStruct
 {
     public UnitID UnitID { get; }
     public HexCoordinateOffset Location { get; }

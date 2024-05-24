@@ -40,17 +40,6 @@ public class GenerateMapEvent
     }
 }
 
-// Published when this client receives their player ID from the server
-public class PlayerIDReceivedEvent
-{
-    public PlayerID PlayerID { get; }
-
-    public PlayerIDReceivedEvent(PlayerID playerIDIn)
-    {
-        PlayerID = playerIDIn;
-    }
-}
-
 // Published when this client receives their starting location from the server
 public class StartingLocationReceivedEvent
 {
@@ -59,41 +48,5 @@ public class StartingLocationReceivedEvent
     public StartingLocationReceivedEvent(Vector3Int locationIn)
     {
         Location = locationIn;
-    }
-}
-
-// Published when it's this client's turn
-public class PlayerTurnEvent
-{
-    public TurnStartData TurnStartInfo { get; }
-
-    public PlayerTurnEvent(TurnStartData turnStartInfoIn)
-    {
-        TurnStartInfo = turnStartInfoIn;
-    }
-}
-
-// Published when this client's turn finishes
-public class TurnFinishedEventClient
-{
-    public TurnEndData TurnEndInfo { get; }
-
-    public TurnFinishedEventClient(TurnEndData turnEndInfoIn)
-    {
-        TurnEndInfo = turnEndInfoIn;
-    }
-}
-
-// Published when the server responds to a create unit request
-public class CreateUnitResponseEvent
-{
-    public CreateUnitRequest Request { get; }
-    public bool Success { get; }
-       
-    public CreateUnitResponseEvent(CreateUnitRequest requestIn, 
-        bool successIn)
-    {
-        Request = requestIn;
-        Success = successIn;
     }
 }

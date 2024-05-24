@@ -8,16 +8,6 @@ using UnityEngine;
 // Used exclusively by the server to manage players and turn order
 // ------------------------------------------------------------------
 
-public struct PlayerID : INetworkStruct
-{
-    public ushort ID { get; }
-
-    public PlayerID (ushort idIn)
-    {
-        ID = idIn;
-    }
-}
-
 public class PlayerManager : NetworkBehaviour
 {
     // Player ID is index into players list
@@ -68,9 +58,9 @@ public class PlayerManager : NetworkBehaviour
                 startingTile.Hex,
                 player.PlayerID));
 
-            ServerMessages.RPC_GameStart(Runner,
+            ServerMessages.RPC_StartGame(Runner,
                 player.PlayerRef,
-                new GameStartData(player.PlayerID,
+                new GameStarted(player.PlayerID,
                     startingTile));
         }
 

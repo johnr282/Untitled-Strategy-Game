@@ -15,30 +15,18 @@ public enum Terrain
     land
 }
 
-public struct GameTile : INetworkStruct
+public class GameTile
 {
     // Update this constant to match the number of Terrain types
     public const int TerrainTypeCount = 2;
     public const int MaxTileUnitCapacity = 12;
 
-    // Location of tile in game map
     public HexCoordinateOffset Hex { get; }
-
     public Terrain TileTerrain { get; set; }
-
-    // ID of this tile's continent; -1 if not part of any continent
     public ContinentID ContinentID { get; set; }
-
-    // Player ID of this tile's current owner; -1 if not owned by any player
-    public PlayerID OwnerID { get; set; }
+    public PlayerID OwnerID { get; private set; }
     public int Capacity { get; private set; }
-
-    // List of unit IDs of all the units currently on this tile
-    [Networked, Capacity(MaxTileUnitCapacity)]
-    NetworkLinkedList<UnitID> UnitsOnTile => default;
-
-    // Set to true when this tile is claimed by a player, initially false
-    bool _claimed;
+    List<UnitID> _unitsOnTile = new();
 
     // Pass in -1 for continent ID if tile is not in a continent
     public GameTile(HexCoordinateOffset coordinateIn, 
@@ -48,10 +36,8 @@ public struct GameTile : INetworkStruct
         Hex = coordinateIn;
         TileTerrain = terrainIn;
         ContinentID = contintentIDIn;
-        OwnerID = default;
-
+        OwnerID = new(-1);
         Capacity = 0;
-        _claimed = false;
     }
 
     // Returns true if this tile is in a continent, false otherwise
@@ -64,29 +50,34 @@ public struct GameTile : INetworkStruct
     // this tile
     public bool Available(PlayerID playerID)
     {
-        return !_claimed ||
+        return !Claimed() ||
             (OwnerID.ID == playerID.ID);
+    }
+
+    // Returns whether this tile has been claimed by a player
+    public bool Claimed()
+    {
+        return OwnerID.ID != -1;
     }
 
     // Sets the owner of this tile to the given player ID
     public void Claim(PlayerID playerID)
     {
         OwnerID = playerID;
-        _claimed = true;
     }
 
     // Adds the given unit to this tile
     // Throws an ArgumentException if given a unit that already exists in this tile
     public void AddUnit(Unit unit)
     {
-        UnitsOnTile.Add(unit.UnitID);
+        _unitsOnTile.Add(unit.UnitID);
     }
 
     // Removes the given unit from this tile
     // Throws an ArgumentException if given unit doesn't exist in this tile
     public void RemoveUnit(Unit unit)
     {
-        if (!UnitsOnTile.Remove(unit.UnitID))
+        if (!_unitsOnTile.Remove(unit.UnitID))
             throw new ArgumentException("Unit does not exist in this tile");
     }
 

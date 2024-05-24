@@ -5,7 +5,7 @@ using UnityEngine;
 using Fusion;
 
 // ------------------------------------------------------------------
-// Class representing a single unit
+// Struct representing a single unit
 // ------------------------------------------------------------------
 
 /*
@@ -36,16 +36,6 @@ public enum UnitType
     land, 
     naval, 
     air
-}
-
-public readonly struct UnitID : INetworkStruct
-{
-    public readonly ushort ID { get; }
-
-    public UnitID(ushort idIn)
-    {
-        ID = idIn;
-    }
 }
 
 public struct Unit : INetworkStruct

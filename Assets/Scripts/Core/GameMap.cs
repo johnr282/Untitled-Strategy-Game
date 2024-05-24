@@ -9,16 +9,6 @@ using Fusion;
 // GameTiles
 // ------------------------------------------------------------------
 
-public readonly struct ContinentID : INetworkStruct
-{
-    public readonly short ID { get; }
-
-    public ContinentID(short idIn)
-    {
-        ID = idIn;
-    }
-}
-
 public struct Continent : INetworkStruct
 {
     [Networked, Capacity(GameMap.MaxTilesPerContinent)]
@@ -40,8 +30,8 @@ public struct Continent : INetworkStruct
 
 public class GameMap : NetworkBehaviour
 {
-    public const int MaxHeight = 50;
-    public const int MaxWidth = 50;
+    public const int MaxHeight = 5;
+    public const int MaxWidth = 30;
     public const int MaxSize = MaxHeight * MaxWidth;
     public const int MaxContinents = 20;
     public const int MaxTilesPerContinent = MaxSize / MaxContinents;
