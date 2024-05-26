@@ -70,11 +70,12 @@ public static class HexUtilities
         return DistanceBetween(a, b) == 1;
     }
 
-    // Returns the shortest path between given start and goal as a list of hexes; 
+    // Returns the shortest path between given start and goal as a list of hexes.
+    // Returned path includes both start and goal. 
     // traversableNeighborsFunc should be a function that returns the list of the
-    // given node's traversable neighbors
+    // given node's traversable neighbors. 
     // costFunc should be a function that returns the cost to travel between two 
-    // adjacent hexes
+    // adjacent hexes. 
     // Throws a RuntimeException if no valid path is found
     public static List<HexCoordinateOffset> FindShortestPath(HexCoordinateOffset start,
         HexCoordinateOffset goal,
