@@ -102,7 +102,7 @@ public class TestPathPlanning : MonoBehaviour
 
         Action<GameTile> findPathToTile = (tile) =>
         {
-            if (_gameMap.Traversable(unit, tile.Hex))
+            if (_gameMap.Traversable(unit, tile))
                 FindPath(unit, tile.Hex);
         };
 

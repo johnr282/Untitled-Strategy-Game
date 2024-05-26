@@ -81,12 +81,13 @@ public class GameTile
             throw new ArgumentException("Unit does not exist in this tile");
     }
 
-    // Returns the cost for a unit of the given Unit to traverse into this
-    // tile from its current location
-    // Assumes the unit's current location is adjacent to this tile
+    // Returns the cost for the given unit to traverse into this tile from the
+    // given start tile
+    // Assumes the start tile is adjacent to this tile
     // Throws an ArgumentException if unitType is invalid or this tile's terrain
     // is invalid
-    public int CostToTraverse(Unit unit)
+    public int CostToTraverse(Unit unit, 
+        GameTile startTile)
     {
         string invalidTerrainMsg = "TileTerrain of GameTile not valid";
 

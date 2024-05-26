@@ -38,7 +38,7 @@ public enum UnitType
     air
 }
 
-public struct Unit
+public class Unit
 {
     public int Strength {  get; }
     public int Capacity { get; }

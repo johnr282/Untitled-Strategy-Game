@@ -49,7 +49,7 @@ public class GameStateManager : NetworkBehaviour
     {
         if (!runner.IsServer)
             throw new ArgumentException(
-                "UpdateGameState shoould only be called by the server");
+                "UpdateGameState should only be called by the server");
 
         // Updates the game state on the server, only needed if a dedicated
         // server with no local player is running
@@ -64,6 +64,7 @@ public class GameStateManager : NetworkBehaviour
     // player's starting tile
     void OnGameStarted(GameStarted gameStarted)
     {
+        Debug.Log("Game starting, generating map and spawning starting unit");
         MapGenerationParameters parameters = 
             ProjectUtilities.FindMapGenerationParameters();
 
@@ -93,6 +94,7 @@ public class GameStateManager : NetworkBehaviour
     void OnUnitCreated(UnitCreated unitCreated)
     {
         UnitID newUnitID = _unitManager.CreateUnit(unitCreated.UnitInfo);
+        Debug.Log("Created new unit " + newUnitID.ID.ToString());
 
         if (Runner.IsServer)
         {
@@ -104,6 +106,7 @@ public class GameStateManager : NetworkBehaviour
 
     void OnUnitMoved(UnitMoved unitMoved)
     {
+        Debug.Log("Moving unit " + unitMoved.UnitID.ID.ToString());
         GameTile destTile = _gameMap.GetTile(unitMoved.NewLocation);
         _unitManager.MoveUnit(unitMoved.UnitID,
             destTile);

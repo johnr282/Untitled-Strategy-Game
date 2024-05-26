@@ -75,27 +75,27 @@ public class UnitObject : SelectableObject
 
     void OnTileHovered(NewTileHoveredOverEvent tileHoveredEvent)
     {
-        Unit thisUnit = _unitManager.GetUnit(UnitID);
-        GameTile goalTile = _gameMap.GetTile(tileHoveredEvent.Coordinate);
+        //Unit thisUnit = _unitManager.GetUnit(UnitID);
+        //GameTile goalTile = _gameMap.GetTile(tileHoveredEvent.Coordinate);
 
-        List<GameTile> path;
-        try
-        {
-            path = _gameMap.FindPath(thisUnit,
-                goalTile);
-        }
-        catch (RuntimeException)
-        {
-            return;
-        }
+        //List<GameTile> path;
+        //try
+        //{
+        //    path = _gameMap.FindPath(thisUnit,
+        //        goalTile);
+        //}
+        //catch (RuntimeException)
+        //{
+        //    return;
+        //}
 
-        List<Vector3Int> pathToHighlight = new();
-        foreach (GameTile tile in path)
-        {
-            pathToHighlight.Add(tile.Hex.ConvertToVector3Int());
-        }
+        //List<Vector3Int> pathToHighlight = new();
+        //foreach (GameTile tile in path)
+        //{
+        //    pathToHighlight.Add(tile.Hex.ConvertToVector3Int());
+        //}
 
-        _mapVisuals.HighlightPath(pathToHighlight);
+        //_mapVisuals.HighlightPath(pathToHighlight);
     }
 
     // Called on the server when it receives a MoveUnitRequest

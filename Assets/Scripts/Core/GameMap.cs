@@ -121,45 +121,46 @@ public class GameMap : NetworkBehaviour
         return neighborTiles;
     }
 
-    // Returns whether the given hex is traversable by a unit of the given type
+    // Returns whether the given tile is traversable by a unit of the given type
     // Throws an ArgumentException if given hex is invalid
     public bool Traversable(Unit unit, 
-        HexCoordinateOffset hex)
+        GameTile tile)
     {
-        GameTile tile = GetTile(hex);
-        return tile.CostToTraverse(unit) != ImpassableCost;
+        return tile.CostToTraverse(unit, unit.CurrentLocation) != ImpassableCost;
     }
 
-    // Returns list of tiles adjacent to the given tile that can be traversed by
-    // the given unit type
-    public List<GameTile> TraversableNeighbors(Unit unit, 
+    // Returns list of hexes adjacent to the given tile that can be traversed by
+    // the given unit
+    public List<HexCoordinateOffset> TraversableNeighbors(Unit unit, 
         GameTile tile)
     {
         List<GameTile> neighbors = Neighbors(tile);
-        List<GameTile> traversableNeighbors = new();
+        List<HexCoordinateOffset> traversableNeighbors = new();
 
         foreach (GameTile neighbor in neighbors)
         {
-            if (Traversable(unit, neighbor.Hex))
-                traversableNeighbors.Add(neighbor);
+            if (Traversable(unit, neighbor))
+                traversableNeighbors.Add(neighbor.Hex);
         }
 
         return traversableNeighbors;
     }
 
-    // Returns the cost for the given unit to traverse between its current hex
-    // and the adjacent goal hex
+    // Returns the cost for the given unit to traverse between the given start
+    // hex and the adjacent goal hex
     // Throws an ArgumentException if goal doesn't exist in the map or the unit
     // isn't adjacent to the goal hex
     public int CostToTraverse(Unit unit,
+        HexCoordinateOffset start,
         HexCoordinateOffset goal)
     {
-        if (!HexUtilities.AreAdjacent(unit.CurrentLocation.Hex, goal))
+        if (!HexUtilities.AreAdjacent(start, goal))
             throw new ArgumentException(
                 "Attempted to calculate cost between non-adjacent tiles");
 
         GameTile goalTile = GetTile(goal);
-        return goalTile.CostToTraverse(unit);
+        GameTile startTile = GetTile(start);
+        return goalTile.CostToTraverse(unit, startTile);
     }
 
     // Executes the given action on every tile in the map
@@ -180,19 +181,12 @@ public class GameMap : NetworkBehaviour
         GameTile goal)
     {
         Func<HexCoordinateOffset, HexCoordinateOffset, int> costFunc = (startHex, goalHex)
-            => CostToTraverse(unit, goalHex);
+            => CostToTraverse(unit, startHex, goalHex);
 
         Func<HexCoordinateOffset, List<HexCoordinateOffset>> traversableNeighborsFunc = (hex) =>
         {
             GameTile tile = GetTile(hex);
-            List<GameTile> traversableNeighborTiles = TraversableNeighbors(unit, tile);
-            List<HexCoordinateOffset> traversableNeighborHexes = new();
-
-            foreach (GameTile neighborTile in traversableNeighborTiles)
-            {
-                traversableNeighborHexes.Add(neighborTile.Hex);
-            }
-            return traversableNeighborHexes;
+            return TraversableNeighbors(unit, tile);
         };
 
         List<HexCoordinateOffset> hexPath = HexUtilities.FindShortestPath(
