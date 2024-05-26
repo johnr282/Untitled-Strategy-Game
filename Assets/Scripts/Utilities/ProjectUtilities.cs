@@ -9,11 +9,10 @@ using UnityEngine.Tilemaps;
 
 public static class ProjectUtilities
 {
-    public const string GameMapObjectName = "GameMap";
-    public const string ClientPlayerDataObjectName = "ClientPlayerData";
-    public const string PlayerManagerObjectName = "PlayerManager";
-    public const string UnitManagerObjectName = "UnitManager";
+    public const string MapObjectName = "Map";
     public const string NetworkInputManagerObjectName = "NetworkInputManager";
+    public const string GameStateManagerObjectName = "GameStateManager";
+    public const string MapGenerationParametersObjectName = "MapGenerationParameters";
 
     // Finds and returns component of given type on GameObject of given name 
     // Throws RuntimeException if GameObject or component cannot be found
@@ -33,41 +32,46 @@ public static class ProjectUtilities
 
     public static GameMap FindGameMap()
     {
-        return FindComponent<GameMap>(GameMapObjectName);
+        return FindComponent<GameMap>(GameStateManagerObjectName);
     }
 
     public static UnitManager FindUnitManager()
     {
-        return FindComponent<UnitManager>(UnitManagerObjectName);
+        return FindComponent<UnitManager>(GameStateManagerObjectName);
     }
 
     public static Tilemap FindTilemap()
     {
-        return FindComponent<Tilemap>(GameMapObjectName);
+        return FindComponent<Tilemap>(MapObjectName);
     }
 
     public static Selection FindTileSelection()
     {
-        return FindComponent<Selection>(GameMapObjectName);
-    }
-
-    public static ClientPlayerData FindClientPlayerData()
-    {
-        return FindComponent<ClientPlayerData>(ClientPlayerDataObjectName);
+        return FindComponent<Selection>(MapObjectName);
     }
 
     public static PlayerManager FindPlayerManager()
     {
-        return FindComponent<PlayerManager>(PlayerManagerObjectName);
+        return FindComponent<PlayerManager>(GameStateManagerObjectName);
     }
 
-    public static MapGeneration FindMapGeneration()
+    public static MapGenerator FindMapGeneration()
     {
-        return FindComponent<MapGeneration>(GameMapObjectName);
+        return FindComponent<MapGenerator>(MapObjectName);
     }
 
     public static NetworkInputManager FindNetworkInputManager()
     {
         return FindComponent<NetworkInputManager>(NetworkInputManagerObjectName);
+    }
+
+    public static MapGenerationParameters FindMapGenerationParameters()
+    {
+        return FindComponent<MapGenerationParameters>(MapGenerationParametersObjectName);
+    }
+
+    public static MapVisuals FindMapVisuals()
+    {
+        return FindComponent<MapVisuals>(MapObjectName);
     }
 }

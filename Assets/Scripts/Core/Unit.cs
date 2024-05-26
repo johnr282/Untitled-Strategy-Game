@@ -38,25 +38,24 @@ public enum UnitType
     air
 }
 
-public struct Unit : INetworkStruct
+public struct Unit
 {
     public int Strength {  get; }
     public int Capacity { get; }
     public UnitType Type { get; }
     public UnitID UnitID { get; }
     public GameTile CurrentLocation { get; set; }
-
-    [Networked, Capacity(GameTile.TerrainTypeCount)]
-    public NetworkArray<Terrain> TraversableTerrains => default;
+    public List<Terrain> TraversableTerrains { get; }
 
     public Unit(UnitType typeIn, 
         GameTile currentLocationIn,
         UnitID unitIDIn)
     {
+        UnitID = unitIDIn;
         Strength = -1;
         Capacity = -1;
         Type = typeIn;
         CurrentLocation = currentLocationIn;
-        UnitID = unitIDIn;
+        TraversableTerrains = new();
     }
 }

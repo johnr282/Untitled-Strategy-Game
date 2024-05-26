@@ -1,6 +1,7 @@
 using Fusion;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 // ------------------------------------------------------------------
@@ -9,23 +10,28 @@ using UnityEngine;
 
 public class ServerMessages : NetworkBehaviour
 {
+    // Sent to a player when they join to give them their player ID
+    [Rpc]
+    public static void RPC_SendPlayerID(NetworkRunner runner,
+        [RpcTarget] PlayerRef player,
+        PlayerID playerID)
+    {
+        EventBus.Publish(playerID);
+    }
+
     // Called once all players join to notify a client that the game has started
     [Rpc]
     public static void RPC_StartGame(NetworkRunner runner,
-        [RpcTarget] PlayerRef player,
         GameStarted gameStartData)
     {
-        Debug.Log("RPC_GameStart called on player " + 
-            gameStartData.PlayerID.ToString());
-
-        EventBus.Publish(gameStartData.PlayerID);
+        EventBus.Publish(gameStartData);
     }
 
     // Notifies a client that it's their turn
     [Rpc]
     public static void RPC_StartTurn(NetworkRunner runner,
         [RpcTarget] PlayerRef player, 
-        TurnStarted turnStarted)
+        TurnChanged turnStarted)
     {
         EventBus.Publish(turnStarted);
     }

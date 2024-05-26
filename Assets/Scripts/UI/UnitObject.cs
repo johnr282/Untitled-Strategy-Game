@@ -30,7 +30,7 @@ public class UnitObject : SelectableObject
         _gameMap = ProjectUtilities.FindGameMap();
         _moveable = GetComponent<MoveableObject>();
         _mapVisuals = 
-            ProjectUtilities.FindComponent<MapVisuals>(ProjectUtilities.GameMapObjectName);
+            ProjectUtilities.FindComponent<MapVisuals>(ProjectUtilities.MapObjectName);
 
         _moveUnitRequestSub = 
             EventBus.Subscribe<MoveUnitRequest>(OnMoveUnitRequest);
@@ -68,13 +68,9 @@ public class UnitObject : SelectableObject
 
         MoveUnitRequest request = new(UnitID,
             tileSelectedEvent.Coordinate,
-            _playerData.PlayerID);
-
-        var rpcAction = new Action<NetworkRunner, PlayerRef, MoveUnitRequest>(
+            SelectingPlayerID);
+        NetworkInputManager.QueueNetworkInputEvent(request,
             ClientMessages.RPC_MoveUnit);
-        EventBus.Publish(new NetworkInputEvent(request,
-            rpcAction,
-            Runner));
     }
 
     void OnTileHovered(NewTileHoveredOverEvent tileHoveredEvent)
@@ -120,9 +116,9 @@ public class UnitObject : SelectableObject
 
             UnitMoved unitMoved = new(request.UnitID,
                 request.Location);
-            EventBus.Publish(unitMoved);
-            ServerMessages.RPC_UnitMoved(Runner,
-                unitMoved);
+            GameStateManager.UpdateGameState(Runner,
+                unitMoved,
+                ServerMessages.RPC_UnitMoved);
         }
         else
         {

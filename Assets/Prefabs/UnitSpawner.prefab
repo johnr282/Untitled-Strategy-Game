@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 3085804906664977750}
   - component: {fileID: 5061557883916413950}
   - component: {fileID: 4015360097344691847}
+  - component: {fileID: 2779470916919935300}
   m_Layer: 0
   m_Name: UnitSpawner
   m_TagString: Untagged
@@ -70,6 +71,7 @@ MonoBehaviour:
   - {fileID: 7823009395056351007}
   - {fileID: 5061557883916413950}
   - {fileID: 4015360097344691847}
+  - {fileID: 2779470916919935300}
 --- !u!1839735485 &3085804906664977750
 Tilemap:
   m_ObjectHideFlags: 0
@@ -120,8 +122,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e6922b705ec791478b3aa9975b24bef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _NumCols: 0
-  _NumRows: 0
 --- !u!114 &4015360097344691847
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -132,5 +132,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 43afdb1783b291f48a84da6ee74c99fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2779470916919935300
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 38635140304829736}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ababad19c8b7ef741bb7dce2f9cfabd4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

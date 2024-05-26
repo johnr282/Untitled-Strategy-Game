@@ -1,4 +1,5 @@
 using Fusion;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,22 +10,19 @@ using UnityEngine;
 // so they all need to implement the INetworkStruct interface
 // ------------------------------------------------------------------
 
-// Sent to each client when all players have joined and the game is starting
+// Sent to clients when all players have joined and the game is starting
 public readonly struct GameStarted : INetworkStruct
 {
-    public PlayerID PlayerID { get; }
-    public GameTile StartLocation { get; }
+    public int MapSeed { get; }
 
-    public GameStarted(PlayerID playerIDIn,
-        GameTile startLocationIn)
+    public GameStarted(int mapSeedIn)
     {
-        PlayerID = playerIDIn;
-        StartLocation = startLocationIn;
+        MapSeed = mapSeedIn;
     }
 }
 
-// Sent to a client when their turn is starting
-public readonly struct TurnStarted : INetworkStruct
+// Sent to clients when it's a new player's turn
+public readonly struct TurnChanged : INetworkStruct
 {
 
 }

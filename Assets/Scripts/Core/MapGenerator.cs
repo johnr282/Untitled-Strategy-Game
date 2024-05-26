@@ -5,68 +5,38 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 
 // ------------------------------------------------------------------
-// Component for handling procedural map generation
+// Class handling procedural map generation
 // ------------------------------------------------------------------
 
-[RequireComponent(typeof(MapVisuals))]
-[RequireComponent(typeof(GameMap))]
-[RequireComponent(typeof(MapGenerationParameters))]
-public class MapGeneration : MonoBehaviour
+public class MapGenerator 
 {
     public int MapSeed { get => _parameters.Seed; }
 
-    MapVisuals _mapVisuals;
     GameMap _gameMap;
     MapGenerationParameters _parameters;
 
-    Subscription<GenerateMapEvent> _generateMapSub;
-
-    void Start()
+    public MapGenerator(GameMap gameMapIn, 
+        MapGenerationParameters parametersIn)
     {
-        _mapVisuals = GetComponent<MapVisuals>();
-        _gameMap = GetComponent<GameMap>();
-        _parameters = GetComponent<MapGenerationParameters>();
-
-        _generateMapSub = EventBus.Subscribe<GenerateMapEvent>(GenerateMapCallback);
+        _gameMap = gameMapIn;
+        _parameters = parametersIn;
     }
 
-    void OnDestroy()
+    public static int GenerateRandomSeed()
     {
-        EventBus.Unsubscribe(_generateMapSub);
-    }
-
-    // Generates and returns random seed to use for map generation
-    public int GenerateRandomSeed()
-    {
-        // If _parameters.RandomlyGenerateSeed is false, simply use the 
-        // serialized seed
-        if (_parameters.RandomlyGenerateSeed)
-            _parameters.Seed = Random.Range(int.MinValue, int.MaxValue);
-
-        Debug.Log("Seed: " + _parameters.Seed.ToString());
-        return _parameters.Seed;
-    }
-
-    // Generates map with seed given in generateMapEvent
-    void GenerateMapCallback(GenerateMapEvent generateMapEvent)
-    {
-        GenerateMap(generateMapEvent.MapSeed);
+        return Random.Range(int.MinValue, int.MaxValue);
     }
 
     // Randomly generate the game map based on map generation parameters
     // and given seed; called from GenerateMapCallback on clients, called
     // from playerManager on server
-    public void GenerateMap(int seed)
+    public void GenerateMap()
     {
-        Debug.Log("Generating map with seed " + seed.ToString());
-        SeedRandomGeneration(seed);
+        Debug.Log("Generating map with seed " + _parameters.Seed.ToString());
+        SeedRandomGeneration(_parameters.Seed);
         CalculateMapDimensions();
-        ValidateParameters();
         InitializeEveryTileToSea();
         GenerateContinents();
-        _mapVisuals.GenerateVisuals(_gameMap,
-            _parameters.MapHeight,
-            _parameters.MapWidth);
     }
 
     // Initializes random generation with given seed
@@ -89,28 +59,6 @@ public class MapGeneration : MonoBehaviour
 
         Debug.Log("Map width: " + _parameters.MapWidth.ToString());
         Debug.Log("Map height: " + _parameters.MapHeight.ToString());
-    }
-
-    // Ensure that no map parameters are greater than their corresponding max
-    // constants; must be called after CalculateMapDimensions()
-    // Throws a RuntimeException if any parameters are too large or if map
-    // dimensions haven't been calculated yet
-    void ValidateParameters()
-    {
-        if (_parameters.MapHeight == -1 ||
-            _parameters.MapWidth == -1)
-        {
-            throw new RuntimeException(
-                "Attempted to validate parameters before dimensions were calculated");
-        }
-
-        if (_parameters.MapHeight > GameMap.MaxHeight ||
-            _parameters.MapWidth > GameMap.MaxHeight || 
-            _parameters.NumContinents > GameMap.MaxContinents)
-        {
-            throw new RuntimeException(
-                "Map parameter greater than its maximum value");
-        }
     }
 
     // Initialize every tile in _gameMap to sea
@@ -501,8 +449,8 @@ public class MapGeneration : MonoBehaviour
             Continent continent = _gameMap.GetContinent(continentID);
             availableContinents.Remove(continentID);
 
-            int tileIndex = Random.Range(0, _gameMap.NumContinents);
-            GameTile startingTile = continent.ContinentTiles[tileIndex];
+            GameTile startingTile = 
+                UnityUtilities.RandomElement(continent.ContinentTiles);
             startingTiles.Add(startingTile);
         }
 

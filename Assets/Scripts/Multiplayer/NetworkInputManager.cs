@@ -1,4 +1,5 @@
 using Fusion;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -22,6 +23,16 @@ public class NetworkInputManager : NetworkBehaviour
         EventBus.Subscribe<NetworkInputEvent>(OnInputEvent);
     }
 
+    // Constructs and publishes a NetworkInputEvent with the given input data
+    // and RPC
+    public static void QueueNetworkInputEvent<TInputData>(TInputData inputData,
+        Action<NetworkRunner, PlayerRef, TInputData> RPC_SendInputEvent)
+        where TInputData : struct, INetworkStruct
+    {
+        EventBus.Publish(new NetworkInputEvent(inputData,
+            RPC_SendInputEvent));
+    }
+
     void OnInputEvent(NetworkInputEvent inputEvent)
     {
         Debug.Log("Adding new input event to queue");
@@ -33,7 +44,7 @@ public class NetworkInputManager : NetworkBehaviour
         if (_inputEventQueue.TryDequeue(out NetworkInputEvent inputEvent))
         {
             Debug.Log("New event in queue, calling RPC");
-            inputEvent.CallRPC();
+            inputEvent.CallRPC(Runner);
         }    
     }
 }

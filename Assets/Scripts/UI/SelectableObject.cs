@@ -13,12 +13,14 @@ public abstract class SelectableObject : NetworkBehaviour
 {
     [Networked] public PlayerID OwnerID { get; set; } = new(-1);
 
-    protected ClientPlayerData _playerData;
+    protected PlayerID SelectingPlayerID { get => _playerManager.ThisPlayerID; }
     protected bool _selectedByOwner = false;
+
+    private PlayerManager _playerManager;
 
     public virtual void Start()
     {
-        _playerData = ProjectUtilities.FindClientPlayerData();
+        _playerManager = ProjectUtilities.FindPlayerManager();
     }
 
     // Called when this object is selected by any player
@@ -37,10 +39,9 @@ public abstract class SelectableObject : NetworkBehaviour
             return;
         }
 
-        Debug.Log(this.gameObject.name + " selected");
+        Debug.Log(gameObject.name + " selected");
 
-        PlayerID selectingPlayerID = _playerData.PlayerID;
-        if (OwnerID.ID == selectingPlayerID.ID)
+        if (OwnerID.ID == SelectingPlayerID.ID)
         {
             _selectedByOwner = true;
             OnSelectedByOwner();

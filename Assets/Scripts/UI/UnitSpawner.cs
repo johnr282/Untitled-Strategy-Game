@@ -9,8 +9,8 @@ using UnityEngine.Tilemaps;
 // Component handling spawning new UnitObjects onto the map
 // ------------------------------------------------------------------
 
-[RequireComponent(typeof(Tilemap))]
 [RequireComponent(typeof(UnitManager))]
+[RequireComponent(typeof(PlayerManager))]
 public class UnitSpawner : NetworkBehaviour
 {
     [SerializeField] NetworkObject _unitPrefab;
@@ -18,14 +18,14 @@ public class UnitSpawner : NetworkBehaviour
 
     Tilemap _tilemap;
     UnitManager _unitManager;
-    ClientPlayerData _playerData;
+    PlayerManager _playerManager;
 
     // Start is called before the first frame update
     void Start()
     {
-        _tilemap = GetComponent<Tilemap>();
+        _tilemap = ProjectUtilities.FindTilemap();
         _unitManager = GetComponent<UnitManager>();
-        _playerData = ProjectUtilities.FindClientPlayerData();
+        _playerManager = GetComponent<PlayerManager>();
 
         EventBus.Subscribe<CreateUnitRequest>(OnCreateUnitRequest);
     }
@@ -36,12 +36,9 @@ public class UnitSpawner : NetworkBehaviour
     {
         CreateUnitRequest request = new(unitType,
             initialHex,
-            _playerData.PlayerID);
-        var rpcAction = new Action<NetworkRunner, PlayerRef, CreateUnitRequest>(
-            ClientMessages.RPC_CreateUnit); 
-        EventBus.Publish(new NetworkInputEvent(request,
-            rpcAction,
-            Runner));
+            _playerManager.ThisPlayerID);
+        NetworkInputManager.QueueNetworkInputEvent(request,
+            ClientMessages.RPC_CreateUnit);
     }
 
     // If the given create unit request is valid, spawns a new unit object and
@@ -56,9 +53,9 @@ public class UnitSpawner : NetworkBehaviour
         {
             Debug.Log("Request successful");
             UnitCreated unitCreated = new(request);
-            EventBus.Publish(unitCreated);
-            ServerMessages.RPC_UnitCreated(Runner,
-                unitCreated);
+            GameStateManager.UpdateGameState(Runner,
+                unitCreated,
+                ServerMessages.RPC_UnitCreated);
         }
     }
 

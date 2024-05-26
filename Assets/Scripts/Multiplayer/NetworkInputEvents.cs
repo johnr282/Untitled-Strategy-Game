@@ -15,23 +15,20 @@ public class NetworkInputEvent
 {
     public INetworkStruct InputData { get; }
     public Delegate RPC { get; } 
-    public NetworkRunner Runner { get; }
 
     public NetworkInputEvent(INetworkStruct inputDataIn,
-        Delegate rpcIn,
-        NetworkRunner runnerIn)
+        Delegate rpcIn)
     {
         InputData = inputDataIn;
         RPC = rpcIn;
-        Runner = runnerIn;
     }
 
-    public void CallRPC()
+    public void CallRPC(NetworkRunner runner)
     {
         // Need to dynamically invoke because each RPC will have a different 
         // InputData type, and using an Action<> results in the compiler error
         // "can't convert method group to Action<>
-        RPC.DynamicInvoke(Runner,
+        RPC.DynamicInvoke(runner,
             PlayerRef.None,
             InputData);
     }

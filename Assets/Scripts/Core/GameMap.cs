@@ -9,42 +9,25 @@ using Fusion;
 // GameTiles
 // ------------------------------------------------------------------
 
-public struct Continent : INetworkStruct
+public class Continent
 {
-    [Networked, Capacity(GameMap.MaxTilesPerContinent)]
-    public NetworkLinkedList<GameTile> ContinentTiles => default;
-
+    public List<GameTile> ContinentTiles = new();
     public int Size { get => ContinentTiles.Count; }
 
     // Adds the given tile to this continent
     // Throws an ArgumentException if this continent is at max capacity
     public void AddTile(GameTile tile)
     {
-        if (Size >= GameMap.MaxTilesPerContinent)
-            throw new RuntimeException(
-                "Continent is at capacity, cannot add tile");
-
         ContinentTiles.Add(tile);
     }
 }
 
 public class GameMap : NetworkBehaviour
 {
-    public const int MaxHeight = 5;
-    public const int MaxWidth = 30;
-    public const int MaxSize = MaxHeight * MaxWidth;
-    public const int MaxContinents = 20;
-    public const int MaxTilesPerContinent = MaxSize / MaxContinents;
+    Dictionary<HexCoordinateOffset, GameTile> _gameMap = new();
 
-    // 1D array representing a 2D grid of GameTiles making up the map
-    [Networked, Capacity(MaxHeight * MaxWidth)]
-    NetworkArray<GameTile> MapArray { get; } = new();
-
-    //[Networked, Capacity(MaxHeight * MaxWidth)]
-    NetworkDictionary<HexCoordinateOffset, GameTile> Map { get; } = new();
-
-    [Networked] public int NumCols { get; set; }
-    [Networked] public int NumRows { get; set; }
+    public int NumCols { get; set; }
+    public int NumRows { get; set; }
 
     // Keys are coordinates of tiles in the map, value is the tile itself
     //Dictionary<HexCoordinateOffset, GameTile> _gameMap = new();
@@ -52,13 +35,9 @@ public class GameMap : NetworkBehaviour
 
     // List of continents in the map, continent ID is the index corresponding
     // to that continent
-    //[Networked, Capacity(MaxContinents)]
-    NetworkLinkedList<Continent> Continents { get; } = new();
+    List<Continent> _continents = new();
 
-    //// Map from continent IDs to continents
-    //Dictionary<int,  Continent> _continents = new();
-
-    public int NumContinents { get => Continents.Count; }
+    public int NumContinents { get => _continents.Count; }
 
     // A value big enough to be larger than any possible A* g score, but not large 
     // enough that it could overflow and become negative
@@ -67,18 +46,18 @@ public class GameMap : NetworkBehaviour
     // Returns whether a GameTile exists at the given hex
     public bool TileExists(HexCoordinateOffset hex)
     {
-        return Map.ContainsKey(hex);
+        return _gameMap.ContainsKey(hex);
     }
 
     // Returns the GameTile at the given hex
     // Throws an ArgumentException if no GameTile exists at the given hex
     public GameTile GetTile(HexCoordinateOffset hex)
     {
-        if (!Map.ContainsKey(hex))
+        if (!_gameMap.ContainsKey(hex))
             throw new ArgumentException(
                 "No GameTile exists at the given hex");
 
-        return Map.Get(hex);
+        return _gameMap[hex];
     }
 
     // Adds given GameTile at given coordinate to map
@@ -89,7 +68,7 @@ public class GameMap : NetworkBehaviour
         if (TileExists(hex))
             throw new ArgumentException("GameTile with given hex already exists");
 
-        Map.Add(hex, newTile);
+        _gameMap.Add(hex, newTile);
     }
 
     // Sets GameTile at given coordinate to given GameTile;
@@ -100,7 +79,7 @@ public class GameMap : NetworkBehaviour
         if (!TileExists(hex))
             throw new ArgumentException("No GameTile exists at the given hex");
 
-        Map.Set(hex, newTile);
+        _gameMap[hex] = newTile;
     }
 
     // Adds given continentID and continent to _continents; continents should
@@ -114,11 +93,7 @@ public class GameMap : NetworkBehaviour
         if (NumContinents != continentID.ID)
             throw new ArgumentException("Continent ID is non-sequential");
 
-        if (NumContinents >= MaxContinents)
-            throw new ArgumentException(
-                "Number of continents would exceed maximum");
-
-        Continents.Add(continent);
+        _continents.Add(continent);
     }
 
     // Returns list of valid tiles adjacent to given tile
@@ -190,7 +165,7 @@ public class GameMap : NetworkBehaviour
     // Executes the given action on every tile in the map
     public void ExecuteOnAllTiles(Action<GameTile> action)
     {
-        foreach (KeyValuePair<HexCoordinateOffset, GameTile> pair in Map)
+        foreach (KeyValuePair<HexCoordinateOffset, GameTile> pair in _gameMap)
         {
             action(pair.Value);
         }
@@ -246,6 +221,6 @@ public class GameMap : NetworkBehaviour
         if (continentID >= NumContinents)
             throw new ArgumentException("Invalid continent ID");
 
-        return Continents[continentID];
+        return _continents[continentID];
     }
 }

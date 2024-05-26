@@ -1,4 +1,5 @@
 using Fusion;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -33,17 +34,58 @@ public class GameStateManager : NetworkBehaviour
 
         // Game state update subscriptions
         EventBus.Subscribe<GameStarted>(OnGameStarted);
-        EventBus.Subscribe<TurnStarted>(OnTurnStarted);
+        EventBus.Subscribe<TurnChanged>(OnTurnStarted);
         EventBus.Subscribe<UnitCreated>(OnUnitCreated);
         EventBus.Subscribe<UnitMoved>(OnUnitMoved);
     }
 
-    void OnGameStarted(GameStarted gameStarted)
+    // Handles updating game state on the server and all clients with the given
+    // updateData and RPC; given RPC should publish updateData as well, allowing
+    // the game state to be updated on all clients
+    public static void UpdateGameState<TUpdate>(NetworkRunner runner,
+        TUpdate updateData,
+        Action<NetworkRunner, TUpdate> RPC_UpdateClientState)
+        where TUpdate : struct, INetworkStruct
     {
-        
+        if (!runner.IsServer)
+            throw new ArgumentException(
+                "UpdateGameState shoould only be called by the server");
+
+        // Updates the game state on the server, only needed if a dedicated
+        // server with no local player is running
+        if (runner.GameMode == GameMode.Server)
+            EventBus.Publish(updateData);
+
+        // Updates the game state on all clients
+        RPC_UpdateClientState(runner, updateData);
     }
 
-    void OnTurnStarted(TurnStarted turnStarted)
+    // Generates the map, initializes map visuals, and spawns a unit at this 
+    // player's starting tile
+    void OnGameStarted(GameStarted gameStarted)
+    {
+        MapGenerationParameters parameters = 
+            ProjectUtilities.FindMapGenerationParameters();
+
+        if (parameters.RandomlyGenerateSeed)
+            parameters.Seed = gameStarted.MapSeed;
+
+        MapGenerator mapGenerator = new(_gameMap, parameters);
+        mapGenerator.GenerateMap();
+
+        MapVisuals mapVisuals = ProjectUtilities.FindMapVisuals();
+        mapVisuals.GenerateVisuals(_gameMap,
+            parameters.MapHeight,
+            parameters.MapWidth);
+
+        List<GameTile> startingTiles = 
+            mapGenerator.GenerateStartingTiles(_playerManager.NumPlayers);
+        GameTile startingTile = startingTiles[_playerManager.ThisPlayerID.ID];
+        UnitType startingUnitType = UnitType.land;
+        _unitSpawner.RequestSpawnUnit(startingUnitType, startingTile.Hex);
+    }
+
+    void OnTurnStarted(TurnChanged turnStarted)
     {
 
     }
