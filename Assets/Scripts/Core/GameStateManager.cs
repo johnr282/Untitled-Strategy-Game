@@ -27,17 +27,17 @@ public class GameStateManager : NetworkBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        _gameMap = GetComponent<GameMap>();
-        _unitManager = GetComponent<UnitManager>();
-        _playerManager = GetComponent<PlayerManager>();
-        _unitSpawner = GetComponent<UnitSpawner>();
+        _gameMap =          GetComponent<GameMap>();
+        _unitManager =      GetComponent<UnitManager>();
+        _playerManager =    GetComponent<PlayerManager>();
+        _unitSpawner =      GetComponent<UnitSpawner>();
 
         // Game state update subscriptions
-        EventBus.Subscribe<AddPlayer>(OnAddPlayer);
-        EventBus.Subscribe<GameStarted>(OnGameStarted);
-        EventBus.Subscribe<TurnChanged>(OnTurnStarted);
-        EventBus.Subscribe<UnitCreated>(OnUnitCreated);
-        EventBus.Subscribe<UnitMoved>(OnUnitMoved);
+        EventBus.Subscribe<AddPlayer>   (OnAddPlayer);
+        EventBus.Subscribe<GameStarted> (OnGameStarted);
+        EventBus.Subscribe<NextTurn>    (OnNextTurn);
+        EventBus.Subscribe<UnitCreated> (OnUnitCreated);
+        EventBus.Subscribe<UnitMoved>   (OnUnitMoved);
     }
 
     // Handles updating game state on the server and all clients with the given
@@ -97,12 +97,12 @@ public class GameStateManager : NetworkBehaviour
 
         List<GameTile> startingTiles = 
             mapGenerator.GenerateStartingTiles(_playerManager.NumPlayers);
-        GameTile startingTile = startingTiles[_playerManager.ThisPlayerID.ID];
+        GameTile startingTile = startingTiles[PlayerManager.ThisPlayerID.ID];
         UnitType startingUnitType = UnitType.land;
         _unitSpawner.RequestSpawnUnit(startingUnitType, startingTile.Hex);
     }
 
-    void OnTurnStarted(TurnChanged turnStarted)
+    void OnNextTurn(NextTurn nextTurn)
     {
 
     }

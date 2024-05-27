@@ -13,14 +13,12 @@ public abstract class SelectableObject : NetworkBehaviour
 {
     [Networked] public PlayerID OwnerID { get; set; } = new(-1);
 
-    protected PlayerID SelectingPlayerID { get => _playerManager.ThisPlayerID; }
+    protected PlayerID SelectingPlayerID { get => PlayerManager.ThisPlayerID; }
     protected bool _selectedByOwner = false;
 
-    private PlayerManager _playerManager;
 
     public virtual void Start()
     {
-        _playerManager = ProjectUtilities.FindPlayerManager();
     }
 
     // Called when this object is selected by any player

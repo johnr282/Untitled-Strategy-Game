@@ -36,7 +36,7 @@ public class UnitSpawner : NetworkBehaviour
     {
         CreateUnitRequest request = new(unitType,
             initialHex,
-            _playerManager.ThisPlayerID);
+            PlayerManager.ThisPlayerID);
         NetworkInputManager.QueueNetworkInputEvent(request,
             ClientMessages.RPC_CreateUnit);
     }

@@ -5,12 +5,28 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // ------------------------------------------------------------------
-// Component used to manage players and turn order
+// Static class used to manage players and turn order; part of the
+// global game state
 // ------------------------------------------------------------------
 
 public class PlayerManager : NetworkBehaviour
 {
+    // Stores the calling client's player ID; this value will be different for
+    // each client
+    public static PlayerID ThisPlayerID
+    {
+        get
+        {
+            if (_thisPlayerID.ID == -1)
+                throw new RuntimeException("ThisPlayerID not set");
+            return _thisPlayerID;
+        }
+    }
+
     public int NumPlayers { get => _players.Count; }
+
+    // The player whose turn it currently is
+    public PlayerID ActivePlayer { get => _turnOrder[_currTurnIndex]; }
 
     // Player ID is index into players list
     List<Player> _players = new();
@@ -20,17 +36,6 @@ public class PlayerManager : NetworkBehaviour
     // Contains an index to _turnOrder
     int _currTurnIndex = 0;
 
-    // Stores the calling client's player ID; this value will be different for
-    // each client
-    public PlayerID ThisPlayerID
-    {
-        get
-        {
-            if (_thisPlayerID.ID == -1)
-                throw new RuntimeException("ThisPlayerID not set");
-            return _thisPlayerID;
-        }
-    }
     static PlayerID _thisPlayerID = new(-1);
 
 
@@ -51,34 +56,7 @@ public class PlayerManager : NetworkBehaviour
         _players.Add(new Player(player, newPlayerID));
         _turnOrder.Add(newPlayerID);
         return newPlayerID;
-        //ServerMessages.RPC_SendPlayerID(Runner,
-        //    player,
-        //    newPlayerID);
     }
-
-    // Spawns a unit and sends a game start message for each player
-    public void NotifyGameStart(List<GameTile> startingTiles)
-    {
-        //Debug.Log("All players joined");
-
-        //foreach (Player player in _players)
-        //{
-        //    GameTile startingTile = startingTiles[player.PlayerID.ID];
-
-        //    EventBus.Publish(new CreateUnitRequest(UnitType.land,
-        //        startingTile.Hex,
-        //        player.PlayerID));
-
-        //    ServerMessages.RPC_StartGame(Runner,
-        //        player.PlayerRef,
-        //        new GameStarted(player.PlayerID,
-        //            startingTile.Hex));
-        //}
-
-        //NotifyFirstPlayer();
-    }
-
-
 
     // Notifies the first player in _turnOrder that it's their turn
     //public void NotifyFirstPlayer()

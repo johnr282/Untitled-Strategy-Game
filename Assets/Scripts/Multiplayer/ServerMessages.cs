@@ -10,7 +10,6 @@ using UnityEngine;
 
 public class ServerMessages : NetworkBehaviour
 {
-    // Sent to a player when they join to give them their player ID
     [Rpc]
     public static void RPC_SendPlayerID(NetworkRunner runner,
         [RpcTarget] PlayerRef player,
@@ -26,7 +25,6 @@ public class ServerMessages : NetworkBehaviour
         EventBus.Publish(addPlayer);
     }
 
-    // Called once all players join to notify a client that the game has started
     [Rpc]
     public static void RPC_StartGame(NetworkRunner runner,
         GameStarted gameStartData)
@@ -34,16 +32,13 @@ public class ServerMessages : NetworkBehaviour
         EventBus.Publish(gameStartData);
     }
 
-    // Notifies a client that it's their turn
     [Rpc]
-    public static void RPC_StartTurn(NetworkRunner runner,
-        [RpcTarget] PlayerRef player, 
-        TurnChanged turnStarted)
+    public static void RPC_NextTurn(NetworkRunner runner,
+        NextTurn nextTurn)
     {
-        EventBus.Publish(turnStarted);
+        EventBus.Publish(nextTurn);
     }
 
-    // Notifies clients that a unit was created
     [Rpc]
     public static void RPC_UnitCreated(NetworkRunner runner,
         UnitCreated unitCreated)
@@ -51,7 +46,6 @@ public class ServerMessages : NetworkBehaviour
         EventBus.Publish(unitCreated);
     }
 
-    // Notifies clients that a unit was moved
     [Rpc]
     public static void RPC_UnitMoved(NetworkRunner runner,
         UnitMoved unitMoved)

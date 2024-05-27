@@ -32,10 +32,9 @@ public readonly struct GameStarted : INetworkStruct
     }
 }
 
-// Sent to clients when it's a new player's turn
-public readonly struct TurnChanged : INetworkStruct
+// Sent to clients when it's the next player's turn
+public readonly struct NextTurn : INetworkStruct
 {
-
 }
 
 // Sent to clients when a new unit is created
