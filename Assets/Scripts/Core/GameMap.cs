@@ -175,9 +175,7 @@ public class GameMap : NetworkBehaviour
     // Returns the shortest path between the given unit's current location and
     // the given goal tile for the given unit
     // Throws a RuntimeException if no valid path was found 
-    // Throws an ArgumentException if an invalid hex is found in the returned
-    // path, which should never happen
-    public List<GameTile> FindPath(Unit unit,
+    public List<HexCoordinateOffset> FindPath(Unit unit,
         GameTile goal)
     {
         Func<HexCoordinateOffset, HexCoordinateOffset, int> costFunc = (startHex, goalHex)
@@ -189,19 +187,11 @@ public class GameMap : NetworkBehaviour
             return TraversableNeighbors(unit, tile);
         };
 
-        List<HexCoordinateOffset> hexPath = HexUtilities.FindShortestPath(
+        return HexUtilities.FindShortestPath(
             unit.CurrentLocation.Hex,
             goal.Hex,
             traversableNeighborsFunc,
             costFunc); 
-
-        List<GameTile> tilePath = new();
-        foreach (HexCoordinateOffset hex in hexPath)
-        {
-            tilePath.Add(GetTile(hex));
-        }
-
-        return tilePath;
     }
 
     // Returns a list of every valid continent ID

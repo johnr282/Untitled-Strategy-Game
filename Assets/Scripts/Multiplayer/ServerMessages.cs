@@ -19,6 +19,13 @@ public class ServerMessages : NetworkBehaviour
         EventBus.Publish(playerID);
     }
 
+    [Rpc]
+    public static void RPC_AddPlayer(NetworkRunner runner,
+        AddPlayer addPlayer)
+    {
+        EventBus.Publish(addPlayer);
+    }
+
     // Called once all players join to notify a client that the game has started
     [Rpc]
     public static void RPC_StartGame(NetworkRunner runner,

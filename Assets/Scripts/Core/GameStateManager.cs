@@ -33,6 +33,7 @@ public class GameStateManager : NetworkBehaviour
         _unitSpawner = GetComponent<UnitSpawner>();
 
         // Game state update subscriptions
+        EventBus.Subscribe<AddPlayer>(OnAddPlayer);
         EventBus.Subscribe<GameStarted>(OnGameStarted);
         EventBus.Subscribe<TurnChanged>(OnTurnStarted);
         EventBus.Subscribe<UnitCreated>(OnUnitCreated);
@@ -58,6 +59,21 @@ public class GameStateManager : NetworkBehaviour
 
         // Updates the game state on all clients
         RPC_UpdateClientState(runner, updateData);
+    }
+
+    // Updates _playerManager with new player, and allows server to send each 
+    // client their PlayerID
+    void OnAddPlayer(AddPlayer addPlayer)
+    {
+        Debug.Log("Adding player to PlayerManager");
+        PlayerID newPlayerID = _playerManager.AddPlayer(addPlayer.PlayerRef);
+
+        if (Runner.IsServer)
+        {
+            ServerMessages.RPC_SendPlayerID(Runner,
+                addPlayer.PlayerRef,
+                newPlayerID);
+        }
     }
 
     // Generates the map, initializes map visuals, and spawns a unit at this 

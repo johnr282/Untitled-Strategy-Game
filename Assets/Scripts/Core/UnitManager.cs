@@ -80,10 +80,9 @@ public class UnitManager : NetworkBehaviour
         GameTile requestedTile = _gameMap.GetTile(request.Location);
         Unit unit = GetUnit(request.UnitID);
 
-        List<GameTile> path;
         try
         {
-            path = _gameMap.FindPath(unit,
+            _gameMap.FindPath(unit,
                 requestedTile);
         }
         catch (RuntimeException)

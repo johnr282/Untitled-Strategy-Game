@@ -16,10 +16,10 @@ public class MapVisuals : MonoBehaviour
     Tilemap _tilemap;
     TileLibrary _tileLibrary;
 
-    Vector3Int _currentlyHighlightedTile = new Vector3Int(-1, -1, -1);
-    Vector3Int _currentlySelectedTile = new Vector3Int(-1, -1, -1);
+    Vector3Int _currentlyHighlightedTile = new(-1, -1, -1);
+    Vector3Int _currentlySelectedTile = new(-1, -1, -1);
 
-    List<Vector3Int> _currentlyHighlightedPath = new();
+    List<HexCoordinateOffset> _currentlyHighlightedPath = new();
 
     [SerializeField] float _tileSaturationFactor;
 
@@ -39,12 +39,6 @@ public class MapVisuals : MonoBehaviour
         //    EventBus.Subscribe<TileSelectedEvent>(OnTileSelected);
     }
 
-    void OnDestroy()
-    {
-        EventBus.Unsubscribe(_tileHoveredSubscription);
-        EventBus.Unsubscribe(_tileSelectedSubscription);
-    }
-
     // Generates tilemap using given height and width and game map
     public void GenerateVisuals(GameMap gameMap,
         int height,
@@ -62,8 +56,6 @@ public class MapVisuals : MonoBehaviour
         _tilemap.origin = Vector3Int.zero;
         _tilemap.size = new Vector3Int(width, height, 1);
         _tilemap.ResizeBounds();
-
-        Debug.Log("Tilemap bounds: " + _tilemap.cellBounds.ToString());
 
         // Initializes all tiles to the default tile; again because tilemap is 
         // rotated, there are actually width rows and height cols
@@ -104,7 +96,7 @@ public class MapVisuals : MonoBehaviour
     }
 
     // Highlights tile at given tile position; assumes tile exists at given position
-    public void OnTileHovered(NewTileHoveredOverEvent tileHoveredEvent)
+    void OnTileHovered(NewTileHoveredOverEvent tileHoveredEvent)
     {
         Vector3Int tilePos = tileHoveredEvent.Coordinate.ConvertToVector3Int();
         if (_currentlyHighlightedTile == tilePos)
@@ -116,13 +108,13 @@ public class MapVisuals : MonoBehaviour
     }
 
     // Highlights every tile in the given path
-    public void HighlightPath(List<Vector3Int> path)
+    public void HighlightPath(List<HexCoordinateOffset> path)
     {
         UnHighlightCurrentPath();
 
-        foreach (Vector3Int tilePos in path)
+        foreach (HexCoordinateOffset hex in path)
         {
-            HighlightTile(tilePos);
+            HighlightTile(hex.ConvertToVector3Int());
         }
 
         _currentlyHighlightedPath = path;
@@ -136,11 +128,11 @@ public class MapVisuals : MonoBehaviour
     }
 
     // Unhighlights every tile in the given path
-    void UnHighlightPath(List<Vector3Int> path)
+    void UnHighlightPath(List<HexCoordinateOffset> path)
     {
-        foreach (Vector3Int tilePos in path)
+        foreach (HexCoordinateOffset hex in path)
         {
-            UnHighlightTile(tilePos);
+            UnHighlightTile(hex.ConvertToVector3Int());
         }
     }
 

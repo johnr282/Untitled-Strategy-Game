@@ -70,7 +70,7 @@ public class TestPathPlanning : MonoBehaviour
 
         GameTile goalTile = _gameMap.GetTile(goal);
 
-        List<GameTile> path;
+        List<HexCoordinateOffset> path;
         try
         {
             path = _gameMap.FindPath(unit, 
@@ -83,17 +83,7 @@ public class TestPathPlanning : MonoBehaviour
         }
 
         Debug.Log("Path found");
-
-        List<Vector3Int> vectorPath = new()
-        {
-            start.ConvertToVector3Int()
-        };
-
-        foreach (GameTile tile in path)
-        {
-            vectorPath.Add(tile.Hex.ConvertToVector3Int());
-        }
-        _mapVisuals.HighlightPath(vectorPath);
+        _mapVisuals.HighlightPath(path);
     }
 
     public void FindAllPaths(Unit unit)

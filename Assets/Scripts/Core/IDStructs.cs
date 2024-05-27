@@ -7,7 +7,7 @@ using UnityEngine;
 // Contains ID structs
 // ------------------------------------------------------------------
 
-public struct PlayerID : INetworkStruct
+public readonly struct PlayerID : INetworkStruct
 {
     public int ID { get; }
 
@@ -15,6 +15,8 @@ public struct PlayerID : INetworkStruct
     {
         ID = idIn;
     }
+
+    public override string ToString() => ID.ToString();
 }
 
 public readonly struct ContinentID : INetworkStruct
@@ -25,6 +27,8 @@ public readonly struct ContinentID : INetworkStruct
     {
         ID = idIn;
     }
+
+    public override string ToString() => ID.ToString();
 }
 
 public readonly struct UnitID : INetworkStruct
@@ -35,4 +39,6 @@ public readonly struct UnitID : INetworkStruct
     {
         ID = idIn;
     }
+
+    public override string ToString() => ID.ToString();
 }

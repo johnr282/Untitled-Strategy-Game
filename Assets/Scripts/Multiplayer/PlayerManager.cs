@@ -44,16 +44,16 @@ public class PlayerManager : NetworkBehaviour
         _thisPlayerID = playerID;
     }
 
-    // Creates a new player and corresponding ID, and sends player ID to
-    // client corresponding to given PlayerRef
-    public void AddPlayer(PlayerRef player)
+    // Creates a new player, and returns the PlayerID of the new player
+    public PlayerID AddPlayer(PlayerRef player)
     {
         PlayerID newPlayerID = new(NumPlayers);
         _players.Add(new Player(player, newPlayerID));
         _turnOrder.Add(newPlayerID);
-        ServerMessages.RPC_SendPlayerID(Runner,
-            player,
-            newPlayerID);
+        return newPlayerID;
+        //ServerMessages.RPC_SendPlayerID(Runner,
+        //    player,
+        //    newPlayerID);
     }
 
     // Spawns a unit and sends a game start message for each player

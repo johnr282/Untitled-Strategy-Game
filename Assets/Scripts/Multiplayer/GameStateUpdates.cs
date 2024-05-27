@@ -10,6 +10,17 @@ using UnityEngine;
 // so they all need to implement the INetworkStruct interface
 // ------------------------------------------------------------------
 
+// Sent to clients for each player to update the PlayerManager
+public readonly struct AddPlayer : INetworkStruct
+{
+    public PlayerRef PlayerRef { get; }
+
+    public AddPlayer(PlayerRef playerRefIn)
+    {
+        PlayerRef = playerRefIn;
+    }
+}
+
 // Sent to clients when all players have joined and the game is starting
 public readonly struct GameStarted : INetworkStruct
 {

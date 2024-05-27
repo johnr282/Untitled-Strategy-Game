@@ -637,10 +637,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: MapGrid
       objectReference: {fileID: 0}
-    - target: {fileID: 5357514271639797642, guid: 1a039f3927eba9b42ba5f15ba10dd4f4, type: 3}
-      propertyPath: SortKey
-      value: 1253808448
-      objectReference: {fileID: 0}
     - target: {fileID: 6186008274436310190, guid: 8229508ea4cc328488ce714ab63eb84a, type: 3}
       propertyPath: m_Name
       value: Map
@@ -684,6 +680,10 @@ PrefabInstance:
     - target: {fileID: 7031481951471148982, guid: 8229508ea4cc328488ce714ab63eb84a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5357514271639797642, guid: 1a039f3927eba9b42ba5f15ba10dd4f4, type: 3}
+      propertyPath: SortKey
+      value: 1253808448
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -962,6 +962,10 @@ PrefabInstance:
     - target: {fileID: 4597645697933169648, guid: 9bef650c929f7d84b963acd6e7e3d4d9, type: 3}
       propertyPath: m_Name
       value: SessionManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 5186423031331576856, guid: 9bef650c929f7d84b963acd6e7e3d4d9, type: 3}
+      propertyPath: _numPlayers
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

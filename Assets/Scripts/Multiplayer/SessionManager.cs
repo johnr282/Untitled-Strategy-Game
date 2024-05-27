@@ -19,6 +19,10 @@ public class SessionManager : MonoBehaviour, INetworkRunnerCallbacks
     NetworkRunner _runner;
     int _playersJoined = 0;
 
+    // Used to keep track of joining players; when all players join, used to
+    // update the PlayerManager
+    List<PlayerRef> _joinedPlayers = new();
+
     void Start()
     {
         _playerManager = ProjectUtilities.FindPlayerManager();
@@ -80,7 +84,7 @@ public class SessionManager : MonoBehaviour, INetworkRunnerCallbacks
         PlayerRef player)
     {
         _playersJoined++;
-        _playerManager.AddPlayer(player);   
+        _joinedPlayers.Add(player);
         Debug.Log(_playersJoined.ToString() + " players joined");
         bool allPlayersJoined = (_playersJoined == _numPlayers);
 
@@ -93,34 +97,18 @@ public class SessionManager : MonoBehaviour, INetworkRunnerCallbacks
     // Does all necessary work to initialize the session
     void InitializeSession()
     {
+        foreach (PlayerRef joinedPlayer in _joinedPlayers)
+        {
+            AddPlayer addPlayer = new(joinedPlayer);
+            GameStateManager.UpdateGameState(_runner,
+                addPlayer,
+                ServerMessages.RPC_AddPlayer);
+        }
+
         GameStarted gameStarted = new(MapGenerator.GenerateRandomSeed());
         GameStateManager.UpdateGameState(_runner,
             gameStarted,
             ServerMessages.RPC_StartGame);
-
-        //int numMaps = 100;
-        //NetworkObject gameMapGrid = null;
-        //for (int i = 0; i < numMaps; i++)
-        //{
-        //    gameMapGrid = _runner.Spawn(_gameMapGridPrefab,
-        //        Vector3.zero,
-        //        Quaternion.identity);
-        //}
-
-        //if (gameMapGrid.transform.childCount != 1)
-        //    throw new RuntimeException(
-        //        "GameMapGrid prefab has incorrect number of children");
-
-        //GameObject gameMap = gameMapGrid.transform.GetChild(0).gameObject;
-        //MapGenerator mapGenerator = gameMap.GetComponent<MapGenerator>() ??
-        //    throw new RuntimeException(
-        //        "Could not get MapGeneration component from GameMap child");
-
-        //mapGenerator.GenerateMap(mapGenerator.GenerateRandomSeed());
-        //List<GameTile> startingTiles = 
-        //    mapGenerator.GenerateStartingTiles(_numPlayers);
-
-        //_playerManager.NotifyGameStart(startingTiles);
     }
 
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) 
