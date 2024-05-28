@@ -10,12 +10,13 @@ using UnityEngine;
 
 public class ServerMessages : NetworkBehaviour
 {
+    // Sends each player their PlayerID as they join
     [Rpc]
     public static void RPC_SendPlayerID(NetworkRunner runner,
         [RpcTarget] PlayerRef player,
         PlayerID playerID)
     {
-        EventBus.Publish(playerID);
+        PlayerManager.ThisPlayerID = playerID;
     }
 
     [Rpc]

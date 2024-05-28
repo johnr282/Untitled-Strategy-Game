@@ -5,8 +5,8 @@ using UnityEngine;
 using Fusion;
 
 // ------------------------------------------------------------------
-// Component representing the entire game map composed of a grid of 
-// GameTiles
+// Static class representing the entire game map composed of a grid of 
+// GameTiles; part of the global game state
 // ------------------------------------------------------------------
 
 public class Continent
@@ -15,43 +15,38 @@ public class Continent
     public int Size { get => ContinentTiles.Count; }
 
     // Adds the given tile to this continent
-    // Throws an ArgumentException if this continent is at max capacity
     public void AddTile(GameTile tile)
     {
         ContinentTiles.Add(tile);
     }
 }
 
-public class GameMap : NetworkBehaviour
+public static class GameMap
 {
-    Dictionary<HexCoordinateOffset, GameTile> _gameMap = new();
+    static Dictionary<HexCoordinateOffset, GameTile> _gameMap = new();
 
-    public int NumCols { get; set; }
-    public int NumRows { get; set; }
-
-    // Keys are coordinates of tiles in the map, value is the tile itself
-    //Dictionary<HexCoordinateOffset, GameTile> _gameMap = new();
-
+    public static int NumCols { get; set; }
+    public static int NumRows { get; set; }
 
     // List of continents in the map, continent ID is the index corresponding
     // to that continent
-    List<Continent> _continents = new();
+    static List<Continent> _continents = new();
 
-    public int NumContinents { get => _continents.Count; }
+    public static int NumContinents { get => _continents.Count; }
 
     // A value big enough to be larger than any possible A* g score, but not large 
     // enough that it could overflow and become negative
     public const int ImpassableCost = int.MaxValue / 2;
 
     // Returns whether a GameTile exists at the given hex
-    public bool TileExists(HexCoordinateOffset hex)
+    public static bool TileExists(HexCoordinateOffset hex)
     {
         return _gameMap.ContainsKey(hex);
     }
 
     // Returns the GameTile at the given hex
     // Throws an ArgumentException if no GameTile exists at the given hex
-    public GameTile GetTile(HexCoordinateOffset hex)
+    public static GameTile GetTile(HexCoordinateOffset hex)
     {
         if (!_gameMap.ContainsKey(hex))
             throw new ArgumentException(
@@ -62,7 +57,7 @@ public class GameMap : NetworkBehaviour
 
     // Adds given GameTile at given coordinate to map
     // Throws an ArgumentException if a GameTile with the given hex already exists
-    public void AddTile(HexCoordinateOffset hex, 
+    public static void AddTile(HexCoordinateOffset hex, 
         GameTile newTile)
     {
         if (TileExists(hex))
@@ -73,7 +68,7 @@ public class GameMap : NetworkBehaviour
 
     // Sets GameTile at given coordinate to given GameTile;
     // Throws an ArgumentException if no GameTile exists at the given hex
-    public void SetTile(HexCoordinateOffset hex, 
+    public static void SetTile(HexCoordinateOffset hex, 
         GameTile newTile)
     {
         if (!TileExists(hex))
@@ -87,7 +82,7 @@ public class GameMap : NetworkBehaviour
     // Throws an ArgumentException if continent ID doesn't equal the size of 
     // the current continents list or if the number of continents would exceed
     // the max
-    public void AddContinent(ContinentID continentID, 
+    public static void AddContinent(ContinentID continentID, 
         Continent continent)
     {
         if (NumContinents != continentID.ID)
@@ -98,7 +93,7 @@ public class GameMap : NetworkBehaviour
 
     // Returns list of valid tiles adjacent to given tile
     // Throws an ArgumentException if given tile is invalid
-    public List<GameTile> Neighbors(GameTile tile)
+    public static List<GameTile> Neighbors(GameTile tile)
     {
         List<GameTile> neighborTiles = new();
         HexCoordinateOffset[] neighborHexes = tile.Hex.Neighbors();
@@ -123,7 +118,7 @@ public class GameMap : NetworkBehaviour
 
     // Returns whether the given tile is traversable by a unit of the given type
     // Throws an ArgumentException if given hex is invalid
-    public bool Traversable(Unit unit, 
+    public static bool Traversable(Unit unit, 
         GameTile tile)
     {
         return tile.CostToTraverse(unit, unit.CurrentLocation) != ImpassableCost;
@@ -131,7 +126,7 @@ public class GameMap : NetworkBehaviour
 
     // Returns list of hexes adjacent to the given tile that can be traversed by
     // the given unit
-    public List<HexCoordinateOffset> TraversableNeighbors(Unit unit, 
+    public static List<HexCoordinateOffset> TraversableNeighbors(Unit unit, 
         GameTile tile)
     {
         List<GameTile> neighbors = Neighbors(tile);
@@ -150,7 +145,7 @@ public class GameMap : NetworkBehaviour
     // hex and the adjacent goal hex
     // Throws an ArgumentException if goal doesn't exist in the map or the unit
     // isn't adjacent to the goal hex
-    public int CostToTraverse(Unit unit,
+    public static int CostToTraverse(Unit unit,
         HexCoordinateOffset start,
         HexCoordinateOffset goal)
     {
@@ -164,7 +159,7 @@ public class GameMap : NetworkBehaviour
     }
 
     // Executes the given action on every tile in the map
-    public void ExecuteOnAllTiles(Action<GameTile> action)
+    public static void ExecuteOnAllTiles(Action<GameTile> action)
     {
         foreach (KeyValuePair<HexCoordinateOffset, GameTile> pair in _gameMap)
         {
@@ -175,7 +170,7 @@ public class GameMap : NetworkBehaviour
     // Returns the shortest path between the given unit's current location and
     // the given goal tile for the given unit
     // Throws a RuntimeException if no valid path was found 
-    public List<HexCoordinateOffset> FindPath(Unit unit,
+    public static List<HexCoordinateOffset> FindPath(Unit unit,
         GameTile goal)
     {
         Func<HexCoordinateOffset, HexCoordinateOffset, int> costFunc = (startHex, goalHex)
@@ -195,12 +190,12 @@ public class GameMap : NetworkBehaviour
     }
 
     // Returns a list of every valid continent ID
-    public List<int> ContinentIDList()
+    public static List<int> ContinentIDList()
     {
         return UnityUtilities.SequentialList(0, NumContinents);
     }
 
-    public Continent GetContinent(int continentID)
+    public static Continent GetContinent(int continentID)
     {
         if (continentID >= NumContinents)
             throw new ArgumentException("Invalid continent ID");

@@ -40,12 +40,11 @@ public class MapVisuals : MonoBehaviour
     }
 
     // Generates tilemap using given height and width and game map
-    public void GenerateVisuals(GameMap gameMap,
-        int height,
+    public void GenerateVisuals(int height,
         int width)
     {
         InitializeTilemap(height, width);
-        UpdateVisuals(gameMap);
+        UpdateVisuals();
     }
 
     // Initializes tilemap with given height and width
@@ -73,9 +72,9 @@ public class MapVisuals : MonoBehaviour
     }
 
     // Updates all tiles in _tilemap based on terrain of HexTiles in given GameMap
-    void UpdateVisuals(GameMap gameMap)
+    void UpdateVisuals()
     {
-        gameMap.ExecuteOnAllTiles(UpdateTile);
+        GameMap.ExecuteOnAllTiles(UpdateTile);
     }
 
     // Sets tile in tilemap at coordinate of given gameTile to TileBase object

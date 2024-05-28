@@ -13,8 +13,6 @@ public class UnitObject : SelectableObject
 {
     [Networked] public UnitID UnitID { get; set; } = new(-1);
 
-    UnitManager _unitManager;
-    GameMap _gameMap;
     MoveableObject _moveable;
     MapVisuals _mapVisuals;
 
@@ -26,8 +24,6 @@ public class UnitObject : SelectableObject
     {
         base.Start();
 
-        _unitManager = ProjectUtilities.FindUnitManager();
-        _gameMap = ProjectUtilities.FindGameMap();
         _moveable = GetComponent<MoveableObject>();
         _mapVisuals = 
             ProjectUtilities.FindComponent<MapVisuals>(ProjectUtilities.MapObjectName);
@@ -75,13 +71,13 @@ public class UnitObject : SelectableObject
 
     void OnTileHovered(NewTileHoveredOverEvent tileHoveredEvent)
     {
-        Unit thisUnit = _unitManager.GetUnit(UnitID);
-        GameTile goalTile = _gameMap.GetTile(tileHoveredEvent.Coordinate);
+        Unit thisUnit = UnitManager.GetUnit(UnitID);
+        GameTile goalTile = GameMap.GetTile(tileHoveredEvent.Coordinate);
 
         List<HexCoordinateOffset> path;
         try
         {
-            path = _gameMap.FindPath(thisUnit,
+            path = GameMap.FindPath(thisUnit,
                 goalTile);
         }
         catch (RuntimeException)
@@ -103,7 +99,7 @@ public class UnitObject : SelectableObject
         Debug.Log("Handling move unit request from player " + 
             request.RequestingPlayerID);
 
-        if (_unitManager.ValidateMoveUnitRequest(request))
+        if (UnitManager.ValidateMoveUnitRequest(request))
         {
             Debug.Log("Request completed");
             _moveable.MoveTo(request.Location);

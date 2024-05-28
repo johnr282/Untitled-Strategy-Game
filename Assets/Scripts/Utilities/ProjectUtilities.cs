@@ -30,15 +30,6 @@ public static class ProjectUtilities
         return component;
     }
 
-    public static GameMap FindGameMap()
-    {
-        return FindComponent<GameMap>(GameStateManagerObjectName);
-    }
-
-    public static UnitManager FindUnitManager()
-    {
-        return FindComponent<UnitManager>(GameStateManagerObjectName);
-    }
 
     public static Tilemap FindTilemap()
     {
@@ -48,11 +39,6 @@ public static class ProjectUtilities
     public static Selection FindTileSelection()
     {
         return FindComponent<Selection>(MapObjectName);
-    }
-
-    public static PlayerManager FindPlayerManager()
-    {
-        return FindComponent<PlayerManager>(GameStateManagerObjectName);
     }
 
     public static MapGenerator FindMapGeneration()

@@ -15,18 +15,12 @@ public class SessionManager : MonoBehaviour, INetworkRunnerCallbacks
 {
     [SerializeField] int _numPlayers;
 
-    PlayerManager _playerManager;
     NetworkRunner _runner;
     int _playersJoined = 0;
 
     // Used to keep track of joining players; when all players join, used to
     // update the PlayerManager
     List<PlayerRef> _joinedPlayers = new();
-
-    void Start()
-    {
-        _playerManager = ProjectUtilities.FindPlayerManager();
-    }
 
     // Creates buttons to choose whether to host or join
     void OnGUI()

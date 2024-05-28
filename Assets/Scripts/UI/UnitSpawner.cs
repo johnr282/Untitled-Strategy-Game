@@ -9,23 +9,17 @@ using UnityEngine.Tilemaps;
 // Component handling spawning new UnitObjects onto the map
 // ------------------------------------------------------------------
 
-[RequireComponent(typeof(UnitManager))]
-[RequireComponent(typeof(PlayerManager))]
 public class UnitSpawner : NetworkBehaviour
 {
     [SerializeField] NetworkObject _unitPrefab;
     [SerializeField] UnitType _unitType;
 
     Tilemap _tilemap;
-    UnitManager _unitManager;
-    PlayerManager _playerManager;
 
     // Start is called before the first frame update
     void Start()
     {
         _tilemap = ProjectUtilities.FindTilemap();
-        _unitManager = GetComponent<UnitManager>();
-        _playerManager = GetComponent<PlayerManager>();
 
         EventBus.Subscribe<CreateUnitRequest>(OnCreateUnitRequest);
     }
@@ -49,7 +43,7 @@ public class UnitSpawner : NetworkBehaviour
             request.RequestingPlayerID.ToString() + " at " + 
             request.Location.ToString());
 
-        if (_unitManager.ValidateCreateUnitRequest(request))
+        if (UnitManager.ValidateCreateUnitRequest(request))
         {
             Debug.Log("Request successful");
             UnitCreated unitCreated = new(request);

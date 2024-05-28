@@ -12,13 +12,10 @@ public class MapGenerator
 {
     public int MapSeed { get => _parameters.Seed; }
 
-    GameMap _gameMap;
     MapGenerationParameters _parameters;
 
-    public MapGenerator(GameMap gameMapIn, 
-        MapGenerationParameters parametersIn)
+    public MapGenerator(MapGenerationParameters parametersIn)
     {
-        _gameMap = gameMapIn;
         _parameters = parametersIn;
     }
 
@@ -61,7 +58,7 @@ public class MapGenerator
         Debug.Log("Map height: " + _parameters.MapHeight.ToString());
     }
 
-    // Initialize every tile in _gameMap to sea
+    // Initialize every tile in GameMap to sea
     void InitializeEveryTileToSea()
     {
         for(int row = 0; row < _parameters.MapHeight; row++)
@@ -69,7 +66,7 @@ public class MapGenerator
             for(int col = 0;  col < _parameters.MapWidth; col++)
             {
                 HexCoordinateOffset coordinate = new HexCoordinateOffset(col, row);
-                _gameMap.AddTile(coordinate, 
+                GameMap.AddTile(coordinate, 
                     new GameTile(coordinate, 
                         Terrain.sea,
                         new ContinentID(-1)));
@@ -99,7 +96,7 @@ public class MapGenerator
             Continent newContinent = 
                 GenerateContinent(centralCoordinates[i], continentID, continentRadius);
 
-            _gameMap.AddContinent(continentID, newContinent);
+            GameMap.AddContinent(continentID, newContinent);
         }
     }
 
@@ -335,7 +332,7 @@ public class MapGenerator
         GameTile centralTile = new(centralCoordinate,
             Terrain.land,
             continentID);
-        _gameMap.SetTile(centralCoordinate, centralTile);
+        GameMap.SetTile(centralCoordinate, centralTile);
         Continent newContinent = new();
         newContinent.AddTile(centralTile);
 
@@ -371,7 +368,7 @@ public class MapGenerator
             if (IncludeTile(hex, continentID, offset))
             {
                 GameTile newTile = new(hex, Terrain.land, continentID);
-                _gameMap.SetTile(hex, 
+                GameMap.SetTile(hex, 
                     newTile);
                 continent.AddTile(newTile);
             }
@@ -387,7 +384,7 @@ public class MapGenerator
         GameTile tile;
         try
         {
-            tile = _gameMap.GetTile(hex);
+            tile = GameMap.GetTile(hex);
         }
         catch (ArgumentException)
         {
@@ -397,7 +394,7 @@ public class MapGenerator
 
         // If tile is an island, i.e. not adjacent to any other tiles from the 
         // same continent, don't include it
-        List<GameTile> adjacentTiles = _gameMap.Neighbors(tile);
+        List<GameTile> adjacentTiles = GameMap.Neighbors(tile);
         bool connectedToContinent = false;
 
         foreach (GameTile adjacentTile in adjacentTiles)
@@ -434,19 +431,19 @@ public class MapGenerator
     // Throws an ArgumentException if n is greater than the number of continents
     public List<GameTile> GenerateStartingTiles(int n)
     {
-        if (n > _gameMap.NumContinents)
+        if (n > GameMap.NumContinents)
             throw new ArgumentException("n cannot be greater than NumContinents");
 
         List<GameTile> startingTiles = new();
-        List<int> availableContinents = _gameMap.ContinentIDList();
+        List<int> availableContinents = GameMap.ContinentIDList();
 
         for (int i = 0; i < n; i++)
         {
             if (availableContinents.Count == 0)
-                availableContinents = _gameMap.ContinentIDList();
+                availableContinents = GameMap.ContinentIDList();
 
             int continentID = UnityUtilities.RandomElement(availableContinents);
-            Continent continent = _gameMap.GetContinent(continentID);
+            Continent continent = GameMap.GetContinent(continentID);
             availableContinents.Remove(continentID);
 
             GameTile startingTile = 

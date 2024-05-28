@@ -9,7 +9,7 @@ using UnityEngine;
 // global game state
 // ------------------------------------------------------------------
 
-public class PlayerManager : NetworkBehaviour
+public static class PlayerManager
 {
     // Stores the calling client's player ID; this value will be different for
     // each client
@@ -21,36 +21,29 @@ public class PlayerManager : NetworkBehaviour
                 throw new RuntimeException("ThisPlayerID not set");
             return _thisPlayerID;
         }
+        set
+        {
+            _thisPlayerID = value;
+        }
     }
 
-    public int NumPlayers { get => _players.Count; }
+    public static int NumPlayers { get => _players.Count; }
 
     // The player whose turn it currently is
-    public PlayerID ActivePlayer { get => _turnOrder[_currTurnIndex]; }
+    public static PlayerID ActivePlayer { get => _turnOrder[_currTurnIndex]; }
 
     // Player ID is index into players list
-    List<Player> _players = new();
+    static List<Player> _players = new();
 
-    List<PlayerID> _turnOrder = new();
+    static List<PlayerID> _turnOrder = new();
 
     // Contains an index to _turnOrder
-    int _currTurnIndex = 0;
+    static int _currTurnIndex = 0;
 
     static PlayerID _thisPlayerID = new(-1);
 
-
-    void Start()
-    {
-        EventBus.Subscribe<PlayerID>(SetPlayerID);
-    }
-
-    void SetPlayerID(PlayerID playerID)
-    {
-        _thisPlayerID = playerID;
-    }
-
     // Creates a new player, and returns the PlayerID of the new player
-    public PlayerID AddPlayer(PlayerRef player)
+    public static PlayerID AddPlayer(PlayerRef player)
     {
         PlayerID newPlayerID = new(NumPlayers);
         _players.Add(new Player(player, newPlayerID));
@@ -66,7 +59,7 @@ public class PlayerManager : NetworkBehaviour
 
     // Returns the Player corresponding to the given playerID
     // Throws an ArgumentException if playerID is invalid
-    public Player GetPlayer(PlayerID playerID)
+    public static Player GetPlayer(PlayerID playerID)
     {
         if (playerID.ID >= NumPlayers)
             throw new ArgumentException("Invalid player ID");
@@ -83,7 +76,7 @@ public class PlayerManager : NetworkBehaviour
     //}
 
     // Increments _currTurnIndex or wraps it back around to 0
-    void UpdateCurrTurnIndex()
+    static void UpdateCurrTurnIndex()
     {
         if (_currTurnIndex >= (_turnOrder.Count - 1))
             _currTurnIndex = 0;

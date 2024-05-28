@@ -10,7 +10,6 @@ using UnityEngine;
 public class TestPathPlanning : MonoBehaviour
 {
     MapVisuals _mapVisuals;
-    GameMap _gameMap;
 
     [SerializeField] UnitType _unitType;
     [SerializeField] bool _findAllPaths;
@@ -24,7 +23,6 @@ public class TestPathPlanning : MonoBehaviour
     void Start()
     {
         _mapVisuals = ProjectUtilities.FindComponent<MapVisuals>("GameMap");
-        _gameMap = ProjectUtilities.FindGameMap();
 
         _tileSelectedSub = EventBus.Subscribe<TileSelectedEvent>(OnTileSelected);
     }
@@ -40,7 +38,7 @@ public class TestPathPlanning : MonoBehaviour
         {
             HexCoordinateOffset goal = tileSelectedEvent.Coordinate;
             Unit dummyUnit = new(_unitType,
-                _gameMap.GetTile(_start),
+                GameMap.GetTile(_start),
                 new UnitID(0));
             FindPath(dummyUnit, goal);
             _startSelected = false;
@@ -53,7 +51,7 @@ public class TestPathPlanning : MonoBehaviour
             if (_findAllPaths)
             {
                 Unit dummyUnit = new(_unitType,
-                    _gameMap.GetTile(_start),
+                    GameMap.GetTile(_start),
                     new UnitID(0));
                 FindAllPaths(dummyUnit);
                 _startSelected = false;
@@ -68,12 +66,12 @@ public class TestPathPlanning : MonoBehaviour
         Debug.Log("Finding path between " + start.ToString() + " and " + goal.ToString() +
                 ", distance of " + HexUtilities.DistanceBetween(start, goal).ToString());
 
-        GameTile goalTile = _gameMap.GetTile(goal);
+        GameTile goalTile = GameMap.GetTile(goal);
 
         List<HexCoordinateOffset> path;
         try
         {
-            path = _gameMap.FindPath(unit, 
+            path = GameMap.FindPath(unit, 
                 goalTile);
         }
         catch (RuntimeException e)
@@ -92,10 +90,10 @@ public class TestPathPlanning : MonoBehaviour
 
         Action<GameTile> findPathToTile = (tile) =>
         {
-            if (_gameMap.Traversable(unit, tile))
+            if (GameMap.Traversable(unit, tile))
                 FindPath(unit, tile.Hex);
         };
 
-        _gameMap.ExecuteOnAllTiles(findPathToTile);
+        GameMap.ExecuteOnAllTiles(findPathToTile);
     }
 }

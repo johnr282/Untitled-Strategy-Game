@@ -5,26 +5,19 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // ------------------------------------------------------------------
-// Component managing the status and movements of units within the game
-// map
+// Static class managing the status and movements of units within the
+// game map; part of the global game state
 // ------------------------------------------------------------------
 
-[RequireComponent(typeof(GameMap))]
-public class UnitManager : NetworkBehaviour
+public static class UnitManager
 {
-    Dictionary<UnitID, Unit> _units = new();
+    static Dictionary<UnitID, Unit> _units = new();
 
-    GameMap _gameMap;
-    int _nextUnitID = 0;
-
-    void Start()
-    {
-        _gameMap = GetComponent<GameMap>();
-    }
+    static int _nextUnitID = 0;
 
     // Returns the unit corresponding to the given unit ID
     // Throws an ArgumentException if given ID has no corresponding unit
-    public Unit GetUnit(UnitID unitID)
+    public static Unit GetUnit(UnitID unitID)
     {
         if (!_units.TryGetValue(unitID, out Unit unit))
             throw new ArgumentException("No unit exists with the given unit ID");
@@ -35,9 +28,9 @@ public class UnitManager : NetworkBehaviour
     // Creates a new unit according to the given request and returns the unit ID
     // of the new unit
     // Throws an ArgumentException if no GameTile exists at the request location
-    public UnitID CreateUnit(CreateUnitRequest request)
+    public static UnitID CreateUnit(CreateUnitRequest request)
     {
-        GameTile initialTile = _gameMap.GetTile(request.Location);
+        GameTile initialTile = GameMap.GetTile(request.Location);
 
         Unit newUnit = new(request.Type,
             initialTile,
@@ -49,7 +42,7 @@ public class UnitManager : NetworkBehaviour
     }
 
     // Moves the unit corresponding to the given unit ID to the given new tile
-    public void MoveUnit(UnitID unitID,
+    public static void MoveUnit(UnitID unitID,
         GameTile newTile)
     {
         Unit unit = GetUnit(unitID);
@@ -62,9 +55,9 @@ public class UnitManager : NetworkBehaviour
     // Returns whether the given CreateUnitRequest is valid
     // Throws an ArgumentException if no GameTile exists at the requested
     // location
-    public bool ValidateCreateUnitRequest(CreateUnitRequest request)
+    public static bool ValidateCreateUnitRequest(CreateUnitRequest request)
     {
-        GameTile initialTile = _gameMap.GetTile(request.Location);
+        GameTile initialTile = GameMap.GetTile(request.Location);
 
         if (!initialTile.Available(request.RequestingPlayerID))
             return false;
@@ -75,14 +68,14 @@ public class UnitManager : NetworkBehaviour
     // Returns whether the given MoveUnitRequest is valid
     // Throws an ArgumentException if no unit exists with the given ID or no
     // GameTile exists at the requested location
-    public bool ValidateMoveUnitRequest(MoveUnitRequest request)
+    public static bool ValidateMoveUnitRequest(MoveUnitRequest request)
     {
-        GameTile requestedTile = _gameMap.GetTile(request.Location);
+        GameTile requestedTile = GameMap.GetTile(request.Location);
         Unit unit = GetUnit(request.UnitID);
 
         try
         {
-            _gameMap.FindPath(unit,
+            GameMap.FindPath(unit,
                 requestedTile);
         }
         catch (RuntimeException)
@@ -93,7 +86,7 @@ public class UnitManager : NetworkBehaviour
         return true;
     }
 
-    UnitID GetNextUnitID()
+    static UnitID GetNextUnitID()
     {
         if (_nextUnitID >= ushort.MaxValue)
             throw new RuntimeException("Ran out of unit IDs");
