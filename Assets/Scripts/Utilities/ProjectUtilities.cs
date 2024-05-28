@@ -36,14 +36,9 @@ public static class ProjectUtilities
         return FindComponent<Tilemap>(MapObjectName);
     }
 
-    public static Selection FindTileSelection()
+    public static MouseSelection FindMouseSelection()
     {
-        return FindComponent<Selection>(MapObjectName);
-    }
-
-    public static MapGenerator FindMapGeneration()
-    {
-        return FindComponent<MapGenerator>(MapObjectName);
+        return FindComponent<MouseSelection>(MapObjectName);
     }
 
     public static NetworkInputManager FindNetworkInputManager()

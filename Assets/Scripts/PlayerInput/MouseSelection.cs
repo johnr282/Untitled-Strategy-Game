@@ -5,11 +5,11 @@ using UnityEngine.Tilemaps;
 
 // ------------------------------------------------------------------
 // Component allowing objects and tiles on the map to be hovered over
-// and selected
+// and selected with the mouse
 // ------------------------------------------------------------------
 
 [RequireComponent(typeof(Tilemap))]
-public class Selection : MonoBehaviour
+public class MouseSelection : MonoBehaviour
 {
     Tilemap _tilemap;
 
