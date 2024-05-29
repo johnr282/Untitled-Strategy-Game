@@ -9,33 +9,73 @@ using UnityEngine;
 
 public class ClientMessages : NetworkBehaviour  
 {
-    // Called by a client to notify server that the player's turn corresponding
-    // to playerID is finished
-    //[Rpc]
-    //public static void RPC_EndTurn(NetworkRunner runner,
-    //    [RpcTarget] PlayerRef player, 
-    //    TurnEndData turnEndData)
-    //{
-    //    EventBus.Publish(new TurnFinishedEventServer(turnEndData));
-    //}
+    // Called by a client to notify server that this player is ending their turn
+    [Rpc]
+    public static void RPC_EndTurn(NetworkRunner runner,
+        [RpcTarget] PlayerRef player,
+        EndTurnAction action)
+    {
+        Debug.Log("Received EndTurnAction from player " + action.EndingPlayerID);
+
+        if (PlayerManager.ValidateEndTurnAction(action))
+        {
+            Debug.Log("Action successful");
+            GameStateManager.UpdateGameState(runner,
+                new NextTurnUpdate(),
+                ServerMessages.RPC_NextTurn);
+        }
+        else
+        {
+            Debug.Log("Action denied");
+        }
+    }
 
     // Requests the server to create a new unit
     [Rpc]
     public static void RPC_CreateUnit(NetworkRunner runner,
         [RpcTarget] PlayerRef player,
-        CreateUnitRequest request)
+        CreateUnitAction action)
     {
-        Debug.Log("Calling RPC_CreateUnit");
-        EventBus.Publish(request);
+        Debug.Log("Received CreateUnitAction from player " +
+            action.RequestingPlayerID + " at " + action.Location);
+
+        if (UnitManager.ValidateCreateUnitAction(action))
+        {
+            Debug.Log("Action successful");
+            UnitCreatedUpdate unitCreated = new(action);
+            GameStateManager.UpdateGameState(runner,
+                unitCreated,
+                ServerMessages.RPC_UnitCreated);
+        }
+        else
+        {
+            Debug.Log("Action denied");
+        }
     }
 
-    // Requests the server to move a unit
+    // Requests the server to move a unit; if the MoveUnitAction is valid, 
+    // updates the game state accordingly
     [Rpc]
     public static void RPC_MoveUnit(NetworkRunner runner,
         [RpcTarget] PlayerRef player,
-        MoveUnitRequest request)
+        MoveUnitAction action)
     {
-        Debug.Log("Calling RPC_MoveUnit");
-        EventBus.Publish(request);
+        Debug.Log("Received MoveUnitAction from player " +
+            action.RequestingPlayerID);
+
+        if (UnitManager.ValidateMoveUnitAction(action))
+        {
+            Debug.Log("Action completed");
+
+            UnitMovedUpdate unitMoved = new(action.UnitID,
+                action.Location);
+            GameStateManager.UpdateGameState(runner,
+                unitMoved,
+                ServerMessages.RPC_UnitMoved);
+        }
+        else
+        {
+            Debug.Log("Action denied");
+        }
     }
 }

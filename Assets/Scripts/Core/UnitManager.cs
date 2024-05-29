@@ -28,7 +28,7 @@ public static class UnitManager
     // Creates a new unit according to the given request and returns the unit ID
     // of the new unit
     // Throws an ArgumentException if no GameTile exists at the request location
-    public static UnitID CreateUnit(CreateUnitRequest request)
+    public static UnitID CreateUnit(CreateUnitAction request)
     {
         GameTile initialTile = GameMap.GetTile(request.Location);
 
@@ -52,26 +52,26 @@ public static class UnitManager
         unit.CurrentLocation = newTile;
     }
 
-    // Returns whether the given CreateUnitRequest is valid
+    // Returns whether the given CreateUnitAction is valid
     // Throws an ArgumentException if no GameTile exists at the requested
     // location
-    public static bool ValidateCreateUnitRequest(CreateUnitRequest request)
+    public static bool ValidateCreateUnitAction(CreateUnitAction action)
     {
-        GameTile initialTile = GameMap.GetTile(request.Location);
+        GameTile initialTile = GameMap.GetTile(action.Location);
 
-        if (!initialTile.Available(request.RequestingPlayerID))
+        if (!initialTile.Available(action.RequestingPlayerID))
             return false;
 
         return true;
     }
 
-    // Returns whether the given MoveUnitRequest is valid
+    // Returns whether the given MoveUnitAction is valid
     // Throws an ArgumentException if no unit exists with the given ID or no
     // GameTile exists at the requested location
-    public static bool ValidateMoveUnitRequest(MoveUnitRequest request)
+    public static bool ValidateMoveUnitAction(MoveUnitAction action)
     {
-        GameTile requestedTile = GameMap.GetTile(request.Location);
-        Unit unit = GetUnit(request.UnitID);
+        GameTile requestedTile = GameMap.GetTile(action.Location);
+        Unit unit = GetUnit(action.UnitID);
 
         try
         {

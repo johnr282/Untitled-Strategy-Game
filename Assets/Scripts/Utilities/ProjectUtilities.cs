@@ -41,9 +41,9 @@ public static class ProjectUtilities
         return FindComponent<MouseSelection>(MapObjectName);
     }
 
-    public static NetworkInputManager FindNetworkInputManager()
+    public static ClientActionManager FindNetworkInputManager()
     {
-        return FindComponent<NetworkInputManager>(NetworkInputManagerObjectName);
+        return FindComponent<ClientActionManager>(NetworkInputManagerObjectName);
     }
 
     public static MapGenerationParameters FindMapGenerationParameters()

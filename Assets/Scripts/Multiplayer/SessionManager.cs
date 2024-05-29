@@ -93,13 +93,13 @@ public class SessionManager : MonoBehaviour, INetworkRunnerCallbacks
     {
         foreach (PlayerRef joinedPlayer in _joinedPlayers)
         {
-            AddPlayer addPlayer = new(joinedPlayer);
+            PlayerAddedUpdate addPlayer = new(joinedPlayer);
             GameStateManager.UpdateGameState(_runner,
                 addPlayer,
                 ServerMessages.RPC_AddPlayer);
         }
 
-        GameStarted gameStarted = new(MapGenerator.GenerateRandomSeed());
+        GameStartedUpdate gameStarted = new(MapGenerator.GenerateRandomSeed());
         GameStateManager.UpdateGameState(_runner,
             gameStarted,
             ServerMessages.RPC_StartGame);

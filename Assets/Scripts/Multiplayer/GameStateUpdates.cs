@@ -10,51 +10,51 @@ using UnityEngine;
 // so they all need to implement the INetworkStruct interface
 // ------------------------------------------------------------------
 
-// Sent to clients for each player to update the PlayerManager
-public readonly struct AddPlayer : INetworkStruct
+// Sent to clients once for each player to update the PlayerManager
+public readonly struct PlayerAddedUpdate : INetworkStruct
 {
     public PlayerRef PlayerRef { get; }
 
-    public AddPlayer(PlayerRef playerRefIn)
+    public PlayerAddedUpdate(PlayerRef playerRefIn)
     {
         PlayerRef = playerRefIn;
     }
 }
 
 // Sent to clients when all players have joined and the game is starting
-public readonly struct GameStarted : INetworkStruct
+public readonly struct GameStartedUpdate : INetworkStruct
 {
     public int MapSeed { get; }
 
-    public GameStarted(int mapSeedIn)
+    public GameStartedUpdate(int mapSeedIn)
     {
         MapSeed = mapSeedIn;
     }
 }
 
 // Sent to clients when it's the next player's turn
-public readonly struct NextTurn : INetworkStruct
+public readonly struct NextTurnUpdate : INetworkStruct
 {
 }
 
 // Sent to clients when a new unit is created
-public readonly struct UnitCreated : INetworkStruct
+public readonly struct UnitCreatedUpdate : INetworkStruct
 {
-    public CreateUnitRequest UnitInfo { get; }
+    public CreateUnitAction UnitInfo { get; }
 
-    public UnitCreated(CreateUnitRequest unitInfoIn)
+    public UnitCreatedUpdate(CreateUnitAction unitInfoIn)
     {
         UnitInfo = unitInfoIn;
     }
 }
 
 // Sent to clients when a unit is moved
-public readonly struct UnitMoved : INetworkStruct
+public readonly struct UnitMovedUpdate : INetworkStruct
 {
     public UnitID UnitID { get; }
     public HexCoordinateOffset NewLocation { get; }
 
-    public UnitMoved(UnitID unitIDIn,
+    public UnitMovedUpdate(UnitID unitIDIn,
         HexCoordinateOffset newLocationIn)
     {
         UnitID = unitIDIn;

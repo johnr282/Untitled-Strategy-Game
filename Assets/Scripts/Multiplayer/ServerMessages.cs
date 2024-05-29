@@ -16,40 +16,40 @@ public class ServerMessages : NetworkBehaviour
         [RpcTarget] PlayerRef player,
         PlayerID playerID)
     {
-        PlayerManager.ThisPlayerID = playerID;
+        PlayerManager.MyPlayerID = playerID;
     }
 
     [Rpc]
     public static void RPC_AddPlayer(NetworkRunner runner,
-        AddPlayer addPlayer)
+        PlayerAddedUpdate addPlayer)
     {
         EventBus.Publish(addPlayer);
     }
 
     [Rpc]
     public static void RPC_StartGame(NetworkRunner runner,
-        GameStarted gameStartData)
+        GameStartedUpdate gameStartData)
     {
         EventBus.Publish(gameStartData);
     }
 
     [Rpc]
     public static void RPC_NextTurn(NetworkRunner runner,
-        NextTurn nextTurn)
+        NextTurnUpdate nextTurn)
     {
         EventBus.Publish(nextTurn);
     }
 
     [Rpc]
     public static void RPC_UnitCreated(NetworkRunner runner,
-        UnitCreated unitCreated)
+        UnitCreatedUpdate unitCreated)
     {
         EventBus.Publish(unitCreated);
     }
 
     [Rpc]
     public static void RPC_UnitMoved(NetworkRunner runner,
-        UnitMoved unitMoved)
+        UnitMovedUpdate unitMoved)
     {
         EventBus.Publish(unitMoved);
     }

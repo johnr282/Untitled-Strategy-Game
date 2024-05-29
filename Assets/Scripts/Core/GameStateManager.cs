@@ -8,8 +8,11 @@ using UnityEngine;
 // Component that handles storing and updating all game state, which
 // consists of the static classes GameMap, UnitManager, and PlayerManager.
 // All modifying of game state occurs here, both on the server and the
-// clients. Game state updates are only published after the client
-// request that resulted in the state update has been validated. 
+// clients.
+// Once a ClientAction has been validated on the server, UpdateGameState()
+// should be called with the corresponding update struct (found in
+// GameStateUpdates.cs) and RPC, resulting in the game state being
+// updated (for everyone) in one of the callback functions in this class.
 // ------------------------------------------------------------------
 
 [RequireComponent(typeof(UnitSpawner))]
@@ -23,11 +26,11 @@ public class GameStateManager : NetworkBehaviour
         _unitSpawner = GetComponent<UnitSpawner>();
 
         // Game state update subscriptions
-        EventBus.Subscribe<AddPlayer>   (OnAddPlayer);
-        EventBus.Subscribe<GameStarted> (OnGameStarted);
-        EventBus.Subscribe<NextTurn>    (OnNextTurn);
-        EventBus.Subscribe<UnitCreated> (OnUnitCreated);
-        EventBus.Subscribe<UnitMoved>   (OnUnitMoved);
+        EventBus.Subscribe<PlayerAddedUpdate>   (OnAddPlayer);
+        EventBus.Subscribe<GameStartedUpdate> (OnGameStarted);
+        EventBus.Subscribe<NextTurnUpdate>    (OnNextTurn);
+        EventBus.Subscribe<UnitCreatedUpdate> (OnUnitCreated);
+        EventBus.Subscribe<UnitMovedUpdate>   (OnUnitMoved);
     }
 
     // Handles updating game state on the server and all clients with the given
@@ -53,29 +56,29 @@ public class GameStateManager : NetworkBehaviour
 
     // Updates PlayerManager with new player, and allows server to send each 
     // client their PlayerID
-    void OnAddPlayer(AddPlayer addPlayer)
+    void OnAddPlayer(PlayerAddedUpdate update)
     {
         Debug.Log("Adding player to PlayerManager");
-        PlayerID newPlayerID = PlayerManager.AddPlayer(addPlayer.PlayerRef);
+        PlayerID newPlayerID = PlayerManager.AddPlayer(update.PlayerRef);
 
         if (Runner.IsServer)
         {
             ServerMessages.RPC_SendPlayerID(Runner,
-                addPlayer.PlayerRef,
+                update.PlayerRef,
                 newPlayerID);
         }
     }
 
     // Generates the map, initializes map visuals, and spawns a unit at this 
     // player's starting tile
-    void OnGameStarted(GameStarted gameStarted)
+    void OnGameStarted(GameStartedUpdate update)
     {
         Debug.Log("Game starting, generating map and spawning starting unit");
         MapGenerationParameters parameters = 
             ProjectUtilities.FindMapGenerationParameters();
 
         if (parameters.RandomlyGenerateSeed)
-            parameters.Seed = gameStarted.MapSeed;
+            parameters.Seed = update.MapSeed;
 
         MapGenerator mapGenerator = new(parameters);
         mapGenerator.GenerateMap();
@@ -86,34 +89,57 @@ public class GameStateManager : NetworkBehaviour
 
         List<GameTile> startingTiles = 
             mapGenerator.GenerateStartingTiles(PlayerManager.NumPlayers);
-        GameTile startingTile = startingTiles[PlayerManager.ThisPlayerID.ID];
+        GameTile startingTile = startingTiles[PlayerManager.MyPlayerID.ID];
         UnitType startingUnitType = UnitType.land;
         _unitSpawner.RequestSpawnUnit(startingUnitType, startingTile.Hex);
+
+        PlayerManager.NotifyActivePlayer();
     }
 
-    void OnNextTurn(NextTurn nextTurn)
+    // Updates the current active player, and publishes an event if it's this
+    // client's turn
+    void OnNextTurn(NextTurnUpdate update)
     {
+        PlayerManager.UpdateCurrTurnIndex();
+        if (Runner.IsClient && PlayerManager.MyTurn)
+            EventBus.Publish(new MyTurnEvent());
 
+        Debug.Log("ActivePlayer is now " + PlayerManager.ActivePlayer);
+        Debug.Log("MyTurn: " + PlayerManager.MyTurn);
     }
 
-    void OnUnitCreated(UnitCreated unitCreated)
+    // Creates a unit based on the given update, and allows the server to spawn
+    // a networked UnitObject
+    void OnUnitCreated(UnitCreatedUpdate update)
     {
-        UnitID newUnitID = UnitManager.CreateUnit(unitCreated.UnitInfo);
+        UnitID newUnitID = UnitManager.CreateUnit(update.UnitInfo);
         Debug.Log("Created new unit " + newUnitID.ID.ToString());
 
         if (Runner.IsServer)
         {
-            _unitSpawner.SpawnUnitObject(newUnitID,
-                unitCreated.UnitInfo.RequestingPlayerID,
-                unitCreated.UnitInfo.Location);
+            UnitObject newUnitObject = _unitSpawner.SpawnUnitObject(newUnitID,
+                update.UnitInfo.RequestingPlayerID,
+                update.UnitInfo.Location);
+            UnitManager.GetUnit(newUnitID).UnitObject = newUnitObject;
         }
     }
 
-    void OnUnitMoved(UnitMoved unitMoved)
+    // Moves a unit based on the given update, and allows the server to move
+    // the corresponding UnitObject
+    void OnUnitMoved(UnitMovedUpdate update)
     {
-        Debug.Log("Moving unit " + unitMoved.UnitID.ID.ToString());
-        GameTile destTile = GameMap.GetTile(unitMoved.NewLocation);
-        UnitManager.MoveUnit(unitMoved.UnitID,
+        Debug.Log("Moving unit " + update.UnitID.ID.ToString());
+        GameTile destTile = GameMap.GetTile(update.NewLocation);
+        UnitManager.MoveUnit(update.UnitID,
             destTile);
+
+        if (Runner.IsServer)
+        {
+            Unit movedUnit = UnitManager.GetUnit(update.UnitID);
+            movedUnit.UnitObject.MoveTo(update.NewLocation);
+        }
+
+        if (PlayerManager.MyTurn)
+            PlayerManager.EndMyTurn();
     }
 }

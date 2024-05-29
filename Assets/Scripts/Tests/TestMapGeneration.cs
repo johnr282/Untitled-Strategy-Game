@@ -10,6 +10,6 @@ public class TestMapGeneration : MonoBehaviour
 {
     void Start()
     {
-        EventBus.Publish(new GameStarted(MapGenerator.GenerateRandomSeed()));
+        EventBus.Publish(new GameStartedUpdate(MapGenerator.GenerateRandomSeed()));
     }
 }

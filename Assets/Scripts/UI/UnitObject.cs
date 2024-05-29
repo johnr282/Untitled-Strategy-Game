@@ -18,26 +18,13 @@ public class UnitObject : SelectableObject
 
     Subscription<TileSelectedEvent> _tileSelectedSub;
     Subscription<NewTileHoveredOverEvent> _tileHoveredSub;
-    Subscription<MoveUnitRequest> _moveUnitRequestSub;
 
     public override void Start()
     {
         base.Start();
 
         _moveable = GetComponent<MoveableObject>();
-        _mapVisuals = 
-            ProjectUtilities.FindComponent<MapVisuals>(ProjectUtilities.MapObjectName);
-
-        _moveUnitRequestSub = 
-            EventBus.Subscribe<MoveUnitRequest>(OnMoveUnitRequest);
-    }
-
-    public override void FixedUpdateNetwork()
-    {
-        if (Input.GetKeyDown(KeyCode.Space) && HasStateAuthority)
-        {
-            transform.position += Vector3.right;
-        }
+        _mapVisuals = ProjectUtilities.FindMapVisuals();
     }
 
     public override void OnSelectedByOwner()
@@ -53,6 +40,12 @@ public class UnitObject : SelectableObject
             EventBus.Subscribe<NewTileHoveredOverEvent>(OnTileHovered);
     }
 
+    // Moves this UnitObject to the given hex using its MoveableObject component
+    public void MoveTo(HexCoordinateOffset hex)
+    {
+        _moveable.MoveTo(hex);
+    }
+
     void OnTileSelected(TileSelectedEvent tileSelectedEvent)
     {
         _selectedByOwner = false;
@@ -62,10 +55,10 @@ public class UnitObject : SelectableObject
 
         HexCoordinateOffset requestedHex = tileSelectedEvent.Coordinate;
 
-        MoveUnitRequest request = new(UnitID,
+        MoveUnitAction request = new(UnitID,
             tileSelectedEvent.Coordinate,
             SelectingPlayerID);
-        NetworkInputManager.QueueNetworkInputEvent(request,
+        ClientActionManager.QueueClientAction(request,
             ClientMessages.RPC_MoveUnit);
     }
 
@@ -86,33 +79,5 @@ public class UnitObject : SelectableObject
         }
 
         _mapVisuals.HighlightPath(path);
-    }
-
-    // Called on the server when it receives a MoveUnitRequest
-    // If request is valid, moves this UnitObject to the correct location on the
-    // map and moves the requested Unit to its new location
-    void OnMoveUnitRequest(MoveUnitRequest request)
-    {
-        if (request.UnitID.ID != UnitID.ID)
-            return;
-
-        Debug.Log("Handling move unit request from player " + 
-            request.RequestingPlayerID);
-
-        if (UnitManager.ValidateMoveUnitRequest(request))
-        {
-            Debug.Log("Request completed");
-            _moveable.MoveTo(request.Location);
-
-            UnitMoved unitMoved = new(request.UnitID,
-                request.Location);
-            GameStateManager.UpdateGameState(Runner,
-                unitMoved,
-                ServerMessages.RPC_UnitMoved);
-        }
-        else
-        {
-            Debug.Log("Request denied");
-        }
     }
 }

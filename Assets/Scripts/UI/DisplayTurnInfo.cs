@@ -11,51 +11,29 @@ using UnityEngine.Tilemaps;
 [RequireComponent(typeof(TextMeshProUGUI))]
 public class DisplayTurnInfo : MonoBehaviour
 {
-    //TextMeshProUGUI _turnInfoDisplay;
-    //Subscription<TurnFinishedEventClient> _hexSelectedSub;
-    //Subscription<PlayerTurnEvent> _playerTurnSub;
+    TextMeshProUGUI _turnInfoDisplay;
 
-    //void Start()
-    //{
-    //    _turnInfoDisplay = GetComponent<TextMeshProUGUI>();
-    //    _turnInfoDisplay.text = "";
+    void Start()
+    {
+        _turnInfoDisplay = GetComponent<TextMeshProUGUI>();
+        _turnInfoDisplay.text = "";
 
-    //    _hexSelectedSub = EventBus.Subscribe<TurnFinishedEventClient>(DisplayTurnEndInfo);
-    //    _playerTurnSub = EventBus.Subscribe<PlayerTurnEvent>(DisplayTurnStartInfo);
-    //}
+        EventBus.Subscribe<MyTurnEvent>(OnMyTurn);
+        EventBus.Subscribe<EndTurnAction>(OnEndTurn);
+    }
 
-    //void OnDestroy()
-    //{
-    //    EventBus.Unsubscribe(_hexSelectedSub);
-    //    EventBus.Unsubscribe(_playerTurnSub);
-    //}
+    void OnMyTurn(MyTurnEvent myTurn)
+    {
+        SetTurnInfoText("It's your turn, select and move your unit!");
+    }
 
-    //void DisplayTurnStartInfo(PlayerTurnEvent turnEvent)
-    //{
-    //    string textToDisplay;
-    //    if (turnEvent.TurnStartInfo.FirstTurn)
-    //    {
-    //        textToDisplay = "It's your turn! Select a hex on the map.";
-    //    }
-    //    else
-    //    {
-    //        textToDisplay = "It's your turn! Select a hex on the map.\n" +
-    //            "Previous player selected " +
-    //            turnEvent.TurnStartInfo.PreviousPlayerHex.ToString();
-    //    }
+    void OnEndTurn(EndTurnAction endTurn)
+    {
+        SetTurnInfoText("Waiting for other players...");
+    }
 
-    //    SetTurnInfoText(textToDisplay);
-    //}
-
-    //void DisplayTurnEndInfo(TurnFinishedEventClient turnFinishedEvent)
-    //{
-    //    SetTurnInfoText("You selected " +
-    //        turnFinishedEvent.TurnEndInfo.SelectedHex.ToString() +
-    //        "\nWaiting for other players...");
-    //}
-
-    //void SetTurnInfoText(string textToDisplay)
-    //{
-    //    _turnInfoDisplay.text = textToDisplay;
-    //}
+    void SetTurnInfoText(string textToDisplay)
+    {
+        _turnInfoDisplay.text = textToDisplay;
+    }
 }

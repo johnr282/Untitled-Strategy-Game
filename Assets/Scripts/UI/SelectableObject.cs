@@ -13,7 +13,7 @@ public abstract class SelectableObject : NetworkBehaviour
 {
     [Networked] public PlayerID OwnerID { get; set; } = new(-1);
 
-    protected PlayerID SelectingPlayerID { get => PlayerManager.ThisPlayerID; }
+    protected PlayerID SelectingPlayerID { get => PlayerManager.MyPlayerID; }
     protected bool _selectedByOwner = false;
 
 

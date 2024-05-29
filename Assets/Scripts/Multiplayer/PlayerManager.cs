@@ -11,19 +11,19 @@ using UnityEngine;
 
 public static class PlayerManager
 {
-    // Stores the calling client's player ID; this value will be different for
+    // Returns the calling client's player ID; this value will be different for
     // each client
-    public static PlayerID ThisPlayerID
+    public static PlayerID MyPlayerID
     {
         get
         {
-            if (_thisPlayerID.ID == -1)
+            if (_myPlayerID.ID == -1)
                 throw new RuntimeException("ThisPlayerID not set");
-            return _thisPlayerID;
+            return _myPlayerID;
         }
         set
         {
-            _thisPlayerID = value;
+            _myPlayerID = value;
         }
     }
 
@@ -31,6 +31,9 @@ public static class PlayerManager
 
     // The player whose turn it currently is
     public static PlayerID ActivePlayer { get => _turnOrder[_currTurnIndex]; }
+
+    // Returns whether it's the calling client's turn
+    public static bool MyTurn { get => MyPlayerID.ID == ActivePlayer.ID; }
 
     // Player ID is index into players list
     static List<Player> _players = new();
@@ -40,9 +43,10 @@ public static class PlayerManager
     // Contains an index to _turnOrder
     static int _currTurnIndex = 0;
 
-    static PlayerID _thisPlayerID = new(-1);
+    static PlayerID _myPlayerID = new(-1);
 
     // Creates a new player, and returns the PlayerID of the new player
+    // Modifies state
     public static PlayerID AddPlayer(PlayerRef player)
     {
         PlayerID newPlayerID = new(NumPlayers);
@@ -51,11 +55,6 @@ public static class PlayerManager
         return newPlayerID;
     }
 
-    // Notifies the first player in _turnOrder that it's their turn
-    //public void NotifyFirstPlayer()
-    //{
-    //    NotifyNextPlayer(new TurnStartData(true));
-    //}
 
     // Returns the Player corresponding to the given playerID
     // Throws an ArgumentException if playerID is invalid
@@ -67,34 +66,33 @@ public static class PlayerManager
         return _players[playerID.ID];
     }
 
-    // Updates _currTurnIndex and notifies next player that it's their turn
-    //void TurnFinishedCallback(TurnFinishedEventServer turnFinishedEvent)
-    //{
-    //    UpdateCurrTurnIndex();
-    //    NotifyNextPlayer(new TurnStartData(false,
-    //        turnFinishedEvent.TurnEndInfo.SelectedHex));
-    //}
+    // If called on the ActivePlayer, notifies them that it's their turn
+    public static void NotifyActivePlayer()
+    {
+        if (MyPlayerID.ID == ActivePlayer.ID)
+            EventBus.Publish(new MyTurnEvent());
+    }
 
-    // Increments _currTurnIndex or wraps it back around to 0
-    static void UpdateCurrTurnIndex()
+    // Requests the server to end this player's turn
+    public static void EndMyTurn()
+    {
+        EventBus.Publish(new EndTurnAction(MyPlayerID));
+    }
+
+    // Updates the ActivePlayer by incrementing _currTurnIndex or wrapping it
+    // back around to 0
+    // Modifies game state
+    public static void UpdateCurrTurnIndex()
     {
         if (_currTurnIndex >= (_turnOrder.Count - 1))
             _currTurnIndex = 0;
         else
             _currTurnIndex++;
-
-        Debug.Log("Updated curr turn index to : " +  _currTurnIndex);
     }
 
-    // Notifies the next player that it's their turns and sends them the given
-    // turn start data
-    //void NotifyNextPlayer(TurnStartData turnStartData)
-    //{
-    //    PlayerID nextPlayerID = _turnOrder[_currTurnIndex];
-    //    Player nextPlayer = GetPlayer(nextPlayerID);
-
-    //    ServerMessages.RPC_NotifyPlayerTurn(Runner, 
-    //        nextPlayer.PlayerRef,
-    //        turnStartData);
-    //}
+    // Returns whether the given EndTurnAction is valid
+    public static bool ValidateEndTurnAction(EndTurnAction action)
+    {
+        return action.EndingPlayerID.ID == ActivePlayer.ID;
+    }
 }

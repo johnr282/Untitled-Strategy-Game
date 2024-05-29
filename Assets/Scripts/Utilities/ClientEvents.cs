@@ -29,24 +29,7 @@ public class TileSelectedEvent
     }
 }
 
-// Published when this client should generate the map with the given seed
-public class GenerateMapEvent
+// Published when it's this client's turn
+public class MyTurnEvent
 {
-    public int MapSeed { get; }
-
-    public GenerateMapEvent(int mapSeedIn)
-    {
-        MapSeed = mapSeedIn;
-    }
-}
-
-// Published when this client receives their starting location from the server
-public class StartingLocationReceivedEvent
-{
-    public Vector3Int Location { get; }
-
-    public StartingLocationReceivedEvent(Vector3Int locationIn)
-    {
-        Location = locationIn;
-    }
 }

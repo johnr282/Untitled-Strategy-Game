@@ -6,42 +6,41 @@ using UnityEngine;
 
 // ------------------------------------------------------------------
 // Component that calls the corresponding RPC for each published
-// NetworkInputEvent for clients in the Unity Update() function.
+// ClientAction in the Unity Update() function.
 // This is necessary because RPCs will fail if they are called in
 // the client's resimulation phase, which should never be the case
-// in Update()
-// This isn't needed for RPCs called by the server because the server
-// doesn't have a resimulation phase
+// in Update(). This isn't needed for RPCs called by the server because
+// the server doesn't have a resimulation phase.
 // ------------------------------------------------------------------
 
-public class NetworkInputManager : NetworkBehaviour
+public class ClientActionManager : NetworkBehaviour
 {
-    Queue<NetworkInputEvent> _inputEventQueue = new();
+    Queue<ClientAction> _clientActionQueue = new();
 
     void Start()
     {    
-        EventBus.Subscribe<NetworkInputEvent>(OnInputEvent);
+        EventBus.Subscribe<ClientAction>(OnClientAction);
     }
 
-    // Constructs and publishes a NetworkInputEvent with the given input data
+    // Constructs and publishes a ClientAction with the given input data
     // and RPC
-    public static void QueueNetworkInputEvent<TInputData>(TInputData inputData,
-        Action<NetworkRunner, PlayerRef, TInputData> RPC_SendInputEvent)
-        where TInputData : struct, INetworkStruct
+    public static void QueueClientAction<TActionData>(TActionData actionData,
+        Action<NetworkRunner, PlayerRef, TActionData> RPC_SendClientAction)
+        where TActionData : struct, INetworkStruct
     {
-        EventBus.Publish(new NetworkInputEvent(inputData,
-            RPC_SendInputEvent));
+        EventBus.Publish(new ClientAction(actionData,
+            RPC_SendClientAction));
     }
 
-    void OnInputEvent(NetworkInputEvent inputEvent)
+    void OnClientAction(ClientAction clientAction)
     {
-        Debug.Log("Adding new input event to queue");
-        _inputEventQueue.Enqueue(inputEvent);
+        Debug.Log("Adding new client action to queue");
+        _clientActionQueue.Enqueue(clientAction);
     }
 
     void Update()
     {
-        if (_inputEventQueue.TryDequeue(out NetworkInputEvent inputEvent))
+        if (_clientActionQueue.TryDequeue(out ClientAction inputEvent))
         {
             Debug.Log("New event in queue, calling RPC");
             inputEvent.CallRPC(Runner);

@@ -5,7 +5,7 @@ using UnityEngine;
 using Fusion;
 
 // ------------------------------------------------------------------
-// Struct representing a single unit
+// Class representing a single unit
 // ------------------------------------------------------------------
 
 /*
@@ -40,12 +40,15 @@ public enum UnitType
 
 public class Unit
 {
-    public int Strength {  get; }
+    public int Strength { get; }
     public int Capacity { get; }
     public UnitType Type { get; }
     public UnitID UnitID { get; }
     public GameTile CurrentLocation { get; set; }
-    public List<Terrain> TraversableTerrains { get; }
+    public List<Terrain> TraversableTerrains { get; } = new();
+
+    // UnitObject will only be set on the server, clients should not access it
+    public UnitObject UnitObject { get; set; } = null;
 
     public Unit(UnitType typeIn, 
         GameTile currentLocationIn,
@@ -56,6 +59,5 @@ public class Unit
         Capacity = -1;
         Type = typeIn;
         CurrentLocation = currentLocationIn;
-        TraversableTerrains = new();
     }
 }
