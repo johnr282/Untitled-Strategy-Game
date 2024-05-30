@@ -101,8 +101,7 @@ public class GameStateManager : NetworkBehaviour
     void OnNextTurn(NextTurnUpdate update)
     {
         PlayerManager.UpdateCurrTurnIndex();
-        if (Runner.IsClient && PlayerManager.MyTurn)
-            EventBus.Publish(new MyTurnEvent());
+        PlayerManager.NotifyActivePlayer();
 
         Debug.Log("ActivePlayer is now " + PlayerManager.ActivePlayer);
         Debug.Log("MyTurn: " + PlayerManager.MyTurn);

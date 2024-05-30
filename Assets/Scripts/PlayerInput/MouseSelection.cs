@@ -25,6 +25,16 @@ public class MouseSelection : MonoBehaviour
 
     void Update()
     {
+        try
+        {
+            if (!PlayerManager.MyTurn)
+                return;
+        }
+        catch
+        {
+            return;
+        }
+
         if (SelectionDetected())
             TrySelection();
         else
