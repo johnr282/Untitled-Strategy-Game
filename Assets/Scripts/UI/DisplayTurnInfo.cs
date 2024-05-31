@@ -18,9 +18,15 @@ public class DisplayTurnInfo : MonoBehaviour
     void Start()
     {
         _turnInfoDisplay = GetComponent<TextMeshProUGUI>();
-        _turnInfoDisplay.text = "";
+        _turnInfoDisplay.text = "Waiting to host or join a session...";
 
         EventBus.Subscribe<MyTurnEvent>(OnMyTurn);
+        EventBus.Subscribe<GameStartedUpdate>(OnGameStarted);
+    }
+
+    void OnGameStarted(GameStartedUpdate update)
+    {
+        SetTurnInfoText("Waiting for other players...");
     }
 
     void OnMyTurn(MyTurnEvent myTurn)

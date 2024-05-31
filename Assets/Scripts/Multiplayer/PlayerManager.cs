@@ -18,7 +18,7 @@ public static class PlayerManager
         get
         {
             if (_myPlayerID.ID == -1)
-                throw new RuntimeException("ThisPlayerID not set");
+                throw new RuntimeException("MyPlayerID not set");
             return _myPlayerID;
         }
         set
@@ -46,7 +46,7 @@ public static class PlayerManager
     static PlayerID _myPlayerID = new(-1);
 
     // Creates a new player, and returns the PlayerID of the new player
-    // Modifies state
+    // Modifies game state
     public static PlayerID AddPlayer(PlayerRef player)
     {
         PlayerID newPlayerID = new(NumPlayers);
@@ -54,7 +54,6 @@ public static class PlayerManager
         _turnOrder.Add(newPlayerID);
         return newPlayerID;
     }
-
 
     // Returns the Player corresponding to the given playerID
     // Throws an ArgumentException if playerID is invalid

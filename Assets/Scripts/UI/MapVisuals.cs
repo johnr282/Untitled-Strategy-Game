@@ -16,12 +16,18 @@ public class MapVisuals : MonoBehaviour
     Tilemap _tilemap;
     TileLibrary _tileLibrary;
 
-    Vector3Int _currentlyHighlightedTile = new(-1, -1, -1);
-    Vector3Int _currentlySelectedTile = new(-1, -1, -1);
+    HexCoordinateOffset _currentlyHighlightedTile = new(-1, -1);
+    Color _highlightedTileOriginalColor;
+
+    HexCoordinateOffset _currentlySelectedTile = new(-1, -1);
+    Color _selectedTileOriginalColor;
 
     List<HexCoordinateOffset> _currentlyHighlightedPath = new();
+    List<Color> _highlightedPathOriginalColors = new();
 
     [SerializeField] float _tileSaturationFactor;
+
+    [SerializeField] Color _selectedTileColor;
 
     [SerializeField] List<Color> _continentColors = new();
 
@@ -84,26 +90,28 @@ public class MapVisuals : MonoBehaviour
         TileBase correspondingTile = 
             _tileLibrary.GetCorrespondingTile(gameTile.TileTerrain);
 
-        Vector3Int tilemapCoord = gameTile.Hex.ConvertToVector3Int();
-        _tilemap.SetTile(tilemapCoord, correspondingTile);
+        HexCoordinateOffset hex = gameTile.Hex;
+        _tilemap.SetTile(hex.ConvertToVector3Int(), correspondingTile);
 
         if (gameTile.InContinent())
         {
             Color continentColor = _continentColors[gameTile.ContinentID.ID];
-            SetTileColor(tilemapCoord, continentColor);
+            SetTileColor(hex, continentColor);
         }
     }
 
-    // Highlights tile at given tile position; assumes tile exists at given position
+    // Highlights tile at given hex; assumes tile exists at given hex
     void OnTileHovered(NewTileHoveredOverEvent tileHoveredEvent)
     {
-        Vector3Int tilePos = tileHoveredEvent.Coordinate.ConvertToVector3Int();
-        if (_currentlyHighlightedTile == tilePos)
+        HexCoordinateOffset hex = tileHoveredEvent.Coordinate;
+        if (_currentlyHighlightedTile == hex)
             return;
 
-        HighlightTile(tilePos);
-        UnHighlightTile(_currentlyHighlightedTile);
-        _currentlyHighlightedTile = tilePos;
+        UnHighlightTile(_currentlyHighlightedTile, 
+            _highlightedTileOriginalColor);
+        _highlightedTileOriginalColor = GetTileColor(hex);
+        HighlightTile(hex);
+        _currentlyHighlightedTile = hex;
     }
 
     // Highlights every tile in the given path
@@ -113,7 +121,14 @@ public class MapVisuals : MonoBehaviour
 
         foreach (HexCoordinateOffset hex in path)
         {
-            HighlightTile(hex.ConvertToVector3Int());
+            Color originalColor;
+            if (hex == _currentlyHighlightedTile)
+                originalColor = _highlightedTileOriginalColor;
+            else
+                originalColor = GetTileColor(hex);
+
+            _highlightedPathOriginalColors.Add(originalColor);
+            HighlightTile(hex);
         }
 
         _currentlyHighlightedPath = path;
@@ -124,62 +139,75 @@ public class MapVisuals : MonoBehaviour
     {
         UnHighlightPath(_currentlyHighlightedPath);
         _currentlyHighlightedPath.Clear();
+        _highlightedPathOriginalColors.Clear();
     }
 
     // Unhighlights every tile in the given path
     void UnHighlightPath(List<HexCoordinateOffset> path)
     {
-        foreach (HexCoordinateOffset hex in path)
+        for (int i = 0; i < path.Count; i++)
         {
-            UnHighlightTile(hex.ConvertToVector3Int());
+            UnHighlightTile(path[i],
+                _highlightedPathOriginalColors[i]);
         }
     }
 
-    // Selects tile at given world position; does nothing if no tile exists
+    // Selects tile at given hex; assumes tile exists at given hex
     public void OnTileSelected(TileSelectedEvent tileSelectedEvent)
     {
-        Vector3Int tilePos = tileSelectedEvent.Coordinate.ConvertToVector3Int();
-        if (_currentlySelectedTile == tilePos)
+        HexCoordinateOffset hex = tileSelectedEvent.Coordinate;
+        if (_currentlySelectedTile == hex)
             return;
 
-        HighlightTile(tilePos);
-        UnHighlightTile(_currentlySelectedTile);
-        _currentlySelectedTile = tilePos;
+        UnHighlightTile(_currentlySelectedTile,
+            _selectedTileOriginalColor);
+        _selectedTileOriginalColor = GetTileColor(hex);
+        HighlightTile(hex);
+        _currentlySelectedTile = hex;
+        
     }
 
-    // Highlights the tile at the given position
-    void HighlightTile(Vector3Int tilePos)
+    // Highlights the tile at the given hex
+    void HighlightTile(HexCoordinateOffset hex)
     {
-        AdjustTileSaturation(tilePos, _tileSaturationFactor);
+        SetTileColor(hex, _selectedTileColor);
     }
 
     // Un-highlights the tile at the given position
-    void UnHighlightTile(Vector3Int tilePos)
+    void UnHighlightTile(HexCoordinateOffset hex, 
+        Color originalColor)
     {
-        AdjustTileSaturation(tilePos, 1 / _tileSaturationFactor);
+        SetTileColor(hex, originalColor);
     }
 
-    // Multiplies saturation value of tile's color at tilePos by saturation 
+    // Multiplies saturation value of tile's color at hex by saturation 
     // factor
-    void AdjustTileSaturation(Vector3Int tilePos, 
+    void AdjustTileSaturation(HexCoordinateOffset hex, 
         float saturationFactor)
     {
-        Color currTileColor = _tilemap.GetColor(tilePos);
+        Color currTileColor = GetTileColor(hex);
         Color.RGBToHSV(currTileColor, 
             out float H, 
             out float S, 
             out float V);
         S *= saturationFactor;
         Color newTileColor = Color.HSVToRGB(H, S, V);
-        SetTileColor(tilePos, newTileColor);
+        SetTileColor(hex, newTileColor);
     }
 
-    // Sets tile at given position to given color
-    void SetTileColor(Vector3Int tilePos, 
+    // Sets tile at given hex to given color
+    void SetTileColor(HexCoordinateOffset hex, 
         Color color)
     {
+        Vector3Int tilePos = hex.ConvertToVector3Int();
         // Allow tile to change color
         _tilemap.SetTileFlags(tilePos, TileFlags.None);
         _tilemap.SetColor(tilePos, color);
+    }
+
+    // Returns color of tile at given hex
+    Color GetTileColor(HexCoordinateOffset hex)
+    {
+        return _tilemap.GetColor(hex.ConvertToVector3Int());
     }
 }
