@@ -13,7 +13,7 @@ public class ClientMessages : NetworkBehaviour
     [Rpc]
     public static void RPC_EndTurn(NetworkRunner runner,
         [RpcTarget] PlayerRef player,
-        EndTurnAction action)
+        EndTurnRequest action)
     {
         Debug.Log("Received EndTurnAction from player " + action.EndingPlayerID);
 
@@ -34,7 +34,7 @@ public class ClientMessages : NetworkBehaviour
     [Rpc]
     public static void RPC_CreateUnit(NetworkRunner runner,
         [RpcTarget] PlayerRef player,
-        CreateUnitAction action)
+        CreateUnitRequest action)
     {
         Debug.Log("Received CreateUnitAction from player " +
             action.RequestingPlayerID + " at " + action.Location);
@@ -53,12 +53,12 @@ public class ClientMessages : NetworkBehaviour
         }
     }
 
-    // Requests the server to move a unit; if the MoveUnitAction is valid, 
+    // Requests the server to move a unit; if the MoveUnitRequest is valid, 
     // updates the game state accordingly
     [Rpc]
     public static void RPC_MoveUnit(NetworkRunner runner,
         [RpcTarget] PlayerRef player,
-        MoveUnitAction action)
+        MoveUnitRequest action)
     {
         Debug.Log("Received MoveUnitAction from player " +
             action.RequestingPlayerID);

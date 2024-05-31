@@ -9,7 +9,7 @@ using UnityEngine;
 // consists of the static classes GameMap, UnitManager, and PlayerManager.
 // All modifying of game state occurs here, both on the server and the
 // clients.
-// Once a ClientAction has been validated on the server, UpdateGameState()
+// Once a ClientRequest has been validated on the server, UpdateGameState()
 // should be called with the corresponding update struct (found in
 // GameStateUpdates.cs) and RPC, resulting in the game state being
 // updated (for everyone) in one of the callback functions in this class.
@@ -96,12 +96,12 @@ public class GameStateManager : NetworkBehaviour
         PlayerManager.NotifyActivePlayer();
     }
 
-    // Updates the current active player, and publishes an event if it's this
-    // client's turn
+    // Updates the current active player and notifies them
     void OnNextTurn(NextTurnUpdate update)
     {
         PlayerManager.UpdateCurrTurnIndex();
-        PlayerManager.NotifyActivePlayer();
+        if (Runner.IsPlayer)
+            PlayerManager.NotifyActivePlayer();
 
         Debug.Log("ActivePlayer is now " + PlayerManager.ActivePlayer);
         Debug.Log("MyTurn: " + PlayerManager.MyTurn);

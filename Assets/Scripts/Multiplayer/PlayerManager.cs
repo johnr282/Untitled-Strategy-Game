@@ -76,7 +76,7 @@ public static class PlayerManager
     // Requests the server to end this player's turn
     public static void EndMyTurn()
     {
-        ClientActionManager.QueueClientAction(new EndTurnAction(MyPlayerID),
+        ClientRequestManager.QueueClientRequest(new EndTurnRequest(MyPlayerID),
             ClientMessages.RPC_EndTurn);
     }
 
@@ -91,8 +91,8 @@ public static class PlayerManager
             _currTurnIndex++;
     }
 
-    // Returns whether the given EndTurnAction is valid
-    public static bool ValidateEndTurnAction(EndTurnAction action)
+    // Returns whether the given EndTurnRequest is valid
+    public static bool ValidateEndTurnAction(EndTurnRequest action)
     {
         return action.EndingPlayerID.ID == ActivePlayer.ID;
     }

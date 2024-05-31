@@ -55,10 +55,10 @@ public class UnitObject : SelectableObject
 
         HexCoordinateOffset requestedHex = tileSelectedEvent.Coordinate;
 
-        MoveUnitAction request = new(UnitID,
+        MoveUnitRequest request = new(UnitID,
             tileSelectedEvent.Coordinate,
             SelectingPlayerID);
-        ClientActionManager.QueueClientAction(request,
+        ClientRequestManager.QueueClientRequest(request,
             ClientMessages.RPC_MoveUnit);
     }
 

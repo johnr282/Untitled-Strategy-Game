@@ -40,9 +40,9 @@ public readonly struct NextTurnUpdate : INetworkStruct
 // Sent to clients when a new unit is created
 public readonly struct UnitCreatedUpdate : INetworkStruct
 {
-    public CreateUnitAction UnitInfo { get; }
+    public CreateUnitRequest UnitInfo { get; }
 
-    public UnitCreatedUpdate(CreateUnitAction unitInfoIn)
+    public UnitCreatedUpdate(CreateUnitRequest unitInfoIn)
     {
         UnitInfo = unitInfoIn;
     }

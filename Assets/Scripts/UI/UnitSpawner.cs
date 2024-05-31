@@ -26,10 +26,10 @@ public class UnitSpawner : NetworkBehaviour
     public void RequestSpawnUnit(UnitType unitType,
         HexCoordinateOffset initialHex)
     {
-        CreateUnitAction request = new(unitType,
+        CreateUnitRequest request = new(unitType,
             initialHex,
             PlayerManager.MyPlayerID);
-        ClientActionManager.QueueClientAction(request,
+        ClientRequestManager.QueueClientRequest(request,
             ClientMessages.RPC_CreateUnit);
     }
 

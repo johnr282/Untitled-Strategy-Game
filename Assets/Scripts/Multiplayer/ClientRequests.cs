@@ -5,55 +5,56 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // ------------------------------------------------------------------
-// Contains the ClientAction class, which is used to represent all
-// possible actions a client can take and their corresponding RPCs.
-// ClientActions are sent to the server by the ClientActionManager.
-// If the action is valid, the server sends out a corresponding 
+// Contains the ClientRequest class, which is used to represent all
+// possible requests a client can make to the server and their
+// corresponding RPCs.
+// ClientRequests are sent to the server by the ClientRequestManager.
+// If the request is valid, the server sends out a corresponding 
 // game state update, which is handled in the GameStateManager.
 // Also contains definitions for all INetworkStruct objects used to 
-// represent each action.
+// represent each request.
 // ------------------------------------------------------------------
 
-public class ClientAction
+public class ClientRequest
 {
-    public INetworkStruct ActionData { get; }
+    public INetworkStruct RequestData { get; }
     public Delegate RPC { get; } 
 
-    public ClientAction(INetworkStruct inputDataIn,
+    public ClientRequest(INetworkStruct requestDataIn,
         Delegate rpcIn)
     {
-        ActionData = inputDataIn;
+        RequestData = requestDataIn;
         RPC = rpcIn;
     }
 
     public void CallRPC(NetworkRunner runner)
     {
         // Need to dynamically invoke because each RPC will have a different 
-        // ActionData type, and using an Action<> results in the compiler error
+        // RequestData type, and using an Action<> results in the compiler error
         // "can't convert method group to Action<>
         RPC.DynamicInvoke(runner,
             PlayerRef.None,
-            ActionData);
+            RequestData);
     }
 }
 
-public readonly struct EndTurnAction : INetworkStruct
+public readonly struct EndTurnRequest : INetworkStruct
 {
     public PlayerID EndingPlayerID { get; }
 
-    public EndTurnAction(PlayerID playerIDIn)
+    public EndTurnRequest(PlayerID playerIDIn)
     {
         EndingPlayerID = playerIDIn;
     }
 }
 
-public readonly struct CreateUnitAction : INetworkStruct
+public readonly struct CreateUnitRequest : INetworkStruct
 {
     public UnitType Type { get; }
     public HexCoordinateOffset Location { get; }
     public PlayerID RequestingPlayerID { get; }
 
-    public CreateUnitAction(UnitType typeIn,
+    public CreateUnitRequest(UnitType typeIn,
         HexCoordinateOffset locationIn,
         PlayerID requestingPlayerIDIn)
     {
@@ -63,13 +64,13 @@ public readonly struct CreateUnitAction : INetworkStruct
     }
 }
 
-public readonly struct MoveUnitAction : INetworkStruct
+public readonly struct MoveUnitRequest : INetworkStruct
 {
     public UnitID UnitID { get; }
     public HexCoordinateOffset Location { get; }
     public PlayerID RequestingPlayerID { get; }
 
-    public MoveUnitAction(UnitID unitIDIn,
+    public MoveUnitRequest(UnitID unitIDIn,
         HexCoordinateOffset locationIn,
         PlayerID requestingPlayerIDIn)
     {

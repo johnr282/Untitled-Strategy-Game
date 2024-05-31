@@ -10,7 +10,6 @@ using UnityEngine.Tilemaps;
 public static class ProjectUtilities
 {
     public const string MapObjectName = "Map";
-    public const string NetworkInputManagerObjectName = "NetworkInputManager";
     public const string GameStateManagerObjectName = "GameStateManager";
     public const string MapGenerationParametersObjectName = "MapGenerationParameters";
 
@@ -30,20 +29,9 @@ public static class ProjectUtilities
         return component;
     }
 
-
     public static Tilemap FindTilemap()
     {
         return FindComponent<Tilemap>(MapObjectName);
-    }
-
-    public static MouseSelection FindMouseSelection()
-    {
-        return FindComponent<MouseSelection>(MapObjectName);
-    }
-
-    public static ClientActionManager FindNetworkInputManager()
-    {
-        return FindComponent<ClientActionManager>(NetworkInputManagerObjectName);
     }
 
     public static MapGenerationParameters FindMapGenerationParameters()
