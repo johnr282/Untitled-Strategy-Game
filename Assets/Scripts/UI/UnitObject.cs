@@ -75,6 +75,7 @@ public class UnitObject : SelectableObject
         }
         catch (RuntimeException)
         {
+            _mapVisuals.UnHighlightCurrentPath();
             return;
         }
 

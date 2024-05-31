@@ -638,6 +638,22 @@ PrefabInstance:
       value: MapGrid
       objectReference: {fileID: 0}
     - target: {fileID: 5715340084769275805, guid: 8229508ea4cc328488ce714ab63eb84a, type: 3}
+      propertyPath: _selectedTileColor.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5715340084769275805, guid: 8229508ea4cc328488ce714ab63eb84a, type: 3}
+      propertyPath: _selectedTileColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5715340084769275805, guid: 8229508ea4cc328488ce714ab63eb84a, type: 3}
+      propertyPath: _selectedTileColor.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5715340084769275805, guid: 8229508ea4cc328488ce714ab63eb84a, type: 3}
+      propertyPath: _selectedTileColor.r
+      value: 0.21140611
+      objectReference: {fileID: 0}
+    - target: {fileID: 5715340084769275805, guid: 8229508ea4cc328488ce714ab63eb84a, type: 3}
       propertyPath: _tileSaturationFactor
       value: 3
       objectReference: {fileID: 0}
@@ -969,7 +985,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5186423031331576856, guid: 9bef650c929f7d84b963acd6e7e3d4d9, type: 3}
       propertyPath: _numPlayers
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

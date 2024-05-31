@@ -17,13 +17,8 @@ public class MapVisuals : MonoBehaviour
     TileLibrary _tileLibrary;
 
     HexCoordinateOffset _currentlyHighlightedTile = new(-1, -1);
-    Color _highlightedTileOriginalColor;
-
     HexCoordinateOffset _currentlySelectedTile = new(-1, -1);
-    Color _selectedTileOriginalColor;
-
     List<HexCoordinateOffset> _currentlyHighlightedPath = new();
-    List<Color> _highlightedPathOriginalColors = new();
 
     [SerializeField] float _tileSaturationFactor;
 
@@ -107,9 +102,9 @@ public class MapVisuals : MonoBehaviour
         if (_currentlyHighlightedTile == hex)
             return;
 
-        UnHighlightTile(_currentlyHighlightedTile, 
-            _highlightedTileOriginalColor);
-        _highlightedTileOriginalColor = GetTileColor(hex);
+        if (HexSet(_currentlyHighlightedTile))
+            UnHighlightTile(_currentlyHighlightedTile);
+
         HighlightTile(hex);
         _currentlyHighlightedTile = hex;
     }
@@ -121,13 +116,6 @@ public class MapVisuals : MonoBehaviour
 
         foreach (HexCoordinateOffset hex in path)
         {
-            Color originalColor;
-            if (hex == _currentlyHighlightedTile)
-                originalColor = _highlightedTileOriginalColor;
-            else
-                originalColor = GetTileColor(hex);
-
-            _highlightedPathOriginalColors.Add(originalColor);
             HighlightTile(hex);
         }
 
@@ -139,16 +127,14 @@ public class MapVisuals : MonoBehaviour
     {
         UnHighlightPath(_currentlyHighlightedPath);
         _currentlyHighlightedPath.Clear();
-        _highlightedPathOriginalColors.Clear();
     }
 
     // Unhighlights every tile in the given path
     void UnHighlightPath(List<HexCoordinateOffset> path)
     {
-        for (int i = 0; i < path.Count; i++)
+        foreach (HexCoordinateOffset hex in path)
         {
-            UnHighlightTile(path[i],
-                _highlightedPathOriginalColors[i]);
+            UnHighlightTile(hex);
         }
     }
 
@@ -159,12 +145,11 @@ public class MapVisuals : MonoBehaviour
         if (_currentlySelectedTile == hex)
             return;
 
-        UnHighlightTile(_currentlySelectedTile,
-            _selectedTileOriginalColor);
-        _selectedTileOriginalColor = GetTileColor(hex);
+        if (HexSet(_currentlySelectedTile))
+            UnHighlightTile(_currentlySelectedTile);
+
         HighlightTile(hex);
         _currentlySelectedTile = hex;
-        
     }
 
     // Highlights the tile at the given hex
@@ -173,11 +158,10 @@ public class MapVisuals : MonoBehaviour
         SetTileColor(hex, _selectedTileColor);
     }
 
-    // Un-highlights the tile at the given position
-    void UnHighlightTile(HexCoordinateOffset hex, 
-        Color originalColor)
+    // Un-highlights the tile at the given hex
+    void UnHighlightTile(HexCoordinateOffset hex)
     {
-        SetTileColor(hex, originalColor);
+        SetTileColor(hex, GetOriginalTileColor(hex));
     }
 
     // Multiplies saturation value of tile's color at hex by saturation 
@@ -205,9 +189,46 @@ public class MapVisuals : MonoBehaviour
         _tilemap.SetColor(tilePos, color);
     }
 
-    // Returns color of tile at given hex
+    // Returns current color of tile at given hex
     Color GetTileColor(HexCoordinateOffset hex)
     {
         return _tilemap.GetColor(hex.ConvertToVector3Int());
+    }
+
+    // Returns the original color of tile at given hex based on its GameTile
+    Color GetOriginalTileColor(HexCoordinateOffset hex)
+    {
+        GameTile tile = GameMap.GetTile(hex);
+        switch (tile.TileTerrain)
+        {
+            case Terrain.sea:
+            {
+                TileBase seaTile = 
+                    _tileLibrary.GetCorrespondingTile(tile.TileTerrain);
+                return GetTileBaseColor(seaTile);
+            }   
+            case Terrain.land:
+            {
+                return _continentColors[tile.ContinentID.ID];
+            }
+            default:
+                throw new RuntimeException("Invalid TileTerrain");
+        }
+    }
+
+    // Returns the color of a given default TileBase object
+    // Assumes that GetTileData has not been overriden by the given tileBase
+    Color GetTileBaseColor(TileBase tileBase)
+    {
+        TileData tileData = new();
+        tileBase.GetTileData(Vector3Int.zero, _tilemap, ref tileData);
+        return tileData.color;
+    }
+
+    // Returns whether the given hex has been set yet, i.e. whether the hex is
+    // not equal to (-1, -1)
+    bool HexSet(HexCoordinateOffset hex)
+    {
+        return hex != new HexCoordinateOffset(-1, -1);
     }
 }
