@@ -44,7 +44,7 @@ public class AStarPlanner<TNode>
     }
 
     // Returns the shortest path between the given start and goal
-    // Includes both start and goal in returned path
+    // Includes goal in returned path, but not start
     // Throws a RuntimeException if no valid path is found
     public List<TNode> FindPath(TNode startIn, 
         TNode goalIn)
@@ -111,7 +111,6 @@ public class AStarPlanner<TNode>
         if (!current.Equals(_start))
             throw new RuntimeException("Failed to reconstruct valid path");
 
-        path.Add(_start);
         path.Reverse();
         return path;
     }

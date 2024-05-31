@@ -169,7 +169,8 @@ public static class GameMap
 
     // Returns the shortest path between the given unit's current location and
     // the given goal tile for the given unit
-    // Throws a RuntimeException if no valid path was found 
+    // Includes the goal, but not the start, in the returned path
+    // Throws a RuntimeException if no valid path was found
     public static List<HexCoordinateOffset> FindPath(Unit unit,
         GameTile goal)
     {

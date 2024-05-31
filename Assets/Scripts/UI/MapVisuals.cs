@@ -36,8 +36,8 @@ public class MapVisuals : MonoBehaviour
 
         _tileHoveredSubscription = 
             EventBus.Subscribe<NewTileHoveredOverEvent>(OnTileHovered);
-        //_tileSelectedSubscription =
-        //    EventBus.Subscribe<TileSelectedEvent>(OnTileSelected);
+        _tileSelectedSubscription =
+            EventBus.Subscribe<TileSelectedEvent>(OnTileSelected);
     }
 
     // Generates tilemap using given height and width and game map
@@ -102,8 +102,11 @@ public class MapVisuals : MonoBehaviour
         if (_currentlyHighlightedTile == hex)
             return;
 
-        if (HexSet(_currentlyHighlightedTile))
+        if (HexSet(_currentlyHighlightedTile) &&
+            _currentlyHighlightedTile != _currentlySelectedTile)
+        {
             UnHighlightTile(_currentlyHighlightedTile);
+        }
 
         HighlightTile(hex);
         _currentlyHighlightedTile = hex;

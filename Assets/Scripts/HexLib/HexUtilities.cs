@@ -71,7 +71,7 @@ public static class HexUtilities
     }
 
     // Returns the shortest path between given start and goal as a list of hexes.
-    // Returned path includes both start and goal. 
+    // Returned path includes goal, but not start. 
     // traversableNeighborsFunc should be a function that returns the list of the
     // given node's traversable neighbors. 
     // costFunc should be a function that returns the cost to travel between two 

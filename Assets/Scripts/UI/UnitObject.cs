@@ -34,6 +34,11 @@ public class UnitObject : SelectableObject
 
         Debug.Log("Unit " + UnitID.ToString() + " selected");
 
+        // Select unit's tile as well to visually show that the unit is selected
+        HexCoordinateOffset unitLocation = 
+            UnitManager.GetUnit(UnitID).CurrentLocation.Hex;
+        EventBus.Publish(new TileSelectedEvent(unitLocation));
+
         _tileSelectedSub =
             EventBus.Subscribe<TileSelectedEvent>(OnTileSelected);
         _tileHoveredSub =
