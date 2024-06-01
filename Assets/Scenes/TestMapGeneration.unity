@@ -928,11 +928,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2896063839047026653, guid: 16f291e49093e7046a43c5eb394f5fcf, type: 3}
       propertyPath: _seed
-      value: 498112864
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2896063839047026653, guid: 16f291e49093e7046a43c5eb394f5fcf, type: 3}
       propertyPath: _randomlyGenerateSeed
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2896063839047026653, guid: 16f291e49093e7046a43c5eb394f5fcf, type: 3}
+      propertyPath: _landGenerationThreshold
+      value: 0.35
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

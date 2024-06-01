@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TreeEditor;
+using Unity.VisualScripting;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -22,6 +24,36 @@ public class MapGenerator
     public static int GenerateRandomSeed()
     {
         return Random.Range(int.MinValue, int.MaxValue);
+    }
+
+    // Struct representing a continent in the process of being generated
+    struct ContinentInProgress
+    {
+        public Continent ContinentTiles { get; set; }
+        public ContinentID ContinentID { get; }
+        public HexCoordinateOffset CentralCoordinate { get; }
+        public int TargetRadius { get; }
+        public int CurrentRadius { get; set; }
+        public float PerlinOffset { get; }
+
+        public ContinentInProgress(ContinentID continentIDIn,
+            HexCoordinateOffset centralCoordinateIn,
+            int targetRadiusIn,
+            float perlinOffsetIn)
+        {
+            ContinentTiles = new();
+            ContinentID = continentIDIn;
+            CentralCoordinate = centralCoordinateIn;
+            TargetRadius = targetRadiusIn;
+            CurrentRadius = 0;
+            PerlinOffset = perlinOffsetIn;
+        }
+
+        // Returns whether this continent is finished generating
+        public bool FinishedGenerating()
+        {
+            return CurrentRadius >= TargetRadius;
+        }
     }
 
     // Randomly generate the game map based on map generation parameters
@@ -78,27 +110,91 @@ public class MapGenerator
     // Generate continents without considering terrain
     void GenerateContinents()
     {
-        // Choose a central tile for each continent 
+        List<ContinentInProgress> continents = InitializeContinents();
+
+        // Generate each continent one ring at a time
+        while (!AllContinentsFinishedGenerating(continents))
+        {
+            for (int i = 0; i < _parameters.NumContinents; i++)
+            {
+                // Can't directly pass continents[i] in as a ref
+                ContinentInProgress continent = continents[i];
+                if (continent.FinishedGenerating())
+                    continue;
+
+                continent.CurrentRadius++;
+                GenerateContinentRing(ref continent);
+                continents[i] = continent;
+            }
+        }
+
+        // Add generated continents to GameMap
+        foreach (ContinentInProgress continent in continents)
+        {
+            GameMap.AddContinent(continent.ContinentID,
+                continent.ContinentTiles);
+        }
+    }
+
+    // Returns a ContinentInProgress list and initializes the central coordinate
+    // of each continent in the GameMap
+    List<ContinentInProgress> InitializeContinents()
+    {
+        List<ContinentInProgress> continents = new();
         List<HexCoordinateOffset> centralCoordinates = ChooseContinentCentralTiles();
 
-        for(int i = 0; i < centralCoordinates.Count; i++)
+        for (int i = 0; i <  _parameters.NumContinents; i++)
         {
-            int continentRadius = UnityUtilities.NormalDistributionInt(
+            ContinentID continentID = new(i);
+            HexCoordinateOffset centralCoordinate = centralCoordinates[i];
+
+            ContinentInProgress newContinent = new(continentID,
+                centralCoordinate,
+                GenerateRadius(),
+                GeneratePerlinOffset());
+
+            GameTile centralTile = new(centralCoordinate,
+                    Terrain.land,
+                    continentID);
+            GameMap.SetTile(centralCoordinate, centralTile);
+            newContinent.ContinentTiles.AddTile(centralTile);
+
+            continents.Add(newContinent);
+        }
+
+        return continents;
+    }
+
+    // Returns whether all of the continents in the given list are finished
+    // generating
+    bool AllContinentsFinishedGenerating(List<ContinentInProgress> continents)
+    {
+        foreach (ContinentInProgress continent in continents)
+        {
+            if (!continent.FinishedGenerating())
+                return false;
+        }
+
+        return true;
+    }
+
+    // Generates a continent radius
+    int GenerateRadius()
+    {
+        int continentRadius = UnityUtilities.NormalDistributionInt(
                 _parameters.AverageContinentRadius,
                 _parameters.StdDevContinentRadius);
 
-            if (continentRadius <= 0)
-                continentRadius = 1;
+        if (continentRadius <= 0)
+            continentRadius = 1;
 
-            ContinentID continentID = new((short)i);
-            Debug.Log("Generating continent " + continentID.ToString() + 
-                " with radius " + continentRadius.ToString() + 
-                " and central tile " + centralCoordinates[i].ToString());
-            Continent newContinent = 
-                GenerateContinent(centralCoordinates[i], continentID, continentRadius);
+        return continentRadius;
+    }
 
-            GameMap.AddContinent(continentID, newContinent);
-        }
+    // Generates a perlin offset to use in continent generation
+    float GeneratePerlinOffset()
+    {
+        return Random.Range(0.0f, _parameters.MaxPerlinOffset);
     }
 
     // Choose central tiles for each continent and return list of these coordinates
@@ -182,7 +278,7 @@ public class MapGenerator
         }
     }
 
-    // Randomly chooses n points out of given list, returns list of chosen points;
+    // Randomly chooses currentRadius points out of given list, returns list of chosen points;
     // points are less likely to be chosen if tiles in adjacent grid cells have
     // already been chosen
     // Returns empty list if selection process failed, which could happen if too
@@ -324,54 +420,23 @@ public class MapGenerator
         return adjacentCoords;
     }
 
-    // Generates continent around given central coordinate with given ID and radius;
-    // returns list of tiles in the continent
-    Continent GenerateContinent(HexCoordinateOffset centralCoordinate, 
-        ContinentID continentID, 
-        int radius)
+    // Generates the next ring of the continent with given central coordinate,
+    // ID, and radius; updates continent as the ring is generated
+    void GenerateContinentRing(ref ContinentInProgress continent)
     {
-        GameTile centralTile = new(centralCoordinate,
-            Terrain.land,
-            continentID);
-        GameMap.SetTile(centralCoordinate, centralTile);
-        Continent newContinent = new();
-        newContinent.AddTile(centralTile);
-
-        float perlinOffset = Random.Range(0.0f, _parameters.MaxPerlinOffset);
-
-        // Current radius is 1, not 0, because each central tile is already set
-        int currentRadius = 0;
-        while(currentRadius < radius)
-        {
-            currentRadius++;
-            GenerateContinentRing(centralCoordinate, 
-                continentID, 
-                currentRadius, 
-                perlinOffset,
-                ref newContinent);
-        }
-
-        return newContinent;
-    }
-
-    // Generates the nth ring of the continent with given central coordinate and ID; 
-    // updates continent as the ring is generated
-    void GenerateContinentRing(HexCoordinateOffset centralCoordinate,
-        ContinentID continentID, 
-        int n, 
-        float offset,
-        ref Continent continent)
-    {
-        List<HexCoordinateOffset> ring = centralCoordinate.HexesExactlyNAway(n);
+        List<HexCoordinateOffset> ring = 
+            continent.CentralCoordinate.HexesExactlyNAway(continent.CurrentRadius);
         
         foreach (HexCoordinateOffset hex in ring)
         {
-            if (IncludeTile(hex, continentID, offset))
+            if (IncludeTile(hex, 
+                continent.ContinentID, 
+                continent.PerlinOffset))
             {
-                GameTile newTile = new(hex, Terrain.land, continentID);
+                GameTile newTile = new(hex, Terrain.land, continent.ContinentID);
                 GameMap.SetTile(hex, 
                     newTile);
-                continent.AddTile(newTile);
+                continent.ContinentTiles.AddTile(newTile);
             }
         }
     }
@@ -431,9 +496,9 @@ public class MapGenerator
         return Mathf.Clamp(val, 0.0f, 1.0f);
     }
 
-    // Returns a list of n unique starting tiles; each tile is guaranteed to be
+    // Returns a list of currentRadius unique starting tiles; each tile is guaranteed to be
     // on land and on a different continent
-    // Throws an ArgumentException if n is greater than the number of continents
+    // Throws an ArgumentException if currentRadius is greater than the number of continents
     public List<GameTile> GenerateStartingTiles(int n)
     {
         if (n > GameMap.NumContinents)
