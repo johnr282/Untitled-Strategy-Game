@@ -8,8 +8,32 @@ using UnityEngine;
 
 public class TestMapGeneration : MonoBehaviour
 {
+    MapGenerationParameters _parameters;
+    MapVisuals _mapVisuals;
+
     void Start()
     {
-        EventBus.Publish(new GameStartedUpdate(MapGenerator.GenerateRandomSeed()));
+        _parameters = ProjectUtilities.FindMapGenerationParameters();
+        _mapVisuals = ProjectUtilities.FindMapVisuals();
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            RegenerateMap();
+        }
+    }
+
+    void RegenerateMap()
+    {
+        GameMap.ClearMap();
+        if (_parameters.RandomlyGenerateSeed)
+            _parameters.Seed = MapGenerator.GenerateRandomSeed();
+
+        MapGenerator generator = new(_parameters);
+        generator.GenerateMap();
+        _mapVisuals.GenerateVisuals(_parameters.MapHeight,
+            _parameters.MapWidth);
     }
 }

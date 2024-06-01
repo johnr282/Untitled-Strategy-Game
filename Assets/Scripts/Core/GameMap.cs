@@ -25,12 +25,12 @@ public static class GameMap
 {
     static Dictionary<HexCoordinateOffset, GameTile> _gameMap = new();
 
-    public static int NumCols { get; set; }
-    public static int NumRows { get; set; }
-
     // List of continents in the map, continent ID is the index corresponding
     // to that continent
     static List<Continent> _continents = new();
+
+    public static int NumCols { get; set; }
+    public static int NumRows { get; set; }
 
     public static int NumContinents { get => _continents.Count; }
 
@@ -75,6 +75,13 @@ public static class GameMap
             throw new ArgumentException("No GameTile exists at the given hex");
 
         _gameMap[hex] = newTile;
+    }
+
+    // Clears the game map
+    public static void ClearMap()
+    {
+        _gameMap.Clear();
+        _continents.Clear();
     }
 
     // Adds given continentID and continent to _continents; continents should

@@ -66,10 +66,11 @@ public class MapGenerator
             for(int col = 0;  col < _parameters.MapWidth; col++)
             {
                 HexCoordinateOffset coordinate = new HexCoordinateOffset(col, row);
+                GameTile seaTile = new(coordinate,
+                    Terrain.sea,
+                    new ContinentID(-1));
                 GameMap.AddTile(coordinate, 
-                    new GameTile(coordinate, 
-                        Terrain.sea,
-                        new ContinentID(-1)));
+                    seaTile);
             }
         }
     }
@@ -392,6 +393,9 @@ public class MapGenerator
             return false;
         }
 
+        if (tile.InContinent())
+            return false;
+
         // If tile is an island, i.e. not adjacent to any other tiles from the 
         // same continent, don't include it
         List<GameTile> adjacentTiles = GameMap.Neighbors(tile);
@@ -409,7 +413,8 @@ public class MapGenerator
         if (!connectedToContinent)
             return false;
 
-        return CalculatePerlinValue(hex, offset) > _parameters.LandGenerationThreshold;
+        float perlinValue = CalculatePerlinValue(hex, offset);
+        return  perlinValue > _parameters.LandGenerationThreshold;
     }
 
     // Returns Perlin noise value for given hex and offset

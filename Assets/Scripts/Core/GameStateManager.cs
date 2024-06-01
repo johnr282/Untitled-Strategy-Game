@@ -26,7 +26,7 @@ public class GameStateManager : NetworkBehaviour
         _unitSpawner = GetComponent<UnitSpawner>();
 
         // Game state update subscriptions
-        EventBus.Subscribe<PlayerAddedUpdate>   (OnAddPlayer);
+        EventBus.Subscribe<PlayerAddedUpdate> (OnAddPlayer);
         EventBus.Subscribe<GameStartedUpdate> (OnGameStarted);
         EventBus.Subscribe<NextTurnUpdate>    (OnNextTurn);
         EventBus.Subscribe<UnitCreatedUpdate> (OnUnitCreated);
