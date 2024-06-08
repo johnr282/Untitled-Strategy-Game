@@ -292,7 +292,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1025867115
 RectTransform:
   m_ObjectHideFlags: 0
@@ -927,16 +927,8 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2896063839047026653, guid: 16f291e49093e7046a43c5eb394f5fcf, type: 3}
-      propertyPath: _seed
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2896063839047026653, guid: 16f291e49093e7046a43c5eb394f5fcf, type: 3}
-      propertyPath: _randomlyGenerateSeed
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2896063839047026653, guid: 16f291e49093e7046a43c5eb394f5fcf, type: 3}
       propertyPath: _landGenerationThreshold
-      value: 0.35
+      value: 0.4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

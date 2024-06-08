@@ -13,8 +13,11 @@ public class UnitObject : SelectableObject
 {
     [Networked] public UnitID UnitID { get; set; } = new(-1);
 
+    [SerializeField] List<Color> _unitColors = new();
+
     MoveableObject _moveable;
     MapVisuals _mapVisuals;
+    Renderer _renderer;
 
     Subscription<TileSelectedEvent> _tileSelectedSub;
     Subscription<NewTileHoveredOverEvent> _tileHoveredSub;
@@ -25,6 +28,25 @@ public class UnitObject : SelectableObject
 
         _moveable = GetComponent<MoveableObject>();
         _mapVisuals = ProjectUtilities.FindMapVisuals();
+        SetColor(); 
+    }
+
+    // Initializes _renderer and sets the color of this UnitObject based on its
+    // OwnerID
+    void SetColor()
+    {
+        GameObject visualsChild =
+            UnityUtilities.GetFirstChildGameObject(gameObject);
+
+        _renderer = visualsChild.GetComponent<Renderer>() ??
+            throw new RuntimeException(
+                "Failed to get Renderer component from child");
+
+        if (OwnerID.ID >= _unitColors.Count)
+            throw new RuntimeException("More players than unit colors");
+
+        Color unitColor = _unitColors[OwnerID.ID];
+        _renderer.material.color = unitColor;
     }
 
     public override void OnSelectedByOwner()

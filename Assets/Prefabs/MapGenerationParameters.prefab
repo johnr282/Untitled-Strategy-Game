@@ -54,5 +54,5 @@ MonoBehaviour:
   _maxPerlinOffset: 1000000
   _continentDiameterToGridCellSizeRatio: 0.5
   _minDistanceBetweenCentralContinentTiles: 4
-  _landGenerationThreshold: 0.3
+  _landGenerationThreshold: 0.35
   _maxCentralTileSelectionAttempts: 100000

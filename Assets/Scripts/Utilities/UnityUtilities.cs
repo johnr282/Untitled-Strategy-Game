@@ -105,6 +105,14 @@ public static class UnityUtilities
         return childTransform.gameObject;
     }
 
+    // Returns first child GameObject of given parent GameObject; assumes
+    // parent has at least one child
+    public static GameObject GetFirstChildGameObject(GameObject parent)
+    {
+        Transform childTransform = parent.transform.GetChild(0);
+        return childTransform.gameObject;
+    }
+
     // Returns parent GameObject of given child GameObject; returns null
     // if there is no parent
     public static GameObject FindParentGameObject(GameObject child)

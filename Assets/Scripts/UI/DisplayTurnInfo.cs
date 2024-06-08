@@ -26,7 +26,8 @@ public class DisplayTurnInfo : MonoBehaviour
 
     void OnGameStarted(GameStartedUpdate update)
     {
-        SetTurnInfoText("Waiting for other players...");
+        if (!PlayerManager.MyTurn)
+            SetTurnInfoText("Waiting for other players...");
     }
 
     void OnMyTurn(MyTurnEvent myTurn)
