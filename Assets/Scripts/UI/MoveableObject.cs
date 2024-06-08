@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using DG.Tweening;
 
 // ------------------------------------------------------------------
 // Component providing functionality to move this object around the
