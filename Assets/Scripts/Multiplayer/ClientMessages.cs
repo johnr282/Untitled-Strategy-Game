@@ -60,12 +60,12 @@ public class ClientMessages : NetworkBehaviour
         [RpcTarget] PlayerRef player,
         MoveUnitRequest action)
     {
-        Debug.Log("Received MoveUnitAction from player " +
+        Debug.Log("Received MoveUnitRequest from player " +
             action.RequestingPlayerID);
 
-        if (UnitManager.ValidateMoveUnitAction(action))
+        if (UnitManager.ValidateMoveUnitRequest(action))
         {
-            Debug.Log("Action completed");
+            Debug.Log("Request is valid");
 
             UnitMovedUpdate unitMoved = new(action.UnitID,
                 action.Location);

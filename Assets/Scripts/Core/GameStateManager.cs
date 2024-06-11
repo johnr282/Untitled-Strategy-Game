@@ -107,36 +107,30 @@ public class GameStateManager : NetworkBehaviour
         Debug.Log("MyTurn: " + PlayerManager.MyTurn);
     }
 
-    // Creates a unit based on the given update, and allows the server to spawn
-    // a networked UnitObject
+    // Creates a unit and its corresponding UnitObjectbased on the given update
     void OnUnitCreated(UnitCreatedUpdate update)
     {
         UnitID newUnitID = UnitManager.CreateUnit(update.UnitInfo);
         Debug.Log("Created new unit " + newUnitID.ID.ToString());
 
-        if (Runner.IsServer)
-        {
-            UnitObject newUnitObject = _unitSpawner.SpawnUnitObject(newUnitID,
-                update.UnitInfo.RequestingPlayerID,
-                update.UnitInfo.Location);
-            UnitManager.GetUnit(newUnitID).UnitObject = newUnitObject;
-        }
+        UnitObject newUnitObject = _unitSpawner.SpawnUnitObject(newUnitID,
+            update.UnitInfo.RequestingPlayerID,
+            update.UnitInfo.Location);
+        UnitManager.GetUnit(newUnitID).UnitObject = newUnitObject;
     }
 
-    // Moves a unit based on the given update, and allows the server to move
-    // the corresponding UnitObject
+    // Moves a unit and its corresponding UnitObject based on the given update
     void OnUnitMoved(UnitMovedUpdate update)
     {
         Debug.Log("Moving unit " + update.UnitID.ID.ToString());
+
+        // Need to move UnitObject before updating state
         GameTile destTile = GameMap.GetTile(update.NewLocation);
+        Unit unitToMove = UnitManager.GetUnit(update.UnitID);
+        unitToMove.UnitObject.MoveTo(update.NewLocation);
+
         UnitManager.MoveUnit(update.UnitID,
             destTile);
-
-        if (Runner.IsServer)
-        {
-            Unit movedUnit = UnitManager.GetUnit(update.UnitID);
-            movedUnit.UnitObject.MoveTo(update.NewLocation);
-        }
 
         if (PlayerManager.MyTurn)
             PlayerManager.EndMyTurn();

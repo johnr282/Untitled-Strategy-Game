@@ -68,7 +68,7 @@ public static class UnitManager
     // Returns whether the given MoveUnitRequest is valid
     // Throws an ArgumentException if no unit exists with the given ID or no
     // GameTile exists at the requested location
-    public static bool ValidateMoveUnitAction(MoveUnitRequest action)
+    public static bool ValidateMoveUnitRequest(MoveUnitRequest action)
     {
         GameTile requestedTile = GameMap.GetTile(action.Location);
         Unit unit = GetUnit(action.UnitID);

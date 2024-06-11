@@ -13,11 +13,13 @@ using UnityEngine.Tilemaps;
 [RequireComponent(typeof(TileLibrary))]
 public class MapVisuals : MonoBehaviour
 {
+    static readonly HexCoordinateOffset NullTile = new(-1, -1);
+
     Tilemap _tilemap;
     TileLibrary _tileLibrary;
 
-    HexCoordinateOffset _currentlyHighlightedTile = new(-1, -1);
-    HexCoordinateOffset _currentlySelectedTile = new(-1, -1);
+    HexCoordinateOffset _currentlyHighlightedTile = NullTile;
+    HexCoordinateOffset _currentlySelectedTile = NullTile;
     List<HexCoordinateOffset> _currentlyHighlightedPath = new();
 
     [SerializeField] float _tileSaturationFactor;
@@ -36,8 +38,8 @@ public class MapVisuals : MonoBehaviour
 
         _tileHoveredSubscription = 
             EventBus.Subscribe<NewTileHoveredOverEvent>(OnTileHovered);
-        _tileSelectedSubscription =
-            EventBus.Subscribe<TileSelectedEvent>(OnTileSelected);
+        //_tileSelectedSubscription =
+        //    EventBus.Subscribe<TileSelectedEvent>(OnTileSelected);
     }
 
     // Generates tilemap using given height and width and game map
@@ -103,7 +105,8 @@ public class MapVisuals : MonoBehaviour
             return;
 
         if (HexSet(_currentlyHighlightedTile) &&
-            _currentlyHighlightedTile != _currentlySelectedTile)
+            _currentlyHighlightedTile != _currentlySelectedTile &&
+            !_currentlyHighlightedPath.Contains(_currentlyHighlightedTile))
         {
             UnHighlightTile(_currentlyHighlightedTile);
         }
@@ -142,17 +145,28 @@ public class MapVisuals : MonoBehaviour
     }
 
     // Selects tile at given hex; assumes tile exists at given hex
-    public void OnTileSelected(TileSelectedEvent tileSelectedEvent)
+    void OnTileSelected(TileSelectedEvent tileSelectedEvent)
     {
-        HexCoordinateOffset hex = tileSelectedEvent.Coordinate;
+        SelectTile(tileSelectedEvent.Coordinate);
+    }
+
+    public void SelectTile(HexCoordinateOffset hex)
+    {
         if (_currentlySelectedTile == hex)
             return;
 
-        if (HexSet(_currentlySelectedTile))
-            UnHighlightTile(_currentlySelectedTile);
+        UnSelectCurrentlySelectedTile();
 
         HighlightTile(hex);
         _currentlySelectedTile = hex;
+    }
+
+    public void UnSelectCurrentlySelectedTile()
+    {
+        if (HexSet(_currentlySelectedTile))
+            UnHighlightTile(_currentlySelectedTile);
+
+        _currentlySelectedTile = NullTile;
     }
 
     // Highlights the tile at the given hex
@@ -229,9 +243,9 @@ public class MapVisuals : MonoBehaviour
     }
 
     // Returns whether the given hex has been set yet, i.e. whether the hex is
-    // not equal to (-1, -1)
+    // not equal to NullTile
     bool HexSet(HexCoordinateOffset hex)
     {
-        return hex != new HexCoordinateOffset(-1, -1);
+        return hex != NullTile;
     }
 }

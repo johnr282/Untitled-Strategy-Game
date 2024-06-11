@@ -9,13 +9,26 @@ using UnityEngine;
 // ------------------------------------------------------------------
 
 [RequireComponent(typeof(Collider))]
-public abstract class SelectableObject : NetworkBehaviour
+public abstract class SelectableObject : MonoBehaviour
 {
-    [Networked] public PlayerID OwnerID { get; set; } = new(-1);
+    public PlayerID OwnerID
+    {
+        get
+        {
+            if (_ownerID.ID == -1)
+                throw new RuntimeException("OwnerID not set");
+            return _ownerID;
+        }
+        set
+        {
+            _ownerID = value;
+        }
+    }
 
     protected PlayerID SelectingPlayerID { get => PlayerManager.MyPlayerID; }
     protected bool _selectedByOwner = false;
 
+    PlayerID _ownerID = new(-1);
 
     public virtual void Start()
     {

@@ -9,8 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2611986910248459991}
-  - component: {fileID: 7722014296735856679}
-  - component: {fileID: 479315668171315496}
   - component: {fileID: 6280989119945518190}
   - component: {fileID: 5563791679564141210}
   - component: {fileID: 7776170410906669446}
@@ -38,42 +36,6 @@ Transform:
   - {fileID: 757707303438530437}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7722014296735856679
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2584624186207267819}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SortKey: 4015741199
-  ObjectInterest: 1
-  Flags: 262145
-  NestedObjects: []
-  NetworkedBehaviours:
-  - {fileID: 479315668171315496}
-  - {fileID: 5563791679564141210}
-  - {fileID: 7776170410906669446}
---- !u!114 &479315668171315496
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2584624186207267819}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SyncScale: 1
-  SyncParent: 1
-  _autoAOIOverride: 1
-  DisableSharedModeInterpolation: 0
 --- !u!135 &6280989119945518190
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -123,6 +85,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9eb48c062cbc40448869d8dff7c10038, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _motionTimePerHex: 0.5
 --- !u!114 &7045650602569507615
 MonoBehaviour:
   m_ObjectHideFlags: 0

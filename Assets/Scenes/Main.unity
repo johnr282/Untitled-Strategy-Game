@@ -985,7 +985,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5186423031331576856, guid: 9bef650c929f7d84b963acd6e7e3d4d9, type: 3}
       propertyPath: _numPlayers
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1048,6 +1048,10 @@ PrefabInstance:
       propertyPath: SortKey
       value: 1536901287
       objectReference: {fileID: 0}
+    - target: {fileID: 8534320329020169242, guid: d2068d256feec8f429d5d85d68ce4303, type: 3}
+      propertyPath: _unitPrefab
+      value: 
+      objectReference: {fileID: 2584624186207267819, guid: 12abc5c6891ff1249881aa4587a92b7d, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

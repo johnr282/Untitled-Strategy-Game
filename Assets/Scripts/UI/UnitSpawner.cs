@@ -11,7 +11,7 @@ using UnityEngine.Tilemaps;
 
 public class UnitSpawner : NetworkBehaviour
 {
-    [SerializeField] NetworkObject _unitPrefab;
+    [SerializeField] GameObject _unitPrefab;
     [SerializeField] UnitType _unitType;
 
     Tilemap _tilemap;
@@ -48,11 +48,11 @@ public class UnitSpawner : NetworkBehaviour
 
         Vector3 spawnLocation = _tilemap.CellToWorld(tilemapLocation) + 
             spawnable.YOffset;
-        NetworkObject newUnitNetworkObject = Runner.Spawn(_unitPrefab,
+        GameObject newUnitGameObject = Instantiate(_unitPrefab,
             spawnLocation,
             Quaternion.identity);
 
-        UnitObject newUnitObject = newUnitNetworkObject.GetComponent<UnitObject>() ??
+        UnitObject newUnitObject = newUnitGameObject.GetComponent<UnitObject>() ??
             throw new RuntimeException(
                 "Failed to get UnitObject component from unit prefab");
 

@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Fusion;
 using System;
 
 // ------------------------------------------------------------------
@@ -11,7 +10,21 @@ using System;
 [RequireComponent(typeof(MoveableObject))]
 public class UnitObject : SelectableObject
 {
-    [Networked] public UnitID UnitID { get; set; } = new(-1);
+    public UnitID UnitID
+    {
+        get
+        {
+            if (_unitID.ID == -1)
+                throw new RuntimeException("OwnerID not set");
+            return _unitID;
+        }
+        set
+        {
+            _unitID = value;
+        }
+    }
+
+    public Unit Unit { get => UnitManager.GetUnit(UnitID); }
 
     [SerializeField] List<Color> _unitColors = new();
 
@@ -21,6 +34,8 @@ public class UnitObject : SelectableObject
 
     Subscription<TileSelectedEvent> _tileSelectedSub;
     Subscription<NewTileHoveredOverEvent> _tileHoveredSub;
+
+    UnitID _unitID = new(-1);
 
     public override void Start()
     {
@@ -51,15 +66,10 @@ public class UnitObject : SelectableObject
 
     public override void OnSelectedByOwner()
     {
-        if (UnitID.ID == -1)
-            throw new RuntimeException("Unit ID not set");
-
         Debug.Log("Unit " + UnitID.ToString() + " selected");
 
         // Select unit's tile as well to visually show that the unit is selected
-        HexCoordinateOffset unitLocation = 
-            UnitManager.GetUnit(UnitID).CurrentLocation.Hex;
-        EventBus.Publish(new TileSelectedEvent(unitLocation));
+        _mapVisuals.SelectTile(Unit.CurrentLocation.Hex);
 
         _tileSelectedSub =
             EventBus.Subscribe<TileSelectedEvent>(OnTileSelected);
@@ -70,17 +80,20 @@ public class UnitObject : SelectableObject
     // Moves this UnitObject to the given hex using its MoveableObject component
     public void MoveTo(HexCoordinateOffset hex)
     {
-        _moveable.MoveTo(hex);
+        List<HexCoordinateOffset> path = GameMap.FindPath(Unit, 
+            GameMap.GetTile(hex));
+
+        _moveable.MoveAlongPath(path, OnPathComplete);
     }
 
     void OnTileSelected(TileSelectedEvent tileSelectedEvent)
     {
         _selectedByOwner = false;
-        _mapVisuals.UnHighlightCurrentPath();
         EventBus.Unsubscribe(_tileSelectedSub);
         EventBus.Unsubscribe(_tileHoveredSub);
 
         HexCoordinateOffset requestedHex = tileSelectedEvent.Coordinate;
+        //_mapVisuals.UnHighlightCurrentPath();
 
         MoveUnitRequest request = new(UnitID,
             tileSelectedEvent.Coordinate,
@@ -91,14 +104,12 @@ public class UnitObject : SelectableObject
 
     void OnTileHovered(NewTileHoveredOverEvent tileHoveredEvent)
     {
-        Unit thisUnit = UnitManager.GetUnit(UnitID);
         GameTile goalTile = GameMap.GetTile(tileHoveredEvent.Coordinate);
 
         List<HexCoordinateOffset> path;
         try
         {
-            path = GameMap.FindPath(thisUnit,
-                goalTile);
+            path = GameMap.FindPath(Unit, goalTile);
         }
         catch (RuntimeException)
         {
@@ -107,5 +118,11 @@ public class UnitObject : SelectableObject
         }
 
         _mapVisuals.HighlightPath(path);
+    }
+
+    void OnPathComplete()
+    {
+        _mapVisuals.UnHighlightCurrentPath();
+        _mapVisuals.UnSelectCurrentlySelectedTile();
     }
 }
