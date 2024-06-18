@@ -91,6 +91,7 @@ public static class PlayerManager
     }
 
     // Returns whether the given EndTurnRequest is valid
+    [RequestValidator(typeof(EndTurnRequest))]
     public static bool ValidateEndTurnAction(EndTurnRequest action)
     {
         return action.EndingPlayerID.ID == ActivePlayer.ID;

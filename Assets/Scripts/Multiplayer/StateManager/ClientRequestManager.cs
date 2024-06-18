@@ -15,21 +15,26 @@ using UnityEngine;
 
 public class ClientRequestManager : NetworkBehaviour
 {
-    Queue<ClientRequest> _clientRequestQueue = new();
+    static Queue<ClientRequest> _clientRequestQueue = new();
 
-    void Start()
-    {    
-        EventBus.Subscribe<ClientRequest>(OnClientRequest);
-    }
+    //void Start()
+    //{    
+    //    EventBus.Subscribe<ClientRequest>(OnClientRequest);
+    //}
 
     // Constructs and publishes a ClientRequest with the given input data
     // and RPC
-    public static void QueueClientRequest<TRequestData>(TRequestData actionData,
-        Action<NetworkRunner, PlayerRef, TRequestData> RPC_SendClientRequest)
-        where TRequestData : struct, INetworkStruct
+    public static void QueueClientRequest<TRequestData>(TRequestData requestData,
+        Predicate<TRequestData> requestValid,
+        Action<TRequestData> updateState)
+        where TRequestData : struct, IClientRequestData
     {
-        EventBus.Publish(new ClientRequest(actionData,
-            RPC_SendClientRequest));
+        //EventBus.Publish(new ClientRequest(requestData,
+        //    RPC_SendClientRequest));
+
+        _clientRequestQueue.Enqueue(new ClientRequest(requestData,
+            requestValid,
+            updateState));
     }
 
     void OnClientRequest(ClientRequest clientRequest)
