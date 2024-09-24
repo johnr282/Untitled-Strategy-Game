@@ -10,6 +10,12 @@ using UnityEngine;
 // so they all need to implement the INetworkStruct interface
 // ------------------------------------------------------------------
 
+// Base interface for all game state updates
+public interface IGameStateUpdate : INetworkStruct
+{
+
+}
+
 // Sent to clients once for each player to update the PlayerManager
 public readonly struct PlayerAddedUpdate : INetworkStruct
 {
