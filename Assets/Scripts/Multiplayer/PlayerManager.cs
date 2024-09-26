@@ -75,8 +75,8 @@ public static class PlayerManager
     // Requests the server to end this player's turn
     public static void EndMyTurn()
     {
-        ClientRequestManager.QueueClientRequest(new EndTurnRequest(MyPlayerID),
-            ClientMessages.RPC_EndTurn);
+        //ClientRequestManager.QueueClientRequest(new EndTurnRequest(MyPlayerID),
+        //    ClientMessages.RPC_EndTurn);
     }
 
     // Updates the ActivePlayer by incrementing _currTurnIndex or wrapping it

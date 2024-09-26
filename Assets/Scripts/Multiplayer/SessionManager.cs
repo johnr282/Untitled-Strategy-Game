@@ -69,8 +69,8 @@ public class SessionManager : MonoBehaviour, INetworkRunnerCallbacks
     public void OnPlayerJoined(NetworkRunner runner, 
         PlayerRef player) 
     {
-        if (runner.IsServer)
-            OnPlayerJoinedServer(runner, player);       
+        //if (runner.IsServer)
+        //    OnPlayerJoinedServer(runner, player);       
     }
 
     // Called by server when a player joins the session

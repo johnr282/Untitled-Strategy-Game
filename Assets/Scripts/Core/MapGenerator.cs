@@ -117,7 +117,7 @@ public class MapGenerator
         {
             for (int i = 0; i < _parameters.NumContinents; i++)
             {
-                // Can't directly pass continents[i] in as a ref
+                // Can't directly pass continents[val] in as a ref
                 ContinentInProgress continent = continents[i];
                 if (continent.FinishedGenerating())
                     continue;
@@ -461,7 +461,7 @@ public class MapGenerator
         if (tile.InContinent())
             return false;
 
-        // If tile is an island, i.e. not adjacent to any other tiles from the 
+        // If tile is an island, val.e. not adjacent to any other tiles from the 
         // same continent, don't include it
         List<GameTile> adjacentTiles = GameMap.Neighbors(tile);
         bool connectedToContinent = false;

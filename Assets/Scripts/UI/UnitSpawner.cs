@@ -29,8 +29,8 @@ public class UnitSpawner : NetworkBehaviour
         CreateUnitRequest request = new(unitType,
             initialHex,
             PlayerManager.MyPlayerID);
-        ClientRequestManager.QueueClientRequest(request,
-            ClientMessages.RPC_CreateUnit);
+        //ClientRequestManager.QueueClientRequest(request,
+        //    ClientMessages.RPC_CreateUnit);
     }
 
     // Spawns a UnitObject onto the tilemap at the given hex with the given

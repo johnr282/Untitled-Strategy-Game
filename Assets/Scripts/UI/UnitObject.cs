@@ -98,8 +98,8 @@ public class UnitObject : SelectableObject
         MoveUnitRequest request = new(UnitID,
             tileSelectedEvent.Coordinate,
             SelectingPlayerID);
-        ClientRequestManager.QueueClientRequest(request,
-            ClientMessages.RPC_MoveUnit);
+        //ClientRequestManager.QueueClientRequest(request,
+        //    ClientMessages.RPC_MoveUnit);
     }
 
     void OnTileHovered(NewTileHoveredOverEvent tileHoveredEvent)

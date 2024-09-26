@@ -242,7 +242,7 @@ public class MapVisuals : MonoBehaviour
         return tileData.color;
     }
 
-    // Returns whether the given hex has been set yet, i.e. whether the hex is
+    // Returns whether the given hex has been set yet, val.e. whether the hex is
     // not equal to NullTile
     bool HexSet(HexCoordinateOffset hex)
     {

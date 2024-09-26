@@ -11,7 +11,7 @@ using UnityEngine;
 // ------------------------------------------------------------------
 
 // Base interface for all game state updates
-public interface IGameStateUpdate : INetworkStruct
+public interface IStateUpdate : INetworkStruct
 {
 
 }
