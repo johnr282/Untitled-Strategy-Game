@@ -16,6 +16,8 @@ public interface IStateUpdate : INetworkStruct
 
 }
 
+public readonly struct TestStateUpdate : IStateUpdate { }
+
 // Sent to clients once for each player to update the PlayerManager
 public readonly struct PlayerAddedUpdate : INetworkStruct
 {
