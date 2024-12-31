@@ -11,21 +11,29 @@ using UnityEngine.SceneManagement;
 // Handles starting, joining, and managing multiplayer sessions
 // ------------------------------------------------------------------
 
-public class SessionManager : MonoBehaviour, INetworkRunnerCallbacks
+public class SessionManager : SimulationBehaviour, INetworkRunnerCallbacks
 {
     [SerializeField] int _numPlayers;
 
-    NetworkRunner _runner;
+    NetworkRunner _networkRunner;
     int _playersJoined = 0;
 
     // Used to keep track of joining players; when all players join, used to
     // update the PlayerManager
     List<PlayerRef> _joinedPlayers = new();
 
+    void Start()
+    {
+        StateManager.RegisterStateUpdate<GameStarted>(gameStarted => true,
+            OnGameStarted,
+            StateManagerRPCs.RPC_GameStartedServer,
+            StateManagerRPCs.RPC_GameStartedClient);
+    }
+
     // Creates buttons to choose whether to host or join
     void OnGUI()
     {
-        if (_runner == null)
+        if (_networkRunner == null)
         {
             if (GUI.Button(new Rect(0, 0, 200, 40), "Host"))
             {
@@ -43,8 +51,8 @@ public class SessionManager : MonoBehaviour, INetworkRunnerCallbacks
     {
         // Create the Fusion runner and let it know that we will be
         // providing user input
-        _runner = gameObject.AddComponent<NetworkRunner>();
-        _runner.ProvideInput = true;
+        _networkRunner = gameObject.AddComponent<NetworkRunner>();
+        _networkRunner.ProvideInput = true;
 
         // Create the NetworkSceneInfo from the current scene
         SceneRef scene = SceneRef.FromIndex(SceneManager.GetActiveScene().buildIndex);
@@ -63,14 +71,14 @@ public class SessionManager : MonoBehaviour, INetworkRunnerCallbacks
         };
 
         // Start or join (depends on gamemode) a session with a specific name
-        await _runner.StartGame(startGameArgs);
+        await _networkRunner.StartGame(startGameArgs);
     }
 
     public void OnPlayerJoined(NetworkRunner runner, 
         PlayerRef player) 
     {
-        //if (runner.IsServer)
-        //    OnPlayerJoinedServer(runner, player);       
+        if (runner.IsServer)
+            OnPlayerJoinedServer(runner, player);
     }
 
     // Called by server when a player joins the session
@@ -91,18 +99,45 @@ public class SessionManager : MonoBehaviour, INetworkRunnerCallbacks
     // Does all necessary work to initialize the session
     void InitializeSession()
     {
+        int playerID = 0;
         foreach (PlayerRef joinedPlayer in _joinedPlayers)
         {
-            PlayerAddedUpdate addPlayer = new(joinedPlayer);
-            GameStateManager.UpdateGameState(_runner,
-                addPlayer,
-                ServerMessages.RPC_AddPlayer);
+            PlayerID id = new(playerID);
+            playerID++;
+            PlayerAdded addPlayer = new(joinedPlayer, id);
+            StateManager.RequestStateUpdate(addPlayer);
+            PlayerManager.RPC_SendPlayerID(_networkRunner, joinedPlayer, id);
         }
 
-        GameStartedUpdate gameStarted = new(MapGenerator.GenerateRandomSeed());
-        GameStateManager.UpdateGameState(_runner,
-            gameStarted,
-            ServerMessages.RPC_StartGame);
+        GameStarted gameStarted = new(MapGenerator.GenerateRandomSeed());
+        StateManager.RequestStateUpdate(gameStarted);
+    }
+
+    // Generates the map, initializes map visuals, and spawns a unit at this 
+    // player's starting tile
+    void OnGameStarted(GameStarted update)
+    {
+        Debug.Log("Game starting, generating map and spawning starting unit");
+        MapGenerationParameters parameters =
+            ProjectUtilities.FindMapGenerationParameters();
+
+        if (parameters.RandomlyGenerateSeed)
+            parameters.Seed = update.MapSeed;
+
+        MapGenerator mapGenerator = new(parameters);
+        mapGenerator.GenerateMap();
+
+        MapVisuals mapVisuals = ProjectUtilities.FindMapVisuals();
+        mapVisuals.GenerateVisuals(parameters.MapHeight,
+            parameters.MapWidth);
+
+        //List<GameTile> startingTiles =
+        //    mapGenerator.GenerateStartingTiles(PlayerManager.NumPlayers);
+        //GameTile startingTile = startingTiles[PlayerManager.MyPlayerID.ID];
+        //UnitType startingUnitType = UnitType.land;
+        //_unitSpawner.RequestSpawnUnit(startingUnitType, startingTile.Hex);
+
+        //PlayerManager.NotifyActivePlayer();
     }
 
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) 

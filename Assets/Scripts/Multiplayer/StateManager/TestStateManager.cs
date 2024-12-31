@@ -10,7 +10,6 @@ using UnityEngine;
 public class TestStateManager : SimulationBehaviour
 {
     [SerializeField] int val = 0;
-    string testStateUpdateRegistration = "TestStateUpdate";
 
     void Start()
     {

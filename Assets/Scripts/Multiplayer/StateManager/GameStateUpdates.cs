@@ -11,30 +11,29 @@ using UnityEngine;
 // ------------------------------------------------------------------
 
 // Base interface for all game state updates
-public interface IStateUpdate : INetworkStruct
-{
-
-}
+public interface IStateUpdate : INetworkStruct { }
 
 public readonly struct TestStateUpdate : IStateUpdate { }
 
 // Sent to clients once for each player to update the PlayerManager
-public readonly struct PlayerAddedUpdate : INetworkStruct
+public readonly struct PlayerAdded : IStateUpdate
 {
     public PlayerRef PlayerRef { get; }
+    public PlayerID ID { get; }
 
-    public PlayerAddedUpdate(PlayerRef playerRefIn)
+    public PlayerAdded(PlayerRef playerRefIn, PlayerID idIn)
     {
         PlayerRef = playerRefIn;
+        ID = idIn;
     }
 }
 
 // Sent to clients when all players have joined and the game is starting
-public readonly struct GameStartedUpdate : INetworkStruct
+public readonly struct GameStarted : IStateUpdate
 {
     public int MapSeed { get; }
 
-    public GameStartedUpdate(int mapSeedIn)
+    public GameStarted(int mapSeedIn)
     {
         MapSeed = mapSeedIn;
     }

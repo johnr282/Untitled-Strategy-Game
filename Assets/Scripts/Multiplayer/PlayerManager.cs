@@ -9,7 +9,7 @@ using UnityEngine;
 // global game state
 // ------------------------------------------------------------------
 
-public static class PlayerManager
+public class PlayerManager: SimulationBehaviour
 {
     // Returns the calling client's player ID; this value will be different for
     // each client
@@ -21,7 +21,7 @@ public static class PlayerManager
                 throw new RuntimeException("MyPlayerID not set");
             return _myPlayerID;
         }
-        set
+        private set
         {
             _myPlayerID = value;
         }
@@ -45,14 +45,35 @@ public static class PlayerManager
 
     static PlayerID _myPlayerID = new(-1);
 
+    void Start()
+    {
+        // No validation needed for PlayerAdded, always return true
+        StateManager.RegisterStateUpdate<PlayerAdded>(update => true,
+            AddPlayer,
+            StateManagerRPCs.RPC_PlayerAddedServer,
+            StateManagerRPCs.RPC_PlayerAddedClient);
+    }
+
     // Creates a new player, and returns the PlayerID of the new player
     // Modifies game state
-    public static PlayerID AddPlayer(PlayerRef player)
+    static void AddPlayer(PlayerAdded playerAdded)
     {
-        PlayerID newPlayerID = new(NumPlayers);
-        _players.Add(new Player(player, newPlayerID));
+        PlayerID newPlayerID = playerAdded.ID;
+        Debug.Log("Adding player " + newPlayerID + " to PlayerManager");
+        _players.Add(new Player(playerAdded.PlayerRef, newPlayerID));
         _turnOrder.Add(newPlayerID);
-        return newPlayerID;
+    }
+
+    // Called by server to send each client their PlayerID
+    // Different Player ID is sent to each client, so can't use StateManager
+    // for this
+    [Rpc]
+    public static void RPC_SendPlayerID(NetworkRunner runner,
+        [RpcTarget] PlayerRef player,
+        PlayerID id)
+    {
+        Debug.Log("My player ID is " + id);
+        MyPlayerID = id;
     }
 
     // Returns the Player corresponding to the given playerID

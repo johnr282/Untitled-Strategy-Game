@@ -10,25 +10,25 @@ using UnityEngine;
 
 public class ServerMessages : NetworkBehaviour
 {
-    // Sends each player their PlayerID as they join
-    [Rpc]
-    public static void RPC_SendPlayerID(NetworkRunner runner,
-        [RpcTarget] PlayerRef player,
-        PlayerID playerID)
-    {
-        PlayerManager.MyPlayerID = playerID;
-    }
+    //// Sends each player their PlayerID as they join
+    //[Rpc]
+    //public static void RPC_SendPlayerID(NetworkRunner runner,
+    //    [RpcTarget] PlayerRef player,
+    //    PlayerID playerID)
+    //{
+    //    PlayerManager.MyPlayerID = playerID;
+    //}
 
     [Rpc]
     public static void RPC_AddPlayer(NetworkRunner runner,
-        PlayerAddedUpdate addPlayer)
+        PlayerAdded addPlayer)
     {
         EventBus.Publish(addPlayer);
     }
 
     [Rpc]
     public static void RPC_StartGame(NetworkRunner runner,
-        GameStartedUpdate gameStartData)
+        GameStarted gameStartData)
     {
         EventBus.Publish(gameStartData);
     }

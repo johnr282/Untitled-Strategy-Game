@@ -21,10 +21,10 @@ public class DisplayTurnInfo : MonoBehaviour
         _turnInfoDisplay.text = "Waiting to host or join a session...";
 
         EventBus.Subscribe<MyTurnEvent>(OnMyTurn);
-        EventBus.Subscribe<GameStartedUpdate>(OnGameStarted);
+        EventBus.Subscribe<GameStarted>(OnGameStarted);
     }
 
-    void OnGameStarted(GameStartedUpdate update)
+    void OnGameStarted(GameStarted update)
     {
         if (!PlayerManager.MyTurn)
             SetTurnInfoText("Waiting for other players...");
