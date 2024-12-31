@@ -1,3 +1,4 @@
+using DG.Tweening;
 using Fusion;
 using System;
 using System.Collections;
@@ -8,11 +9,11 @@ public class StateManager : NetworkBehaviour
 {
     class StateUpdateRegistration
     {
-        Delegate _validateUpdateFunc;
-        Delegate _performUpdateFunc;
-        Delegate _serverUpdateRPC;
-        Delegate _clientUpdateRPC;
-        Type _stateUpdateType;
+        readonly Delegate _validateUpdateFunc;
+        readonly Delegate _performUpdateFunc;
+        readonly Delegate _serverUpdateRPC;
+        readonly Delegate _clientUpdateRPC;
+        readonly Type _stateUpdateType;
 
         public StateUpdateRegistration(Delegate validateUpdateFuncIn,
             Delegate performUpdateFuncIn,
@@ -29,7 +30,7 @@ public class StateManager : NetworkBehaviour
 
         public bool CheckUpdateType<TStateUpdate>(TStateUpdate updateData)
         {
-            return _stateUpdateType == updateData.GetType();
+            return _stateUpdateType == typeof(TStateUpdate);
         }
 
         public bool ValidateUpdate(IStateUpdate updateData)
@@ -45,27 +46,23 @@ public class StateManager : NetworkBehaviour
         // Server update RPC is called on the client, so we need to go through
         // the ClientRPCManager
         public void CallServerUpdateRPC(NetworkRunner runner,
-            string registrationString,
             IStateUpdate updateData)
         {
             ClientRPCManager.QueueClientRPC(_serverUpdateRPC,
                 runner,
                 PlayerRef.None,
-                registrationString,
                 updateData);
         }
 
         public void CallClientUpdateRPC(NetworkRunner runner,
-            string registrationString,
             IStateUpdate updateData)
         {
             _clientUpdateRPC.DynamicInvoke(runner,
-                registrationString,
                 updateData);
         }
     }
 
-    static Dictionary<string, StateUpdateRegistration> _registeredUpdates = new();
+    static Dictionary<Type, StateUpdateRegistration> _registeredUpdates = new();
     static NetworkRunner StateManagerRunner
     {
         get
@@ -83,76 +80,72 @@ public class StateManager : NetworkBehaviour
 
     static NetworkRunner _stateManagerRunner;    
 
-    // Register a new state update with the given registration string, validate 
-    // function, and perform function
-    // Throws exception if registrationString is already found in _registeredUpdates
-    public static void RegisterStateUpdate<TStateUpdate>(string registrationString, 
-        Predicate<TStateUpdate> validateUpdate,
+    // Register a new state update with the given validate function, perform function,
+    // and RPCs
+    // Throws exception if update type is already found in _registeredUpdates
+    public static void RegisterStateUpdate<TStateUpdate>(Predicate<TStateUpdate> validateUpdate,
         Action<TStateUpdate> performUpdate,
-        Action<NetworkRunner, PlayerRef, string, TStateUpdate> serverUpdateRPC,
-        Action<NetworkRunner, string, TStateUpdate> clientUpdateRPC)
+        Action<NetworkRunner, PlayerRef, TStateUpdate> serverUpdateRPC,
+        Action<NetworkRunner, TStateUpdate> clientUpdateRPC)
         where TStateUpdate : struct, IStateUpdate
     {
-        if (_registeredUpdates.ContainsKey(registrationString))
-            throw new RuntimeException(registrationString + " is already registered");
+        Type updateType = typeof(TStateUpdate);
+        if (_registeredUpdates.ContainsKey(updateType))
+            throw new RuntimeException(updateType + " is already registered");
 
         StateUpdateRegistration newRegistration = new(validateUpdate, 
             performUpdate,
             serverUpdateRPC,
             clientUpdateRPC,
-            typeof(TStateUpdate));
-        _registeredUpdates[registrationString] = newRegistration;
+            updateType);
+        _registeredUpdates[updateType] = newRegistration;
     }
 
-    // Initiates a state update with the given registration string and update
-    // data; only called by clients
+    // Initiates a state update with the given update data; only called by clients
     // Throws exception if called on the server
-    // Throws exception if registrationString was not previously registered
+    // Throws exception if update type was not previously registered
     // with RegisterStateUpdate 
     // Throws exception if updateData type doesn't match the registration corresponding
     // to registrationString
-    public static void RequestStateUpdate<TStateUpdate>(string registrationString,
-        TStateUpdate updateData)
+    public static void RequestStateUpdate<TStateUpdate>(TStateUpdate updateData)
         where TStateUpdate : struct, IStateUpdate
     {
         if (StateManagerRunner.GameMode == GameMode.Server)
             throw new RuntimeException("RequestStateUpdate called on server");
 
-        StateUpdateRegistration registration = GetRegistration(registrationString);
+        Type updateType = typeof(TStateUpdate);
+        StateUpdateRegistration registration = GetRegistration(updateType);
 
         if (!registration.CheckUpdateType(updateData))
             throw new RuntimeException(
-                "Type of updateData does not match type registered for " + registrationString);
+                "Type of updateData does not match type registered for " + updateType);
 
         // Before sending request to server, client checks if update is valid
         if (!registration.ValidateUpdate(updateData))
         {
-            Debug.Log("Requested state update of type " + registrationString + 
+            Debug.Log("Requested state update of type " + updateType + 
                 " was not validated by the client");
             return;
         }
 
-        registration.CallServerUpdateRPC(StateManagerRunner,
-            registrationString,
-            updateData);
+        registration.CallServerUpdateRPC(StateManagerRunner, updateData);
     }
 
     // Should be called by the user-created server update RPC to initiate
     // state update on the server
-    // Throws exception if registrationString was not previously registered
-    // with RegisterStateUpdate; this should never happen as the registration
-    // string is checked on the client before this, and the registrations 
+    // Throws exception if TStateUpdate was not previously registered
+    // with RegisterStateUpdate; this should never happen as the update type
+    // is checked on the client before this, and the registrations 
     // should be identical on the server
-    public static void UpdateServerState<TStateUpdate>(string registrationString,
-        TStateUpdate updateData)
+    public static void UpdateServerState<TStateUpdate>(TStateUpdate updateData)
         where TStateUpdate : struct, IStateUpdate
     {
-        StateUpdateRegistration registration = GetRegistration(registrationString);
+        StateUpdateRegistration registration = GetRegistration(typeof(TStateUpdate));
 
         // Validate update again on the server, don't trust client
         if (!registration.ValidateUpdate(updateData))
         {
-            Debug.Log("Requested state update of type " + registrationString +
+            Debug.Log("Requested state update of type " + typeof(TStateUpdate) +
                 " was not validated by the server");
             return;
         }
@@ -167,31 +160,28 @@ public class StateManager : NetworkBehaviour
 
         // Updates state on all clients
         Debug.Log("Sending state update to clients");
-        registration.CallClientUpdateRPC(StateManagerRunner,
-            registrationString,
-            updateData);
+        registration.CallClientUpdateRPC(StateManagerRunner, updateData);
     }
 
     // Should be called by the user-created client update RPC to initiate state
     // update on this client
-    public static void UpdateClientState<TStateUpdate>(string registrationString,
-        TStateUpdate updateData)
+    public static void UpdateClientState<TStateUpdate>(TStateUpdate updateData)
         where TStateUpdate : struct, IStateUpdate
     {
-        StateUpdateRegistration registration = GetRegistration(registrationString);
+        StateUpdateRegistration registration = GetRegistration(typeof(TStateUpdate));
 
         // Server must've already validated update, so no need to validate again
         Debug.Log("Performing state update on client");
         registration.PerformUpdate(updateData);
     }
 
-    // Returns the registration corresponding to given registrationString
-    // Throws exception if registrationString has not been registered
-    static StateUpdateRegistration GetRegistration(string registrationString)
+    // Returns the registration corresponding to given update type
+    // Throws exception if updateType has not been registered
+    static StateUpdateRegistration GetRegistration(Type updateType)
     {
-        if (!_registeredUpdates.ContainsKey(registrationString))
-            throw new RuntimeException(registrationString + " is not registered");
+        if (!_registeredUpdates.ContainsKey(updateType))
+            throw new RuntimeException(updateType + " is not registered");
 
-        return _registeredUpdates[registrationString];
+        return _registeredUpdates[updateType];
     }
 }

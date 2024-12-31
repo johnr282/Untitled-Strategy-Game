@@ -11,19 +11,32 @@ using UnityEngine;
 public class StateManagerRPCs: NetworkBehaviour
 {
     [Rpc]
-    public static void RPC_ServerTestStateUpdate(NetworkRunner runner,
+    public static void RPC_TestStateUpdateServer(NetworkRunner runner,
         [RpcTarget] PlayerRef player,
-        string registrationString,
         TestStateUpdate updateData)
     {
-        StateManager.UpdateServerState(registrationString, updateData);
+        StateManager.UpdateServerState(updateData);
     }
 
     [Rpc]
-    public static void RPC_ClientTestStateUpdate(NetworkRunner runner,
-        string registrationString,
+    public static void RPC_TestStateUpdateClient(NetworkRunner runner,
         TestStateUpdate updateData)
     {
-        StateManager.UpdateClientState(registrationString, updateData);
+        StateManager.UpdateClientState(updateData);
+    }
+
+    [Rpc]
+    public static void RPC_PlayerAddedServer(NetworkRunner runner,
+        [RpcTarget] PlayerRef player,
+        PlayerAdded updateData)
+    {
+        StateManager.UpdateServerState(updateData);
+    }
+
+    [Rpc]
+    public static void RPC_PlayerAddedClient(NetworkRunner runner,
+        PlayerAdded updateData)
+    {
+        StateManager.UpdateClientState(updateData);
     }
 }

@@ -14,19 +14,17 @@ public class TestStateManager : SimulationBehaviour
 
     void Start()
     {
-        StateManager.RegisterStateUpdate<TestStateUpdate>(testStateUpdateRegistration,
-            Validate,
+        StateManager.RegisterStateUpdate<TestStateUpdate>(Validate,
             PerformUpdate,
-            StateManagerRPCs.RPC_ServerTestStateUpdate,
-            StateManagerRPCs.RPC_ClientTestStateUpdate);
+            StateManagerRPCs.RPC_TestStateUpdateServer,
+            StateManagerRPCs.RPC_TestStateUpdateClient);
     }
 
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            StateManager.RequestStateUpdate(testStateUpdateRegistration,
-                new TestStateUpdate());
+            StateManager.RequestStateUpdate(new TestStateUpdate());
         }
     }
 
