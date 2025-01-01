@@ -24,10 +24,10 @@ public class SessionManager : SimulationBehaviour, INetworkRunnerCallbacks
 
     void Start()
     {
-        StateManager.RegisterStateUpdate<GameStarted>(gameStarted => true,
+        StateManager.RegisterStateUpdate<StartGameUpdate>(gameStarted => true,
             OnGameStarted,
-            StateManagerRPCs.RPC_GameStartedServer,
-            StateManagerRPCs.RPC_GameStartedClient);
+            StateManagerRPCs.RPC_StartGameServer,
+            StateManagerRPCs.RPC_StartGameClient);
     }
 
     // Creates buttons to choose whether to host or join
@@ -104,19 +104,20 @@ public class SessionManager : SimulationBehaviour, INetworkRunnerCallbacks
         {
             PlayerID id = new(playerID);
             playerID++;
-            PlayerAdded addPlayer = new(joinedPlayer, id);
+            AddPlayerUpdate addPlayer = new(joinedPlayer, id);
             StateManager.RequestStateUpdate(addPlayer);
             PlayerManager.RPC_SendPlayerID(_networkRunner, joinedPlayer, id);
         }
 
-        GameStarted gameStarted = new(MapGenerator.GenerateRandomSeed());
+        StartGameUpdate gameStarted = new(MapGenerator.GenerateRandomSeed());
         StateManager.RequestStateUpdate(gameStarted);
     }
 
     // Generates the map, initializes map visuals, and spawns a unit at this 
     // player's starting tile
-    void OnGameStarted(GameStarted update)
+    void OnGameStarted(StartGameUpdate update)
     {
+        EventBus.Publish(update);
         Debug.Log("Game starting, generating map and spawning starting unit");
         MapGenerationParameters parameters =
             ProjectUtilities.FindMapGenerationParameters();
@@ -131,13 +132,15 @@ public class SessionManager : SimulationBehaviour, INetworkRunnerCallbacks
         mapVisuals.GenerateVisuals(parameters.MapHeight,
             parameters.MapWidth);
 
-        //List<GameTile> startingTiles =
-        //    mapGenerator.GenerateStartingTiles(PlayerManager.NumPlayers);
-        //GameTile startingTile = startingTiles[PlayerManager.MyPlayerID.ID];
-        //UnitType startingUnitType = UnitType.land;
-        //_unitSpawner.RequestSpawnUnit(startingUnitType, startingTile.Hex);
+        List<GameTile> startingTiles =
+            mapGenerator.GenerateStartingTiles(PlayerManager.NumPlayers);
+        GameTile startingTile = startingTiles[PlayerManager.MyPlayerID.ID];
+        UnitType startingUnitType = UnitType.land;
+        StateManager.RequestStateUpdate(new CreateUnitUpdate(startingUnitType,
+            startingTile.Hex,
+            PlayerManager.MyPlayerID));
 
-        //PlayerManager.NotifyActivePlayer();
+        PlayerManager.NotifyActivePlayer();
     }
 
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) 

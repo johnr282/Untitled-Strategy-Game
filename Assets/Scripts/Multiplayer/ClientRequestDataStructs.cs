@@ -18,21 +18,21 @@ public readonly struct EndTurnRequest : IClientRequestData
     }
 }
 
-public readonly struct CreateUnitRequest : IClientRequestData 
-{
-    public UnitType Type { get; }
-    public HexCoordinateOffset Location { get; }
-    public PlayerID RequestingPlayerID { get; }
+//public readonly struct CreateUnitRequest : IClientRequestData 
+//{
+//    public UnitType Type { get; }
+//    public HexCoordinateOffset Location { get; }
+//    public PlayerID RequestingPlayerID { get; }
 
-    public CreateUnitRequest(UnitType typeIn,
-        HexCoordinateOffset locationIn,
-        PlayerID requestingPlayerIDIn)
-    {
-        Type = typeIn;
-        Location = locationIn;
-        RequestingPlayerID = requestingPlayerIDIn;
-    }
-}
+//    public CreateUnitRequest(UnitType typeIn,
+//        HexCoordinateOffset locationIn,
+//        PlayerID requestingPlayerIDIn)
+//    {
+//        Type = typeIn;
+//        Location = locationIn;
+//        RequestingPlayerID = requestingPlayerIDIn;
+//    }
+//}
 
 public readonly struct MoveUnitRequest : IClientRequestData 
 {

@@ -15,21 +15,21 @@ using UnityEngine;
 // updated (for everyone) in one of the callback functions in this class.
 // ------------------------------------------------------------------
 
-[RequireComponent(typeof(UnitSpawner))]
+[RequireComponent(typeof(UnitObjectSpawner))]
 public class GameStateManager : NetworkBehaviour
 {
-    UnitSpawner _unitSpawner;
+    UnitObjectSpawner _unitSpawner;
 
     // Start is called before the first frame update
     void Start()
     {
-        _unitSpawner = GetComponent<UnitSpawner>();
+        _unitSpawner = GetComponent<UnitObjectSpawner>();
 
         // Game state update subscriptions
-        EventBus.Subscribe<PlayerAdded> (OnAddPlayer);
-        EventBus.Subscribe<GameStarted> (OnGameStarted);
+        EventBus.Subscribe<AddPlayerUpdate> (OnAddPlayer);
+        //EventBus.Subscribe<StartGameUpdate> (OnGameStarted);
         EventBus.Subscribe<NextTurnUpdate>    (OnNextTurn);
-        EventBus.Subscribe<UnitCreatedUpdate> (OnUnitCreated);
+        //EventBus.Subscribe<CreateUnitUpdate> (OnUnitCreated);
         EventBus.Subscribe<UnitMovedUpdate>   (OnUnitMoved);
     }
 
@@ -56,10 +56,10 @@ public class GameStateManager : NetworkBehaviour
 
     // Updates PlayerManager with new player, and allows server to send each 
     // client their PlayerID
-    void OnAddPlayer(PlayerAdded update)
+    void OnAddPlayer(AddPlayerUpdate update)
     {
         //Debug.Log("Adding player to PlayerManager");
-        //PlayerID newPlayerID = PlayerManager.AddPlayer(update.PlayerRef);
+        //PlayerID newPlayerID = PlayerManager.AddPlayerUpdate(update.PlayerRef);
 
         //if (Runner.IsServer)
         //{
@@ -71,30 +71,30 @@ public class GameStateManager : NetworkBehaviour
 
     // Generates the map, initializes map visuals, and spawns a unit at this 
     // player's starting tile
-    void OnGameStarted(GameStarted update)
-    {
-        Debug.Log("Game starting, generating map and spawning starting unit");
-        MapGenerationParameters parameters = 
-            ProjectUtilities.FindMapGenerationParameters();
+    //void OnGameStarted(StartGameUpdate update)
+    //{
+    //    Debug.Log("Game starting, generating map and spawning starting unit");
+    //    MapGenerationParameters parameters = 
+    //        ProjectUtilities.FindMapGenerationParameters();
 
-        if (parameters.RandomlyGenerateSeed)
-            parameters.Seed = update.MapSeed;
+    //    if (parameters.RandomlyGenerateSeed)
+    //        parameters.Seed = update.MapSeed;
 
-        MapGenerator mapGenerator = new(parameters);
-        mapGenerator.GenerateMap();
+    //    MapGenerator mapGenerator = new(parameters);
+    //    mapGenerator.GenerateMap();
 
-        MapVisuals mapVisuals = ProjectUtilities.FindMapVisuals();
-        mapVisuals.GenerateVisuals(parameters.MapHeight,
-            parameters.MapWidth);
+    //    MapVisuals mapVisuals = ProjectUtilities.FindMapVisuals();
+    //    mapVisuals.GenerateVisuals(parameters.MapHeight,
+    //        parameters.MapWidth);
 
-        List<GameTile> startingTiles = 
-            mapGenerator.GenerateStartingTiles(PlayerManager.NumPlayers);
-        GameTile startingTile = startingTiles[PlayerManager.MyPlayerID.ID];
-        UnitType startingUnitType = UnitType.land;
-        _unitSpawner.RequestSpawnUnit(startingUnitType, startingTile.Hex);
+    //    List<GameTile> startingTiles = 
+    //        mapGenerator.GenerateStartingTiles(PlayerManager.NumPlayers);
+    //    GameTile startingTile = startingTiles[PlayerManager.MyPlayerID.ID];
+    //    UnitType startingUnitType = UnitType.land;
+    //    _unitSpawner.RequestSpawnUnit(startingUnitType, startingTile.Hex);
 
-        PlayerManager.NotifyActivePlayer();
-    }
+    //    PlayerManager.NotifyActivePlayer();
+    //}
 
     // Updates the current active player and notifies them
     void OnNextTurn(NextTurnUpdate update)
@@ -108,16 +108,16 @@ public class GameStateManager : NetworkBehaviour
     }
 
     // Creates a unit and its corresponding UnitObjectbased on the given update
-    void OnUnitCreated(UnitCreatedUpdate update)
-    {
-        UnitID newUnitID = UnitManager.CreateUnit(update.UnitInfo);
-        Debug.Log("Created new unit " + newUnitID.ID.ToString());
+    //void OnUnitCreated(CreateUnitUpdate update)
+    //{
+    //    UnitID newUnitID = UnitManager.CreateUnit(update.UnitInfo);
+    //    Debug.Log("Created new unit " + newUnitID.ID.ToString());
 
-        UnitObject newUnitObject = _unitSpawner.SpawnUnitObject(newUnitID,
-            update.UnitInfo.RequestingPlayerID,
-            update.UnitInfo.Location);
-        UnitManager.GetUnit(newUnitID).UnitObject = newUnitObject;
-    }
+    //    UnitObject newUnitObject = _unitSpawner.SpawnUnitObject(newUnitID,
+    //        update.UnitInfo.RequestingPlayerID,
+    //        update.UnitInfo.Location);
+    //    UnitManager.GetUnit(newUnitID).UnitObject = newUnitObject;
+    //}
 
     // Moves a unit and its corresponding UnitObject based on the given update
     void OnUnitMoved(UnitMovedUpdate update)

@@ -12,6 +12,7 @@ public static class ProjectUtilities
     public const string MapObjectName = "Map";
     public const string GameStateManagerObjectName = "GameStateManager";
     public const string MapGenerationParametersObjectName = "MapGenerationParameters";
+    public const string UnitObjectSpawnerObjectName = "UnitObjectSpawner";
 
     // Finds and returns component of given type on GameObject of given name 
     // Throws RuntimeException if GameObject or component cannot be found
@@ -42,5 +43,10 @@ public static class ProjectUtilities
     public static MapVisuals FindMapVisuals()
     {
         return FindComponent<MapVisuals>(MapObjectName);
+    }
+
+    public static UnitObjectSpawner FindUnitObjectSpawner()
+    {
+        return FindComponent<UnitObjectSpawner>(UnitObjectSpawnerObjectName);
     }
 }

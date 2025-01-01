@@ -5,26 +5,42 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 
 // ------------------------------------------------------------------
-// Component that displays turn info to the player
+// Component that displays game info to the player
 // ------------------------------------------------------------------
 
-[RequireComponent(typeof(TextMeshProUGUI))]
-public class DisplayTurnInfo : MonoBehaviour
+public struct DisplayGameInfoEvent
 {
-    TextMeshProUGUI _turnInfoDisplay;
+    public string InfoToDisplay { get; }
+
+    public DisplayGameInfoEvent(string infoToDisplay)
+    {
+        InfoToDisplay = infoToDisplay;
+    }
+}
+
+[RequireComponent(typeof(TextMeshProUGUI))]
+public class DisplayGameInfo : MonoBehaviour
+{
+    TextMeshProUGUI _gameInfoDisplay;
 
     Subscription<NextTurnUpdate> _nextTurnSub;
 
     void Start()
     {
-        _turnInfoDisplay = GetComponent<TextMeshProUGUI>();
-        _turnInfoDisplay.text = "Waiting to host or join a session...";
+        _gameInfoDisplay = GetComponent<TextMeshProUGUI>();
+        _gameInfoDisplay.text = "Waiting to host or join a session...";
 
+        EventBus.Subscribe<DisplayGameInfoEvent>(Display);
         EventBus.Subscribe<MyTurnEvent>(OnMyTurn);
-        EventBus.Subscribe<GameStarted>(OnGameStarted);
+        EventBus.Subscribe<StartGameUpdate>(OnGameStarted);
     }
 
-    void OnGameStarted(GameStarted update)
+    void Display(DisplayGameInfoEvent displayGameInfoEvent)
+    {
+        SetTurnInfoText(displayGameInfoEvent.InfoToDisplay);
+    }
+
+    void OnGameStarted(StartGameUpdate update)
     {
         if (!PlayerManager.MyTurn)
             SetTurnInfoText("Waiting for other players...");
@@ -44,6 +60,6 @@ public class DisplayTurnInfo : MonoBehaviour
 
     void SetTurnInfoText(string textToDisplay)
     {
-        _turnInfoDisplay.text = textToDisplay;
+        _gameInfoDisplay.text = textToDisplay;
     }
 }

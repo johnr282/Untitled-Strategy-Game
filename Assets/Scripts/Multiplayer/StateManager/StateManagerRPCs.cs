@@ -10,50 +10,50 @@ using UnityEngine;
 
 public class StateManagerRPCs: NetworkBehaviour
 {
-    // TestStateUpdate RPCs
+    // AddPlayerUpdate RPCs
     [Rpc]
-    public static void RPC_TestStateUpdateServer(NetworkRunner runner,
+    public static void RPC_AddPlayerServer(NetworkRunner runner,
         [RpcTarget] PlayerRef player,
-        TestStateUpdate updateData)
+        AddPlayerUpdate updateData)
     {
         StateManager.UpdateServerState(updateData);
     }
 
     [Rpc]
-    public static void RPC_TestStateUpdateClient(NetworkRunner runner,
-        TestStateUpdate updateData)
+    public static void RPC_AddPlayerClient(NetworkRunner runner,
+        AddPlayerUpdate updateData)
     {
         StateManager.UpdateClientState(updateData);
     }
 
-    // PlayerAdded RPCs
+    // StartGameUpdate RPCs
     [Rpc]
-    public static void RPC_PlayerAddedServer(NetworkRunner runner,
+    public static void RPC_StartGameServer(NetworkRunner runner,
         [RpcTarget] PlayerRef player,
-        PlayerAdded updateData)
+        StartGameUpdate updateData)
     {
         StateManager.UpdateServerState(updateData);
     }
 
     [Rpc]
-    public static void RPC_PlayerAddedClient(NetworkRunner runner,
-        PlayerAdded updateData)
+    public static void RPC_StartGameClient(NetworkRunner runner,
+        StartGameUpdate updateData)
     {
         StateManager.UpdateClientState(updateData);
     }
 
-    // GameStarted RPCs
+    // CreateUnitUpdate RPCs
     [Rpc]
-    public static void RPC_GameStartedServer(NetworkRunner runner,
+    public static void RPC_CreateUnitServer(NetworkRunner runner,
         [RpcTarget] PlayerRef player,
-        GameStarted updateData)
+        CreateUnitUpdate updateData)
     {
         StateManager.UpdateServerState(updateData);
     }
 
     [Rpc]
-    public static void RPC_GameStartedClient(NetworkRunner runner,
-        GameStarted updateData)
+    public static void RPC_CreateUnitClient(NetworkRunner runner,
+        CreateUnitUpdate updateData)
     {
         StateManager.UpdateClientState(updateData);
     }

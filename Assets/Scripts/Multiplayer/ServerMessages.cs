@@ -21,14 +21,14 @@ public class ServerMessages : NetworkBehaviour
 
     [Rpc]
     public static void RPC_AddPlayer(NetworkRunner runner,
-        PlayerAdded addPlayer)
+        AddPlayerUpdate addPlayer)
     {
         EventBus.Publish(addPlayer);
     }
 
     [Rpc]
     public static void RPC_StartGame(NetworkRunner runner,
-        GameStarted gameStartData)
+        StartGameUpdate gameStartData)
     {
         EventBus.Publish(gameStartData);
     }
@@ -42,7 +42,7 @@ public class ServerMessages : NetworkBehaviour
 
     [Rpc]
     public static void RPC_UnitCreated(NetworkRunner runner,
-        UnitCreatedUpdate unitCreated)
+        CreateUnitUpdate unitCreated)
     {
         EventBus.Publish(unitCreated);
     }

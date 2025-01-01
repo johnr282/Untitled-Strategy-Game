@@ -30,6 +30,4 @@ public class TileSelectedEvent
 }
 
 // Published when it's this client's turn
-public class MyTurnEvent
-{
-}
+public class MyTurnEvent { }

@@ -30,28 +30,28 @@ public class ClientMessages : NetworkBehaviour
         }
     }
 
-    // Requests the server to create a new unit
-    [Rpc]
-    public static void RPC_CreateUnit(NetworkRunner runner,
-        [RpcTarget] PlayerRef player,
-        CreateUnitRequest action)
-    {
-        Debug.Log("Received CreateUnitAction from player " +
-            action.RequestingPlayerID + " at " + action.Location);
+    //// Requests the server to create a new unit
+    //[Rpc]
+    //public static void RPC_CreateUnit(NetworkRunner runner,
+    //    [RpcTarget] PlayerRef player,
+    //    CreateUnitRequest action)
+    //{
+    //    Debug.Log("Received CreateUnitAction from player " +
+    //        action.RequestingPlayerID + " at " + action.Location);
 
-        if (UnitManager.ValidateCreateUnitAction(action))
-        {
-            Debug.Log("Action successful");
-            UnitCreatedUpdate unitCreated = new(action);
-            GameStateManager.UpdateGameState(runner,
-                unitCreated,
-                ServerMessages.RPC_UnitCreated);
-        }
-        else
-        {
-            Debug.Log("Action denied");
-        }
-    }
+    //    if (UnitManager.ValidateCreateUnitUpdate(action))
+    //    {
+    //        Debug.Log("Action successful");
+    //        CreateUnitUpdate unitCreated = new(action);
+    //        GameStateManager.UpdateGameState(runner,
+    //            unitCreated,
+    //            ServerMessages.RPC_UnitCreated);
+    //    }
+    //    else
+    //    {
+    //        Debug.Log("Action denied");
+    //    }
+    //}
 
     // Requests the server to move a unit; if the MoveUnitRequest is valid, 
     // updates the game state accordingly

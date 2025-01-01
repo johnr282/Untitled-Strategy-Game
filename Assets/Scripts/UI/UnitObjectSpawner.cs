@@ -9,7 +9,7 @@ using UnityEngine.Tilemaps;
 // Component handling spawning new UnitObjects onto the map
 // ------------------------------------------------------------------
 
-public class UnitSpawner : NetworkBehaviour
+public class UnitObjectSpawner : MonoBehaviour
 {
     [SerializeField] GameObject _unitPrefab;
     [SerializeField] UnitType _unitType;
@@ -20,17 +20,6 @@ public class UnitSpawner : NetworkBehaviour
     void Start()
     {
         _tilemap = ProjectUtilities.FindTilemap();
-    }
-
-    // Requests the server to create a new unit of the given type at the given tile
-    public void RequestSpawnUnit(UnitType unitType,
-        HexCoordinateOffset initialHex)
-    {
-        CreateUnitRequest request = new(unitType,
-            initialHex,
-            PlayerManager.MyPlayerID);
-        //ClientRequestManager.QueueClientRequest(request,
-        //    ClientMessages.RPC_CreateUnit);
     }
 
     // Spawns a UnitObject onto the tilemap at the given hex with the given

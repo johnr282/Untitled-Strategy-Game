@@ -13,15 +13,13 @@ using UnityEngine;
 // Base interface for all game state updates
 public interface IStateUpdate : INetworkStruct { }
 
-public readonly struct TestStateUpdate : IStateUpdate { }
-
 // Sent to clients once for each player to update the PlayerManager
-public readonly struct PlayerAdded : IStateUpdate
+public readonly struct AddPlayerUpdate : IStateUpdate
 {
     public PlayerRef PlayerRef { get; }
     public PlayerID ID { get; }
 
-    public PlayerAdded(PlayerRef playerRefIn, PlayerID idIn)
+    public AddPlayerUpdate(PlayerRef playerRefIn, PlayerID idIn)
     {
         PlayerRef = playerRefIn;
         ID = idIn;
@@ -29,29 +27,33 @@ public readonly struct PlayerAdded : IStateUpdate
 }
 
 // Sent to clients when all players have joined and the game is starting
-public readonly struct GameStarted : IStateUpdate
+public readonly struct StartGameUpdate : IStateUpdate
 {
     public int MapSeed { get; }
 
-    public GameStarted(int mapSeedIn)
+    public StartGameUpdate(int mapSeedIn)
     {
         MapSeed = mapSeedIn;
     }
 }
 
 // Sent to clients when it's the next player's turn
-public readonly struct NextTurnUpdate : INetworkStruct
-{
-}
+public readonly struct NextTurnUpdate : IStateUpdate { }
 
 // Sent to clients when a new unit is created
-public readonly struct UnitCreatedUpdate : INetworkStruct
+public readonly struct CreateUnitUpdate : IStateUpdate
 {
-    public CreateUnitRequest UnitInfo { get; }
+    public UnitType Type { get; }
+    public HexCoordinateOffset Location { get; }
+    public PlayerID RequestingPlayerID { get; }
 
-    public UnitCreatedUpdate(CreateUnitRequest unitInfoIn)
+    public CreateUnitUpdate(UnitType typeIn,
+        HexCoordinateOffset locationIn,
+        PlayerID requestingPlayerIDIn)
     {
-        UnitInfo = unitInfoIn;
+        Type = typeIn;
+        Location = locationIn;
+        RequestingPlayerID = requestingPlayerIDIn;
     }
 }
 

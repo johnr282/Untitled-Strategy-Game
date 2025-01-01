@@ -9,11 +9,23 @@ using UnityEngine;
 // game map; part of the global game state
 // ------------------------------------------------------------------
 
-public static class UnitManager
+public class UnitManager : SimulationBehaviour
 {
     static Dictionary<UnitID, Unit> _units = new();
 
+    static UnitObjectSpawner _unitObjectSpawner = null;
+
     static int _nextUnitID = 0;
+
+    void Start()
+    {
+        _unitObjectSpawner = ProjectUtilities.FindUnitObjectSpawner();
+
+        StateManager.RegisterStateUpdate<CreateUnitUpdate>(ValidateCreateUnitUpdate,
+            CreateUnit,
+            StateManagerRPCs.RPC_CreateUnitServer,
+            StateManagerRPCs.RPC_CreateUnitClient);
+    }
 
     // Returns the unit corresponding to the given unit ID
     // Throws an ArgumentException if given ID has no corresponding unit
@@ -28,7 +40,7 @@ public static class UnitManager
     // Creates a new unit according to the given request and returns the unit ID
     // of the new unit
     // Throws an ArgumentException if no GameTile exists at the request location
-    public static UnitID CreateUnit(CreateUnitRequest request)
+    static void CreateUnit(CreateUnitUpdate request)
     {
         GameTile initialTile = GameMap.GetTile(request.Location);
 
@@ -38,7 +50,12 @@ public static class UnitManager
         _units.Add(newUnit.UnitID, newUnit);
         initialTile.AddUnit(newUnit);
 
-        return newUnit.UnitID;
+        Debug.Log("Created unit " + newUnit.UnitID);
+
+        UnitObject newUnitObject = _unitObjectSpawner.SpawnUnitObject(newUnit.UnitID,
+            request.RequestingPlayerID,
+            request.Location);
+        newUnit.UnitObject = newUnitObject;
     }
 
     // Moves the unit corresponding to the given unit ID to the given new tile
@@ -55,11 +72,11 @@ public static class UnitManager
     // Returns whether the given CreateUnitRequest is valid
     // Throws an ArgumentException if no GameTile exists at the requested
     // location
-    public static bool ValidateCreateUnitAction(CreateUnitRequest action)
+    static bool ValidateCreateUnitUpdate(CreateUnitUpdate update)
     {
-        GameTile initialTile = GameMap.GetTile(action.Location);
+        GameTile initialTile = GameMap.GetTile(update.Location);
 
-        if (!initialTile.Available(action.RequestingPlayerID))
+        if (!initialTile.Available(update.RequestingPlayerID))
             return false;
 
         return true;

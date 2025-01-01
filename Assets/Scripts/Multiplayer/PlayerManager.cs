@@ -9,7 +9,7 @@ using UnityEngine;
 // global game state
 // ------------------------------------------------------------------
 
-public class PlayerManager: SimulationBehaviour
+public class PlayerManager : SimulationBehaviour
 {
     // Returns the calling client's player ID; this value will be different for
     // each client
@@ -47,16 +47,16 @@ public class PlayerManager: SimulationBehaviour
 
     void Start()
     {
-        // No validation needed for PlayerAdded, always return true
-        StateManager.RegisterStateUpdate<PlayerAdded>(update => true,
+        // No validation needed for AddPlayerUpdate, always return true
+        StateManager.RegisterStateUpdate<AddPlayerUpdate>(update => true,
             AddPlayer,
-            StateManagerRPCs.RPC_PlayerAddedServer,
-            StateManagerRPCs.RPC_PlayerAddedClient);
+            StateManagerRPCs.RPC_AddPlayerServer,
+            StateManagerRPCs.RPC_AddPlayerClient);
     }
 
     // Creates a new player, and returns the PlayerID of the new player
     // Modifies game state
-    static void AddPlayer(PlayerAdded playerAdded)
+    static void AddPlayer(AddPlayerUpdate playerAdded)
     {
         PlayerID newPlayerID = playerAdded.ID;
         Debug.Log("Adding player " + newPlayerID + " to PlayerManager");
