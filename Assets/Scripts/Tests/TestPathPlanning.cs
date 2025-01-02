@@ -37,9 +37,7 @@ public class TestPathPlanning : MonoBehaviour
         if (_startSelected)
         {
             HexCoordinateOffset goal = tileSelectedEvent.Coordinate;
-            Unit dummyUnit = new(_unitType,
-                GameMap.GetTile(_start),
-                new UnitID(0));
+            Unit dummyUnit = CreateDummyUnit();
             FindPath(dummyUnit, goal);
             _startSelected = false;
         }
@@ -50,9 +48,7 @@ public class TestPathPlanning : MonoBehaviour
 
             if (_findAllPaths)
             {
-                Unit dummyUnit = new(_unitType,
-                    GameMap.GetTile(_start),
-                    new UnitID(0));
+                Unit dummyUnit = CreateDummyUnit();
                 FindAllPaths(dummyUnit);
                 _startSelected = false;
             }
@@ -95,5 +91,13 @@ public class TestPathPlanning : MonoBehaviour
         };
 
         GameMap.ExecuteOnAllTiles(findPathToTile);
+    }
+
+    Unit CreateDummyUnit()
+    {
+        return new(_unitType,
+            GameMap.GetTile(_start),
+            new UnitID(0),
+            new PlayerID(0));
     }
 }

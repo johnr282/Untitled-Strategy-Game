@@ -51,7 +51,8 @@ public class UnitManager : SimulationBehaviour
 
         Unit newUnit = new(update.Type,
             initialTile,
-            GetNextUnitID());
+            GetNextUnitID(),
+            update.RequestingPlayerID);
         _units.Add(newUnit.UnitID, newUnit);
         initialTile.AddUnit(newUnit);
 
@@ -94,12 +95,17 @@ public class UnitManager : SimulationBehaviour
     }
 
     // Returns whether the given MoveUnitRequest is valid
-    // Throws an ArgumentException if no unit exists with the given ID or no
-    // GameTile exists at the requested location
+    // Throws an ArgumentException if no unit exists with the given ID, no
+    // GameTile exists at the requested location, or the RequestingPlayerID
+    // is different from the unit's owner
     static bool ValidateMoveUnitUpdate(MoveUnitUpdate update)
     {
         GameTile requestedTile = GameMap.GetTile(update.NewLocation);
         Unit unit = GetUnit(update.UnitID);
+
+        if (unit.OwnerID.ID != update.RequestingPlayerID.ID)
+            throw new RuntimeException("Player " + update.RequestingPlayerID + 
+                " requested to move unit owned by Player " + unit.OwnerID);
 
         try
         {

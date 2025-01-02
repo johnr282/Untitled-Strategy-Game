@@ -61,16 +61,31 @@ public class GameTile
     }
 
     // Sets the owner of this tile to the given player ID
-    public void Claim(PlayerID playerID)
+    void Claim(PlayerID playerID)
     {
         OwnerID = playerID;
     }
 
+    // Sets this tile to be unclaimed
+    void Unclaim()
+    {
+        OwnerID = new(-1);
+    }
+
     // Adds the given unit to this tile
     // Throws an ArgumentException if given a unit that already exists in this tile
+    // or if this tile's owner is different from the given unit's owner
     public void AddUnit(Unit unit)
     {
+        if (_unitsOnTile.Contains(unit.UnitID))
+            throw new ArgumentException("Unit " + unit.UnitID + " already exists in this tile");
+
+        if (!Available(unit.OwnerID))
+            throw new ArgumentException("Unit's owner, " + unit.OwnerID + 
+                ", is different from tile's owner, " + OwnerID);
+
         _unitsOnTile.Add(unit.UnitID);
+        Claim(unit.OwnerID);
     }
 
     // Removes the given unit from this tile
@@ -78,7 +93,10 @@ public class GameTile
     public void RemoveUnit(Unit unit)
     {
         if (!_unitsOnTile.Remove(unit.UnitID))
-            throw new ArgumentException("Unit does not exist in this tile");
+            throw new ArgumentException("Unit " + unit.UnitID + " does not exist in this tile");
+
+        if (_unitsOnTile.Count == 0)
+            Unclaim();
     }
 
     // Returns the cost for the given unit to traverse into this tile from the
@@ -89,6 +107,9 @@ public class GameTile
     public int CostToTraverse(Unit unit, 
         GameTile startTile)
     {
+        if (!Available(unit.OwnerID))
+            return GameMap.ImpassableCost;
+
         string invalidTerrainMsg = "TileTerrain of GameTile not valid";
 
         switch (unit.Type)
