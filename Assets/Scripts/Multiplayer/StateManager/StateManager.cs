@@ -94,6 +94,7 @@ public class StateManager : NetworkBehaviour
         if (_registeredUpdates.ContainsKey(updateType))
             throw new RuntimeException(updateType + " is already registered");
 
+        Debug.Log("Registering " + updateType);
         StateUpdateRegistration newRegistration = new(validateUpdate, 
             performUpdate,
             serverUpdateRPC,
@@ -109,20 +110,20 @@ public class StateManager : NetworkBehaviour
     public static void RequestStateUpdate<TStateUpdate>(TStateUpdate updateData)
         where TStateUpdate : struct, IStateUpdate
     {
-        if (StateManagerRunner.GameMode == GameMode.Server)
-            throw new RuntimeException("RequestStateUpdate called on server");
-
         Type updateType = typeof(TStateUpdate);
+        if (StateManagerRunner.GameMode == GameMode.Server)
+            throw new RuntimeException("RequestStateUpdate for " + updateType + " called on server");
+
         StateUpdateRegistration registration = GetRegistration(updateType);
 
         // Before sending request to server, client checks if update is valid
         if (!registration.ValidateUpdate(updateData))
         {
-            Debug.Log("Requested state update of type " + updateType + 
-                " was not validated by the client");
+            Debug.Log(updateType + " request was not validated by the client");
             return;
         }
 
+        Debug.Log("Sending " + updateType + " request to server");
         registration.CallServerUpdateRPC(StateManagerRunner, updateData);
     }
 
@@ -135,13 +136,13 @@ public class StateManager : NetworkBehaviour
     public static void UpdateServerState<TStateUpdate>(TStateUpdate updateData)
         where TStateUpdate : struct, IStateUpdate
     {
-        StateUpdateRegistration registration = GetRegistration(typeof(TStateUpdate));
+        Type updateType = typeof(TStateUpdate);
+        StateUpdateRegistration registration = GetRegistration(updateType);
 
         // Validate update again on the server, don't trust client
         if (!registration.ValidateUpdate(updateData))
         {
-            Debug.Log("Requested state update of type " + typeof(TStateUpdate) +
-                " was not validated by the server");
+            Debug.Log(updateType + " request was not validated by the server");
             return;
         }
 
@@ -149,12 +150,12 @@ public class StateManager : NetworkBehaviour
         // with no local player
         if (StateManagerRunner.GameMode == GameMode.Server)
         {
-            Debug.Log("Performing state update on dedicated server");
+            Debug.Log("Performing " + updateType + " on dedicated server");
             registration.PerformUpdate(updateData);
         }
 
         // Updates state on all clients
-        Debug.Log("Sending state update to clients");
+        Debug.Log("Sending " + updateType + " to clients");
         registration.CallClientUpdateRPC(StateManagerRunner, updateData);
     }
 
@@ -163,10 +164,11 @@ public class StateManager : NetworkBehaviour
     public static void UpdateClientState<TStateUpdate>(TStateUpdate updateData)
         where TStateUpdate : struct, IStateUpdate
     {
-        StateUpdateRegistration registration = GetRegistration(typeof(TStateUpdate));
+        Type updateType = typeof(TStateUpdate);
+        StateUpdateRegistration registration = GetRegistration(updateType);
 
         // Server must've already validated update, so no need to validate again
-        Debug.Log("Performing state update on client");
+        Debug.Log("Performing " + updateType + " on client");
         registration.PerformUpdate(updateData);
     }
 
