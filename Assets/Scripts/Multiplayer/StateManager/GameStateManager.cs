@@ -26,11 +26,11 @@ public class GameStateManager : NetworkBehaviour
         _unitSpawner = GetComponent<UnitObjectSpawner>();
 
         // Game state update subscriptions
-        EventBus.Subscribe<AddPlayerUpdate> (OnAddPlayer);
+        //EventBus.Subscribe<AddPlayerUpdate> (OnAddPlayer);
         //EventBus.Subscribe<StartGameUpdate> (OnGameStarted);
-        EventBus.Subscribe<NextTurnUpdate>    (OnNextTurn);
+        //EventBus.Subscribe<EndTurnUpdate>    (OnNextTurn);
         //EventBus.Subscribe<CreateUnitUpdate> (OnUnitCreated);
-        EventBus.Subscribe<UnitMovedUpdate>   (OnUnitMoved);
+        //EventBus.Subscribe<MoveUnitUpdate>   (OnUnitMoved);
     }
 
     // Handles updating game state on the server and all clients with the given
@@ -56,18 +56,18 @@ public class GameStateManager : NetworkBehaviour
 
     // Updates PlayerManager with new player, and allows server to send each 
     // client their PlayerID
-    void OnAddPlayer(AddPlayerUpdate update)
-    {
-        //Debug.Log("Adding player to PlayerManager");
-        //PlayerID newPlayerID = PlayerManager.AddPlayerUpdate(update.PlayerRef);
+    //void OnAddPlayer(AddPlayerUpdate update)
+    //{
+    //    //Debug.Log("Adding player to PlayerManager");
+    //    //PlayerID newPlayerID = PlayerManager.AddPlayerUpdate(update.PlayerRef);
 
-        //if (Runner.IsServer)
-        //{
-        //    ServerMessages.RPC_SendPlayerID(Runner,
-        //        update.PlayerRef,
-        //        newPlayerID);
-        //}
-    }
+    //    //if (Runner.IsServer)
+    //    //{
+    //    //    ServerMessages.RPC_SendPlayerID(Runner,
+    //    //        update.PlayerRef,
+    //    //        newPlayerID);
+    //    //}
+    //}
 
     // Generates the map, initializes map visuals, and spawns a unit at this 
     // player's starting tile
@@ -96,16 +96,16 @@ public class GameStateManager : NetworkBehaviour
     //    PlayerManager.NotifyActivePlayer();
     //}
 
-    // Updates the current active player and notifies them
-    void OnNextTurn(NextTurnUpdate update)
-    {
-        PlayerManager.UpdateCurrTurnIndex();
-        if (Runner.IsPlayer)
-            PlayerManager.NotifyActivePlayer();
+    //// Updates the current active player and notifies them
+    //void OnNextTurn(EndTurnUpdate update)
+    //{
+    //    PlayerManager.UpdateCurrTurnIndex();
+    //    if (Runner.IsPlayer)
+    //        PlayerManager.NotifyActivePlayer();
 
-        Debug.Log("ActivePlayer is now " + PlayerManager.ActivePlayer);
-        Debug.Log("MyTurn: " + PlayerManager.MyTurn);
-    }
+    //    Debug.Log("ActivePlayer is now " + PlayerManager.ActivePlayer);
+    //    Debug.Log("MyTurn: " + PlayerManager.MyTurn);
+    //}
 
     // Creates a unit and its corresponding UnitObjectbased on the given update
     //void OnUnitCreated(CreateUnitUpdate update)
@@ -119,20 +119,20 @@ public class GameStateManager : NetworkBehaviour
     //    UnitManager.GetUnit(newUnitID).UnitObject = newUnitObject;
     //}
 
-    // Moves a unit and its corresponding UnitObject based on the given update
-    void OnUnitMoved(UnitMovedUpdate update)
-    {
-        Debug.Log("Moving unit " + update.UnitID.ID.ToString());
+    //// Moves a unit and its corresponding UnitObject based on the given update
+    //void OnUnitMoved(MoveUnitUpdate update)
+    //{
+    //    Debug.Log("Moving unit " + update.UnitID.ID.ToString());
 
-        // Need to move UnitObject before updating state
-        GameTile destTile = GameMap.GetTile(update.NewLocation);
-        Unit unitToMove = UnitManager.GetUnit(update.UnitID);
-        unitToMove.UnitObject.MoveTo(update.NewLocation);
+    //    // Need to move UnitObject before updating state
+    //    GameTile destTile = GameMap.GetTile(update.NewLocation);
+    //    Unit unitToMove = UnitManager.GetUnit(update.UnitID);
+    //    unitToMove.UnitObject.MoveTo(update.NewLocation);
 
-        UnitManager.MoveUnit(update.UnitID,
-            destTile);
+    //    UnitManager.MoveUnit(update.UnitID,
+    //        destTile);
 
-        if (PlayerManager.MyTurn)
-            PlayerManager.EndMyTurn();
-    }
+    //    if (PlayerManager.MyTurn)
+    //        PlayerManager.EndMyTurn();
+    //}
 }

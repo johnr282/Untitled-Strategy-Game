@@ -95,11 +95,10 @@ public class UnitObject : SelectableObject
         HexCoordinateOffset requestedHex = tileSelectedEvent.Coordinate;
         //_mapVisuals.UnHighlightCurrentPath();
 
-        MoveUnitRequest request = new(UnitID,
-            tileSelectedEvent.Coordinate,
+        MoveUnitUpdate update = new(UnitID,
+            requestedHex,
             SelectingPlayerID);
-        //ClientRequestManager.QueueClientRequest(request,
-        //    ClientMessages.RPC_MoveUnit);
+        StateManager.RequestStateUpdate(update);
     }
 
     void OnTileHovered(NewTileHoveredOverEvent tileHoveredEvent)
@@ -124,5 +123,8 @@ public class UnitObject : SelectableObject
     {
         _mapVisuals.UnHighlightCurrentPath();
         _mapVisuals.UnSelectCurrentlySelectedTile();
+
+        // For now, end turn after unit is finished moving
+        StateManager.RequestStateUpdate(new EndTurnUpdate(PlayerManager.MyPlayerID));
     }
 }

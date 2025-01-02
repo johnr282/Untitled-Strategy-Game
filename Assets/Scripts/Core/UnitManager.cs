@@ -25,6 +25,11 @@ public class UnitManager : SimulationBehaviour
             CreateUnit,
             StateManagerRPCs.RPC_CreateUnitServer,
             StateManagerRPCs.RPC_CreateUnitClient);
+        
+        StateManager.RegisterStateUpdate<MoveUnitUpdate>(ValidateMoveUnitUpdate,
+            MoveUnit,
+            StateManagerRPCs.RPC_MoveUnitServer,
+            StateManagerRPCs.RPC_MoveUnitClient);
     }
 
     // Returns the unit corresponding to the given unit ID
@@ -37,14 +42,14 @@ public class UnitManager : SimulationBehaviour
         return unit;
     }
 
-    // Creates a new unit according to the given request and returns the unit ID
+    // Creates a new unit according to the given update and returns the unit ID
     // of the new unit
-    // Throws an ArgumentException if no GameTile exists at the request location
-    static void CreateUnit(CreateUnitUpdate request)
+    // Throws an ArgumentException if no GameTile exists at the update location
+    static void CreateUnit(CreateUnitUpdate update)
     {
-        GameTile initialTile = GameMap.GetTile(request.Location);
+        GameTile initialTile = GameMap.GetTile(update.Location);
 
-        Unit newUnit = new(request.Type,
+        Unit newUnit = new(update.Type,
             initialTile,
             GetNextUnitID());
         _units.Add(newUnit.UnitID, newUnit);
@@ -53,23 +58,29 @@ public class UnitManager : SimulationBehaviour
         Debug.Log("Created unit " + newUnit.UnitID);
 
         UnitObject newUnitObject = _unitObjectSpawner.SpawnUnitObject(newUnit.UnitID,
-            request.RequestingPlayerID,
-            request.Location);
+            update.RequestingPlayerID,
+            update.Location);
         newUnit.UnitObject = newUnitObject;
     }
 
     // Moves the unit corresponding to the given unit ID to the given new tile
-    public static void MoveUnit(UnitID unitID,
-        GameTile newTile)
+    // Moves the corresponding UnitObject as well
+    static void MoveUnit(MoveUnitUpdate update)
     {
-        Unit unit = GetUnit(unitID);
-        GameTile oldTile = unit.CurrentLocation;
-        oldTile.RemoveUnit(unit);
-        newTile.AddUnit(unit);
-        unit.CurrentLocation = newTile;
+        Debug.Log("Moving unit " + update.UnitID);
+
+        // Need to move UnitObject before updating state
+        Unit unitToMove = GetUnit(update.UnitID);
+        unitToMove.UnitObject.MoveTo(update.NewLocation);
+
+        GameTile oldTile = unitToMove.CurrentLocation;
+        oldTile.RemoveUnit(unitToMove);
+        GameTile destTile = GameMap.GetTile(update.NewLocation);
+        destTile.AddUnit(unitToMove);
+        unitToMove.CurrentLocation = destTile;
     }
 
-    // Returns whether the given CreateUnitRequest is valid
+    // Returns whether the given CreateUnitUpdate is valid
     // Throws an ArgumentException if no GameTile exists at the requested
     // location
     static bool ValidateCreateUnitUpdate(CreateUnitUpdate update)
@@ -85,10 +96,10 @@ public class UnitManager : SimulationBehaviour
     // Returns whether the given MoveUnitRequest is valid
     // Throws an ArgumentException if no unit exists with the given ID or no
     // GameTile exists at the requested location
-    public static bool ValidateMoveUnitRequest(MoveUnitRequest action)
+    static bool ValidateMoveUnitUpdate(MoveUnitUpdate update)
     {
-        GameTile requestedTile = GameMap.GetTile(action.Location);
-        Unit unit = GetUnit(action.UnitID);
+        GameTile requestedTile = GameMap.GetTile(update.NewLocation);
+        Unit unit = GetUnit(update.UnitID);
 
         try
         {

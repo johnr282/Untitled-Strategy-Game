@@ -48,32 +48,15 @@ public class PlayerManager : SimulationBehaviour
     void Start()
     {
         // No validation needed for AddPlayerUpdate, always return true
-        StateManager.RegisterStateUpdate<AddPlayerUpdate>(update => true,
+        StateManager.RegisterStateUpdate<AddPlayerUpdate>((update) => true,
             AddPlayer,
             StateManagerRPCs.RPC_AddPlayerServer,
             StateManagerRPCs.RPC_AddPlayerClient);
-    }
 
-    // Creates a new player, and returns the PlayerID of the new player
-    // Modifies game state
-    static void AddPlayer(AddPlayerUpdate playerAdded)
-    {
-        PlayerID newPlayerID = playerAdded.ID;
-        Debug.Log("Adding player " + newPlayerID + " to PlayerManager");
-        _players.Add(new Player(playerAdded.PlayerRef, newPlayerID));
-        _turnOrder.Add(newPlayerID);
-    }
-
-    // Called by server to send each client their PlayerID
-    // Different Player ID is sent to each client, so can't use StateManager
-    // for this
-    [Rpc]
-    public static void RPC_SendPlayerID(NetworkRunner runner,
-        [RpcTarget] PlayerRef player,
-        PlayerID id)
-    {
-        Debug.Log("My player ID is " + id);
-        MyPlayerID = id;
+        StateManager.RegisterStateUpdate<EndTurnUpdate>(ValidateEndTurnUpdate,
+            EndActivePlayerTurn,
+            StateManagerRPCs.RPC_EndTurnServer,
+            StateManagerRPCs.RPC_EndTurnClient);
     }
 
     // Returns the Player corresponding to the given playerID
@@ -93,11 +76,38 @@ public class PlayerManager : SimulationBehaviour
             EventBus.Publish(new MyTurnEvent());
     }
 
-    // Requests the server to end this player's turn
-    public static void EndMyTurn()
+    // Called by server to send each client their PlayerID
+    // Different Player ID is sent to each client, so can't use StateManager
+    // for this
+    [Rpc]
+    public static void RPC_SendPlayerID(NetworkRunner runner,
+        [RpcTarget] PlayerRef player,
+        PlayerID id)
     {
-        //ClientRequestManager.QueueClientRequest(new EndTurnRequest(MyPlayerID),
-        //    ClientMessages.RPC_EndTurn);
+        Debug.Log("My player ID is " + id);
+        MyPlayerID = id;
+    }
+
+    // Creates a new player, and returns the PlayerID of the new player
+    // Modifies game state
+    static void AddPlayer(AddPlayerUpdate playerAdded)
+    {
+        PlayerID newPlayerID = playerAdded.ID;
+        Debug.Log("Adding player " + newPlayerID + " to PlayerManager");
+        _players.Add(new Player(playerAdded.PlayerRef, newPlayerID));
+        _turnOrder.Add(newPlayerID);
+    }
+
+    // Ends the current active player's turn
+    static void EndActivePlayerTurn(EndTurnUpdate update)
+    {
+        EventBus.Publish(update);
+        UpdateCurrTurnIndex();
+        NotifyActivePlayer();
+
+        Debug.Log("Player " + update.EndingPlayerID + " has ended their turn, " +
+            "ActivePlayer is now " + ActivePlayer);
+        Debug.Log("My Player ID: " + MyPlayerID + ", MyTurn: " + MyTurn);
     }
 
     // Updates the ActivePlayer by incrementing _currTurnIndex or wrapping it
@@ -111,10 +121,9 @@ public class PlayerManager : SimulationBehaviour
             _currTurnIndex++;
     }
 
-    // Returns whether the given EndTurnRequest is valid
-    [RequestValidator(typeof(EndTurnRequest))]
-    public static bool ValidateEndTurnAction(EndTurnRequest action)
+    // Returns whether the given EndTurnUpdate is valid
+    static bool ValidateEndTurnUpdate(EndTurnUpdate update)
     {
-        return action.EndingPlayerID.ID == ActivePlayer.ID;
+        return update.EndingPlayerID.ID == ActivePlayer.ID;
     }
 }

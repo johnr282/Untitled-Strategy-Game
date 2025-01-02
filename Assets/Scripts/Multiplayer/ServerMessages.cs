@@ -35,7 +35,7 @@ public class ServerMessages : NetworkBehaviour
 
     [Rpc]
     public static void RPC_NextTurn(NetworkRunner runner,
-        NextTurnUpdate nextTurn)
+        EndTurnUpdate nextTurn)
     {
         EventBus.Publish(nextTurn);
     }
@@ -49,7 +49,7 @@ public class ServerMessages : NetworkBehaviour
 
     [Rpc]
     public static void RPC_UnitMoved(NetworkRunner runner,
-        UnitMovedUpdate unitMoved)
+        MoveUnitUpdate unitMoved)
     {
         EventBus.Publish(unitMoved);
     }

@@ -42,6 +42,22 @@ public class StateManagerRPCs: NetworkBehaviour
         StateManager.UpdateClientState(updateData);
     }
 
+    // EndTurnUpdate RPCs
+    [Rpc]
+    public static void RPC_EndTurnServer(NetworkRunner runner,
+        [RpcTarget] PlayerRef player,
+        EndTurnUpdate updateData)
+    {
+        StateManager.UpdateServerState(updateData);
+    }
+
+    [Rpc]
+    public static void RPC_EndTurnClient(NetworkRunner runner,
+        EndTurnUpdate updateData)
+    {
+        StateManager.UpdateClientState(updateData);
+    }
+
     // CreateUnitUpdate RPCs
     [Rpc]
     public static void RPC_CreateUnitServer(NetworkRunner runner,
@@ -54,6 +70,22 @@ public class StateManagerRPCs: NetworkBehaviour
     [Rpc]
     public static void RPC_CreateUnitClient(NetworkRunner runner,
         CreateUnitUpdate updateData)
+    {
+        StateManager.UpdateClientState(updateData);
+    }
+
+    // MoveUnitUpdate RPCs
+    [Rpc]
+    public static void RPC_MoveUnitServer(NetworkRunner runner,
+        [RpcTarget] PlayerRef player,
+        MoveUnitUpdate updateData)
+    {
+        StateManager.UpdateServerState(updateData);
+    }
+
+    [Rpc]
+    public static void RPC_MoveUnitClient(NetworkRunner runner,
+        MoveUnitUpdate updateData)
     {
         StateManager.UpdateClientState(updateData);
     }

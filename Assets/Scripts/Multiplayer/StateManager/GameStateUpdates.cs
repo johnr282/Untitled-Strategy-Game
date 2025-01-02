@@ -37,8 +37,17 @@ public readonly struct StartGameUpdate : IStateUpdate
     }
 }
 
-// Sent to clients when it's the next player's turn
-public readonly struct NextTurnUpdate : IStateUpdate { }
+// Sent to clients when a player ends their turn
+public readonly struct EndTurnUpdate : IStateUpdate 
+{ 
+    public PlayerID EndingPlayerID { get; }
+
+    public EndTurnUpdate(PlayerID endingPlayerIDIn)
+    {
+        EndingPlayerID = endingPlayerIDIn;
+    }
+}
+
 
 // Sent to clients when a new unit is created
 public readonly struct CreateUnitUpdate : IStateUpdate
@@ -58,15 +67,18 @@ public readonly struct CreateUnitUpdate : IStateUpdate
 }
 
 // Sent to clients when a unit is moved
-public readonly struct UnitMovedUpdate : INetworkStruct
+public readonly struct MoveUnitUpdate : IStateUpdate
 {
     public UnitID UnitID { get; }
     public HexCoordinateOffset NewLocation { get; }
+    public PlayerID RequestingPlayerID { get; }
 
-    public UnitMovedUpdate(UnitID unitIDIn,
-        HexCoordinateOffset newLocationIn)
+    public MoveUnitUpdate(UnitID unitIDIn,
+        HexCoordinateOffset newLocationIn,
+        PlayerID requestingPlayerIDIn)
     {
         UnitID = unitIDIn;
         NewLocation = newLocationIn;
+        RequestingPlayerID = requestingPlayerIDIn;
     }
 }

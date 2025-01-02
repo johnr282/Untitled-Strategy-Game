@@ -23,7 +23,7 @@ public class DisplayGameInfo : MonoBehaviour
 {
     TextMeshProUGUI _gameInfoDisplay;
 
-    Subscription<NextTurnUpdate> _nextTurnSub;
+    Subscription<EndTurnUpdate> _nextTurnSub;
 
     void Start()
     {
@@ -49,10 +49,10 @@ public class DisplayGameInfo : MonoBehaviour
     void OnMyTurn(MyTurnEvent myTurn)
     {
         SetTurnInfoText("It's your turn, select and move your unit!");
-        _nextTurnSub = EventBus.Subscribe<NextTurnUpdate>(OnNextTurn);
+        _nextTurnSub = EventBus.Subscribe<EndTurnUpdate>(OnNextTurn);
     }
 
-    void OnNextTurn(NextTurnUpdate update)
+    void OnNextTurn(EndTurnUpdate update)
     {
         SetTurnInfoText("Waiting for other players...");
         EventBus.Unsubscribe(_nextTurnSub);
