@@ -40,11 +40,17 @@ public enum UnitType
 
 public class Unit
 {
-    public int Strength { get; }
-    public int Capacity { get; }
+    public int OffensiveStrength { get; }
+    public int DefensiveStrength { get; }
+    public int Size { get; }
+    public int MovementActionPoints { get; }
+    public int CombatActionPoints { get; }
+    public int MovementActionPointsRemaining { get; set; }
+    public int CombatActionPointsRemaining { get; set; }
     public UnitType Type { get; }
     public UnitID UnitID { get; }
     public GameTile CurrentLocation { get; set; }
+    public PlayerID OwnerID { get; set; }
     public List<Terrain> TraversableTerrains { get; } = new();
 
     // UnitObject will only be set on the server, clients should not access it
@@ -52,12 +58,12 @@ public class Unit
 
     public Unit(UnitType typeIn, 
         GameTile currentLocationIn,
-        UnitID unitIDIn)
+        UnitID unitIDIn,
+        PlayerID ownerIDIn)
     {
         UnitID = unitIDIn;
-        Strength = -1;
-        Capacity = -1;
         Type = typeIn;
         CurrentLocation = currentLocationIn;
+        OwnerID = ownerIDIn;
     }
 }
