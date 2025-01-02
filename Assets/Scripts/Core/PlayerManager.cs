@@ -113,7 +113,7 @@ public class PlayerManager : SimulationBehaviour
     // Updates the ActivePlayer by incrementing _currTurnIndex or wrapping it
     // back around to 0
     // Modifies game state
-    public static void UpdateCurrTurnIndex()
+    static void UpdateCurrTurnIndex()
     {
         if (_currTurnIndex >= (_turnOrder.Count - 1))
             _currTurnIndex = 0;

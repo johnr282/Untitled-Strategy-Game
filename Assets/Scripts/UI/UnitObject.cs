@@ -121,10 +121,8 @@ public class UnitObject : SelectableObject
 
     void OnPathComplete()
     {
+        Debug.Log("Unit " + UnitID + " motion complete");
         _mapVisuals.UnHighlightCurrentPath();
         _mapVisuals.UnSelectCurrentlySelectedTile();
-
-        // For now, end turn after unit is finished moving
-        StateManager.RequestStateUpdate(new EndTurnUpdate(PlayerManager.MyPlayerID));
     }
 }
