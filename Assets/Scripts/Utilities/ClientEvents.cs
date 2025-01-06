@@ -8,7 +8,7 @@ using UnityEngine;
 // ------------------------------------------------------------------   
 
 // Published when a new tile is hovered over
-public class NewTileHoveredOverEvent
+public readonly struct NewTileHoveredOverEvent
 {
     public HexCoordinateOffset Coordinate { get; }
 
@@ -19,7 +19,7 @@ public class NewTileHoveredOverEvent
 }
 
 // Published when a tile is selected
-public class TileSelectedEvent
+public readonly struct TileSelectedEvent
 {
     public HexCoordinateOffset Coordinate { get; }
 
@@ -30,4 +30,33 @@ public class TileSelectedEvent
 }
 
 // Published when it's this client's turn
-public class MyTurnEvent { }
+public readonly struct MyTurnEvent { }
+
+// Published when the territory selection phase starts
+public readonly struct TerritorySelectionPhaseStartedEvent 
+{ 
+    public int InfantryBudget { get; }
+
+    public TerritorySelectionPhaseStartedEvent(int infantryBudgetIn)
+    {
+        InfantryBudget = infantryBudgetIn;
+    }
+}
+
+public readonly struct NewTerritorySelectionInfantryPlacedEvent
+{
+    public PlayerID PlayerID { get; }
+    public HexCoordinateOffset InfantryCoordinate { get; }
+    public int NewRemainingInfantryBudget { get; }
+
+    public NewTerritorySelectionInfantryPlacedEvent(PlayerID playerIDIn, 
+        HexCoordinateOffset infantryCoordinateIn,
+        int newRemainingInfantryBudgetIn)
+    {
+        PlayerID = playerIDIn;
+        InfantryCoordinate = infantryCoordinateIn;
+        NewRemainingInfantryBudget = newRemainingInfantryBudgetIn;
+    }
+}
+
+public readonly struct TerritorySelectionPhaseEndedEvent { }

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // ------------------------------------------------------------------
-// Static class managing the status and movements of units within the
+// Component managing the status and movements of units within the
 // game map; part of the global game state
 // ------------------------------------------------------------------
 

@@ -10,9 +10,9 @@ using UnityEngine.Tilemaps;
 public static class ProjectUtilities
 {
     public const string MapObjectName = "Map";
-    public const string GameStateManagerObjectName = "GameStateManager";
     public const string MapGenerationParametersObjectName = "MapGenerationParameters";
     public const string UnitObjectSpawnerObjectName = "UnitObjectSpawner";
+    public const string GameParametersObjectName = "GameParameters";
 
     // Finds and returns component of given type on GameObject of given name 
     // Throws RuntimeException if GameObject or component cannot be found
@@ -48,5 +48,10 @@ public static class ProjectUtilities
     public static UnitObjectSpawner FindUnitObjectSpawner()
     {
         return FindComponent<UnitObjectSpawner>(UnitObjectSpawnerObjectName);
+    }
+
+    public static GameParameters FindGameParameters()
+    {
+        return FindComponent<GameParameters>(GameParametersObjectName);
     }
 }

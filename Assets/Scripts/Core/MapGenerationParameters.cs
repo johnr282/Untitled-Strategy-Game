@@ -8,6 +8,11 @@ using UnityEngine;
 
 public class MapGenerationParameters : MonoBehaviour
 {
+    // Note for future me: Using both properties and serialized fields
+    // because the Unity editor doesn't serialize properties
+    // This way, I can use properties to control access to the fields
+    // and use serialized fields to make them visible in the editor
+
     [SerializeField] int _seed;
     public int Seed 
     { 

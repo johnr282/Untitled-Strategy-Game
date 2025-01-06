@@ -499,12 +499,12 @@ public class MapGenerator
     // Returns a list of currentRadius unique starting tiles; each tile is guaranteed to be
     // on land and on a different continent
     // Throws an ArgumentException if currentRadius is greater than the number of continents
-    public List<GameTile> GenerateStartingTiles(int n)
+    public GameTile[] GenerateStartingTiles(int n)
     {
         if (n > GameMap.NumContinents)
             throw new ArgumentException("n cannot be greater than NumContinents");
 
-        List<GameTile> startingTiles = new();
+        GameTile[] startingTiles = new GameTile[n];
         List<int> availableContinents = GameMap.ContinentIDList();
 
         for (int i = 0; i < n; i++)
@@ -518,7 +518,7 @@ public class MapGenerator
 
             GameTile startingTile = 
                 UnityUtilities.RandomElement(continent.ContinentTiles);
-            startingTiles.Add(startingTile);
+            startingTiles[i] = startingTile;
         }
 
         return startingTiles;

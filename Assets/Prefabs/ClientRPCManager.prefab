@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7844761254013051757}
   - component: {fileID: 6808641724832082203}
   m_Layer: 0
-  m_Name: NetworkInputManager
+  m_Name: ClientRPCManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

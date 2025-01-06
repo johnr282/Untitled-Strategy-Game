@@ -113,34 +113,19 @@ public class SessionManager : SimulationBehaviour, INetworkRunnerCallbacks
         StateManager.RequestStateUpdate(gameStarted);
     }
 
-    // Generates the map, initializes map visuals, and spawns a unit at this 
-    // player's starting tile
+    // Starts the territory selection phase
     void OnGameStarted(StartGameUpdate update)
     {
-        EventBus.Publish(update);
-        Debug.Log("Game starting, generating map and spawning starting unit");
+        // Set the seed from StartGameUpdate if needed
         MapGenerationParameters parameters =
             ProjectUtilities.FindMapGenerationParameters();
-
         if (parameters.RandomlyGenerateSeed)
             parameters.Seed = update.MapSeed;
 
-        MapGenerator mapGenerator = new(parameters);
-        mapGenerator.GenerateMap();
-
-        MapVisuals mapVisuals = ProjectUtilities.FindMapVisuals();
-        mapVisuals.GenerateVisuals(parameters.MapHeight,
-            parameters.MapWidth);
-
-        List<GameTile> startingTiles =
-            mapGenerator.GenerateStartingTiles(PlayerManager.NumPlayers);
-        GameTile startingTile = startingTiles[PlayerManager.MyPlayerID.ID];
-        UnitType startingUnitType = UnitType.land;
-        StateManager.RequestStateUpdate(new CreateUnitUpdate(startingUnitType,
-            startingTile.Hex,
-            PlayerManager.MyPlayerID));
-
-        PlayerManager.NotifyActivePlayer();
+        EventBus.Publish(update);
+        Debug.Log("Game starting, starting territory selection phase");
+        GameObject territorySelectionManager = new("TerritorySelectionManager");
+        territorySelectionManager.AddComponent<TerritorySelectionManager>();
     }
 
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) 
