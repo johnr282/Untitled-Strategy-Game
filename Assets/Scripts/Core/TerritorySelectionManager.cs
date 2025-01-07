@@ -5,8 +5,7 @@ using Fusion;
 
 // ------------------------------------------------------------------
 // Component managing the map initialization and territory selection phase
-// of the game; it is created by the SessionManager when the phase starts
-// and destroyed by itself when it ends
+// of the game; it destroys itself when territory selection ends
 // ------------------------------------------------------------------
 
 public class TerritorySelectionManager : SimulationBehaviour
@@ -16,16 +15,29 @@ public class TerritorySelectionManager : SimulationBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        GameTile thisPlayerStartTile = InitializeMap();
-        InitializeTerritorySelectionPhase(thisPlayerStartTile);   
+        StateManager.RegisterStateUpdate<StartGameUpdate>(gameStarted => true,
+            OnGameStarted,
+            StateManagerRPCs.RPC_StartGameServer,
+            StateManagerRPCs.RPC_StartGameClient);  
+    }
+
+    void OnGameStarted(StartGameUpdate startGameUpdate)
+    {
+        EventBus.Publish(startGameUpdate);
+        GameTile thisPlayerStartTile = InitializeMap(startGameUpdate.MapSeed);
+        InitializeTerritorySelectionPhase(thisPlayerStartTile);
     }
 
     // Generates the map and map visuals, returns this player's starting tile
-    GameTile InitializeMap()
+    GameTile InitializeMap(int mapSeed)
     {
         Debug.Log("Initializaing map");
+
         MapGenerationParameters parameters = 
             ProjectUtilities.FindMapGenerationParameters();
+        if (parameters.RandomlyGenerateSeed)
+            parameters.Seed = mapSeed;
+
         MapGenerator mapGenerator = new(parameters);
         mapGenerator.GenerateMap();
 

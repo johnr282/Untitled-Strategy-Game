@@ -22,14 +22,6 @@ public class SessionManager : SimulationBehaviour, INetworkRunnerCallbacks
     // update the PlayerManager
     List<PlayerRef> _joinedPlayers = new();
 
-    void Start()
-    {
-        StateManager.RegisterStateUpdate<StartGameUpdate>(gameStarted => true,
-            OnGameStarted,
-            StateManagerRPCs.RPC_StartGameServer,
-            StateManagerRPCs.RPC_StartGameClient);
-    }
-
     // Creates buttons to choose whether to host or join
     void OnGUI()
     {
@@ -104,28 +96,12 @@ public class SessionManager : SimulationBehaviour, INetworkRunnerCallbacks
         {
             PlayerID id = new(playerID);
             playerID++;
-            AddPlayerUpdate addPlayer = new(joinedPlayer, id);
-            StateManager.RequestStateUpdate(addPlayer);
+            StateManager.RequestStateUpdate(new AddPlayerUpdate(joinedPlayer, id));
             PlayerManager.RPC_SendPlayerID(_networkRunner, joinedPlayer, id);
         }
 
         StartGameUpdate gameStarted = new(MapGenerator.GenerateRandomSeed());
         StateManager.RequestStateUpdate(gameStarted);
-    }
-
-    // Starts the territory selection phase
-    void OnGameStarted(StartGameUpdate update)
-    {
-        // Set the seed from StartGameUpdate if needed
-        MapGenerationParameters parameters =
-            ProjectUtilities.FindMapGenerationParameters();
-        if (parameters.RandomlyGenerateSeed)
-            parameters.Seed = update.MapSeed;
-
-        EventBus.Publish(update);
-        Debug.Log("Game starting, starting territory selection phase");
-        GameObject territorySelectionManager = new("TerritorySelectionManager");
-        territorySelectionManager.AddComponent<TerritorySelectionManager>();
     }
 
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) 
