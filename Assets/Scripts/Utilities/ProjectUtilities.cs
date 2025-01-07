@@ -1,3 +1,4 @@
+using Fusion;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,6 +14,7 @@ public static class ProjectUtilities
     public const string MapGenerationParametersObjectName = "MapGenerationParameters";
     public const string UnitObjectSpawnerObjectName = "UnitObjectSpawner";
     public const string GameParametersObjectName = "GameParameters";
+    public const string NetworkedManagersObjectName = "NetworkedManagers";
 
     // Finds and returns component of given type on GameObject of given name 
     // Throws RuntimeException if GameObject or component cannot be found
@@ -53,5 +55,10 @@ public static class ProjectUtilities
     public static GameParameters FindGameParameters()
     {
         return FindComponent<GameParameters>(GameParametersObjectName);
+    }
+
+    public static NetworkObject FindManagersNetworkObject()
+    {
+        return FindComponent<NetworkObject>(NetworkedManagersObjectName);
     }
 }

@@ -65,7 +65,7 @@ public class TerritorySelectionManager : SimulationBehaviour
             thisPlayerStartTile.Hex,
             PlayerManager.MyPlayerID));
 
-        Debug.Log("Finished initializing Territory Selection Phase, notifying active player");
+        Debug.Log("Finished initializing Territory Selection Phase");
         EventBus.Publish(new TerritorySelectionPhaseStartedEvent(startingInfantryBudget));
         PlayerManager.NotifyActivePlayer();
     }

@@ -8,5 +8,5 @@ using UnityEngine;
 
 public class GameParameters : MonoBehaviour
 {
-    
+
 }
