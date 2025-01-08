@@ -8,16 +8,6 @@ using UnityEngine.Tilemaps;
 // Component that displays game info to the player
 // ------------------------------------------------------------------
 
-public struct DisplayGameInfoEvent
-{
-    public string InfoToDisplay { get; }
-
-    public DisplayGameInfoEvent(string infoToDisplay)
-    {
-        InfoToDisplay = infoToDisplay;
-    }
-}
-
 [RequireComponent(typeof(TextMeshProUGUI))]
 public class DisplayGameInfo : MonoBehaviour
 {
@@ -30,14 +20,8 @@ public class DisplayGameInfo : MonoBehaviour
         _gameInfoDisplay = GetComponent<TextMeshProUGUI>();
         _gameInfoDisplay.text = "Waiting to host or join a session...";
 
-        EventBus.Subscribe<DisplayGameInfoEvent>(Display);
         EventBus.Subscribe<MyTurnEvent>(OnMyTurn);
         EventBus.Subscribe<StartGameUpdate>(OnGameStarted);
-    }
-
-    void Display(DisplayGameInfoEvent displayGameInfoEvent)
-    {
-        SetTurnInfoText(displayGameInfoEvent.InfoToDisplay);
     }
 
     void OnGameStarted(StartGameUpdate update)
@@ -48,7 +32,14 @@ public class DisplayGameInfo : MonoBehaviour
 
     void OnMyTurn(MyTurnEvent myTurn)
     {
-        SetTurnInfoText("It's your turn, select and move your unit! Press Space to end your turn!");
+        string onMyTurnMessage = "";
+        if (GamePhaseManager.CurrentPhase == GamePhase.TerritorySelection)
+        {
+            onMyTurnMessage = "It's your turn; place 1 unit on an unclaimed tile adjacent to at " +
+                "least one of your current tiles, or reinforce an already claimed tile";
+        }
+
+        SetTurnInfoText(onMyTurnMessage);
         _nextTurnSub = EventBus.Subscribe<EndTurnUpdate>(OnNextTurn);
     }
 
