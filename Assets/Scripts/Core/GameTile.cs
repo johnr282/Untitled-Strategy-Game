@@ -104,6 +104,12 @@ public class GameTile
             Unclaim();
     }
 
+    // Returns the number of units on this tile
+    public int GetNumUnits() 
+    { 
+        return _unitsOnTile.Count;
+    }
+
     // Returns the cost for the given unit to traverse into this tile from the
     // given start tile
     // Assumes the start tile is adjacent to this tile

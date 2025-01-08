@@ -12,7 +12,7 @@ using UnityEngine.Tilemaps;
 public class UnitObjectSpawner : MonoBehaviour
 {
     [SerializeField] GameObject _unitPrefab;
-    [SerializeField] UnitType _unitType;
+    [SerializeField] float _unitStackYDistance; // Y distance between units when they are stacked
 
     Tilemap _tilemap;
 
@@ -34,9 +34,10 @@ public class UnitObjectSpawner : MonoBehaviour
                 "Failed to get SpawnableObject component from unit prefab");
 
         Vector3Int tilemapLocation = hex.ConvertToVector3Int();
-
+        float stackYOffset = GameMap.GetTile(hex).GetNumUnits() * _unitStackYDistance;
         Vector3 spawnLocation = _tilemap.CellToWorld(tilemapLocation) + 
-            spawnable.YOffset;
+            spawnable.YOffset + Vector3.up * stackYOffset;
+
         GameObject newUnitGameObject = Instantiate(_unitPrefab,
             spawnLocation,
             Quaternion.identity);

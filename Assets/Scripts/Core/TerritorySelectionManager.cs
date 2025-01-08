@@ -11,6 +11,7 @@ using Fusion;
 public class TerritorySelectionManager : SimulationBehaviour
 {
     int[] _remainingUnitBudgets = null;
+    [SerializeField] int _startingUnitBudget; 
 
     // Start is called before the first frame update
     void Start()
@@ -83,7 +84,7 @@ public class TerritorySelectionManager : SimulationBehaviour
     int CalculateStartingUnitBudget()
     {
         // TODO
-        return 4;
+        return _startingUnitBudget;
     }
 
     void OnTileSelected(TileSelectedEvent e)

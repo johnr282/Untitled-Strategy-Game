@@ -54,14 +54,14 @@ public class UnitManager : SimulationBehaviour
             GetNextUnitID(),
             update.RequestingPlayerID);
         _units.Add(newUnit.UnitID, newUnit);
-        initialTile.AddUnit(newUnit);
-
+        
         Debug.Log("Created unit " + newUnit.UnitID);
 
         UnitObject newUnitObject = _unitObjectSpawner.SpawnUnitObject(newUnit.UnitID,
             update.RequestingPlayerID,
             update.Location);
         newUnit.UnitObject = newUnitObject;
+        initialTile.AddUnit(newUnit); // This needs to be after spawning unit object for stacking
     }
 
     // Moves the unit corresponding to the given unit ID to the given new tile
