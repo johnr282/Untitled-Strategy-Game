@@ -51,7 +51,12 @@ public class GameTile
     public bool Available(PlayerID playerID)
     {
         return !Claimed() ||
-            (OwnerID.ID == playerID.ID);
+            IsOwnedBy(playerID);
+    }
+
+    public bool IsOwnedBy(PlayerID playerID)
+    {
+        return OwnerID.ID == playerID.ID;
     }
 
     // Returns whether this tile has been claimed by a player

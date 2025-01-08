@@ -19,7 +19,7 @@ public class TerritorySelectionInfantryBudgetDisplay : MonoBehaviour
         gameObject.SetActive(false); // Off by default
 
         EventBus.Subscribe<TerritorySelectionPhaseStartedEvent>(OnTerritorySelectionPhaseStarted);
-        EventBus.Subscribe<NewTerritorySelectionInfantryPlacedEvent>(OnNewTerritorySelectionInfantryPlaced);
+        EventBus.Subscribe<TerritorySelectionUnitPlacedEvent>(OnNewTerritorySelectionInfantryPlaced);
         EventBus.Subscribe<TerritorySelectionPhaseEndedEvent>(OnTerritorySelectionPhaseEnded);
     }
 
@@ -29,7 +29,7 @@ public class TerritorySelectionInfantryBudgetDisplay : MonoBehaviour
         gameObject.SetActive(true);
     }
 
-    void OnNewTerritorySelectionInfantryPlaced(NewTerritorySelectionInfantryPlacedEvent e)
+    void OnNewTerritorySelectionInfantryPlaced(TerritorySelectionUnitPlacedEvent e)
     {
         SetRemainingInfantry(e.NewRemainingInfantryBudget);
     }

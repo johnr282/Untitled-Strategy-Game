@@ -43,18 +43,12 @@ public readonly struct TerritorySelectionPhaseStartedEvent
     }
 }
 
-public readonly struct NewTerritorySelectionInfantryPlacedEvent
+public readonly struct TerritorySelectionUnitPlacedEvent
 {
-    public PlayerID PlayerID { get; }
-    public HexCoordinateOffset InfantryCoordinate { get; }
     public int NewRemainingInfantryBudget { get; }
 
-    public NewTerritorySelectionInfantryPlacedEvent(PlayerID playerIDIn, 
-        HexCoordinateOffset infantryCoordinateIn,
-        int newRemainingInfantryBudgetIn)
+    public TerritorySelectionUnitPlacedEvent(int newRemainingInfantryBudgetIn)
     {
-        PlayerID = playerIDIn;
-        InfantryCoordinate = infantryCoordinateIn;
         NewRemainingInfantryBudget = newRemainingInfantryBudgetIn;
     }
 }

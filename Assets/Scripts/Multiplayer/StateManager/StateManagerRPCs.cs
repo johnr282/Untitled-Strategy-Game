@@ -89,4 +89,20 @@ public class StateManagerRPCs: NetworkBehaviour
     {
         StateManager.UpdateClientState(updateData);
     }
+
+    // PlaceTerritorySelectionUnitUpdate RPCs
+    [Rpc]
+    public static void RPC_PlaceTerritorySelectionUnitServer(NetworkRunner runner,
+        [RpcTarget] PlayerRef player,
+        PlaceTerritorySelectionUnitUpdate updateData)
+    {
+        StateManager.UpdateServerState(updateData);
+    }
+
+    [Rpc]
+    public static void RPC_PlaceTerritorySelectionUnitClient(NetworkRunner runner,
+        PlaceTerritorySelectionUnitUpdate updateData)
+    {
+        StateManager.UpdateClientState(updateData);
+    }
 }

@@ -10,7 +10,7 @@ using Fusion;
 
 public class TerritorySelectionManager : SimulationBehaviour
 {
-    int[] _remainingInfantryBudgets = new int[PlayerManager.NumPlayers];
+    int[] _remainingUnitBudgets = null;
 
     // Start is called before the first frame update
     void Start()
@@ -18,7 +18,12 @@ public class TerritorySelectionManager : SimulationBehaviour
         StateManager.RegisterStateUpdate<StartGameUpdate>(gameStarted => true,
             OnGameStarted,
             StateManagerRPCs.RPC_StartGameServer,
-            StateManagerRPCs.RPC_StartGameClient);  
+            StateManagerRPCs.RPC_StartGameClient);
+
+        StateManager.RegisterStateUpdate<PlaceTerritorySelectionUnitUpdate>(ValidatePlaceTerritorySelectionUnitUpdate,
+            PlaceTerritorySelectionUnit,
+            StateManagerRPCs.RPC_PlaceTerritorySelectionUnitServer,
+            StateManagerRPCs.RPC_PlaceTerritorySelectionUnitClient);
     }
 
     void OnGameStarted(StartGameUpdate startGameUpdate)
@@ -53,10 +58,12 @@ public class TerritorySelectionManager : SimulationBehaviour
     void InitializeTerritorySelectionPhase(GameTile thisPlayerStartTile)
     {
         Debug.Log("Initializaing territory selection phase");
-        int startingInfantryBudget = CalculateStartingInfantryBudget();
-        for (int i = 0; i < _remainingInfantryBudgets.Length; i++)
+
+        int startingUnitBudget = CalculateStartingUnitBudget();
+        _remainingUnitBudgets = new int[PlayerManager.NumPlayers];
+        for (int i = 0; i < _remainingUnitBudgets.Length; i++)
         {
-            _remainingInfantryBudgets[i] = startingInfantryBudget;
+            _remainingUnitBudgets[i] = startingUnitBudget;
         }
 
         // Spawn first unit for this player at their start tile
@@ -66,15 +73,73 @@ public class TerritorySelectionManager : SimulationBehaviour
             PlayerManager.MyPlayerID));
 
         Debug.Log("Finished initializing Territory Selection Phase");
-        EventBus.Publish(new TerritorySelectionPhaseStartedEvent(startingInfantryBudget));
+        EventBus.Publish(new TerritorySelectionPhaseStartedEvent(startingUnitBudget));
+        EventBus.Subscribe<TileSelectedEvent>(OnTileSelected);
         PlayerManager.NotifyActivePlayer();
     }
 
-    // Calculates the starting infantry budget based on the number of players
-    // and map size
-    int CalculateStartingInfantryBudget()
+    // Calculates the starting unit budget based on the number of players
+    // and map size, not counting the player's start unit
+    int CalculateStartingUnitBudget()
     {
         // TODO
-        return 5;
+        return 4;
+    }
+
+    void OnTileSelected(TileSelectedEvent e)
+    {
+        if (!PlayerManager.MyTurn)
+            return;
+
+        StateManager.RequestStateUpdate(new PlaceTerritorySelectionUnitUpdate(
+            e.Coordinate,
+            PlayerManager.MyPlayerID));
+    }
+
+    void PlaceTerritorySelectionUnit(PlaceTerritorySelectionUnitUpdate update)
+    {
+        Debug.Log("Player " + update.RequestingPlayerID + 
+            " claimed or reinforced tile " + update.Location);
+
+        bool ok = StateManager.RequestStateUpdate(new CreateUnitUpdate(UnitType.land,
+            update.Location,
+            update.RequestingPlayerID), 
+            true);
+        if (!ok)
+        {
+            Debug.Log("Player " + update.RequestingPlayerID + 
+                " failed to place territory selection unit on tile " + update.Location);
+            return;
+        }
+
+        _remainingUnitBudgets[update.RequestingPlayerID.ID]--;
+        int remainingBudget = _remainingUnitBudgets[update.RequestingPlayerID.ID];
+
+        if (PlayerManager.MyPlayerID.ID == update.RequestingPlayerID.ID)
+            EventBus.Publish(new TerritorySelectionUnitPlacedEvent(remainingBudget));
+    }
+
+    bool ValidatePlaceTerritorySelectionUnitUpdate(PlaceTerritorySelectionUnitUpdate update)
+    {
+        if (!PlayerManager.ThisPlayersTurn(update.RequestingPlayerID))
+            return false;
+
+        // The player must have a remaning unit budget
+        if (_remainingUnitBudgets[update.RequestingPlayerID.ID] <= 0)
+            return false;
+
+        GameTile selectedTile = GameMap.GetTile(update.Location);
+        if (!selectedTile.Available(update.RequestingPlayerID))
+            return false;
+
+        // Selected territories must be adjacent to at least one already owned territory
+        List<GameTile> neighbors = GameMap.Neighbors(selectedTile);
+        foreach (GameTile neighbor in neighbors)
+        {
+            if (neighbor.IsOwnedBy(update.RequestingPlayerID))
+                return true;
+        }
+
+        return false;
     }
 }

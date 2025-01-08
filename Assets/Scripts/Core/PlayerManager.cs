@@ -33,7 +33,7 @@ public class PlayerManager : SimulationBehaviour
     public static PlayerID ActivePlayer { get => _turnOrder[_currTurnIndex]; }
 
     // Returns whether it's the calling client's turn
-    public static bool MyTurn { get => MyPlayerID.ID == ActivePlayer.ID; }
+    public static bool MyTurn { get => ThisPlayersTurn(MyPlayerID); }
 
     // Player ID is index into players list
     static List<Player> _players = new();
@@ -72,8 +72,14 @@ public class PlayerManager : SimulationBehaviour
     // If called on the ActivePlayer, notifies them that it's their turn
     public static void NotifyActivePlayer()
     {
-        if (MyPlayerID.ID == ActivePlayer.ID)
+        if (ThisPlayersTurn(MyPlayerID))
             EventBus.Publish(new MyTurnEvent());
+    }
+
+    // Return whether it's the given player's turn
+    public static bool ThisPlayersTurn(PlayerID playerID)
+    {
+        return playerID.ID == ActivePlayer.ID;
     }
 
     // Called by server to send each client their PlayerID

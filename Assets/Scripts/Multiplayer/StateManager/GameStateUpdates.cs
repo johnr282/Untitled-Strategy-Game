@@ -82,3 +82,16 @@ public readonly struct MoveUnitUpdate : IStateUpdate
         RequestingPlayerID = requestingPlayerIDIn;
     }
 }
+
+public readonly struct PlaceTerritorySelectionUnitUpdate : IStateUpdate
+{
+    public HexCoordinateOffset Location { get; }
+    public PlayerID RequestingPlayerID { get; }
+
+    public PlaceTerritorySelectionUnitUpdate(HexCoordinateOffset locationIn,
+        PlayerID requestingPlayerIDIn)
+    {
+        Location = locationIn;
+        RequestingPlayerID = requestingPlayerIDIn;
+    }
+}
