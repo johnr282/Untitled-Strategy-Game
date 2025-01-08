@@ -102,27 +102,35 @@ public class TerritorySelectionManager : SimulationBehaviour
         Debug.Log("Player " + update.RequestingPlayerID + 
             " claimed or reinforced tile " + update.Location);
 
-        bool ok = StateManager.RequestStateUpdate(new CreateUnitUpdate(UnitType.land,
-            update.Location,
-            update.RequestingPlayerID), 
-            true);
-        if (!ok)
+        bool myRequest = PlayerManager.MyPlayerID.ID == update.RequestingPlayerID.ID;
+        if (myRequest)
         {
-            Debug.Log("Player " + update.RequestingPlayerID + 
-                " failed to place territory selection unit on tile " + update.Location);
-            return;
+            bool ok = StateManager.RequestStateUpdate(new CreateUnitUpdate(UnitType.land,
+            update.Location,
+            update.RequestingPlayerID));
+            if (!ok)
+            {
+                Debug.Log("Player " + update.RequestingPlayerID +
+                    " failed to place territory selection unit on tile " + update.Location);
+                return;
+            }
         }
 
         _remainingUnitBudgets[update.RequestingPlayerID.ID]--;
         int remainingBudget = _remainingUnitBudgets[update.RequestingPlayerID.ID];
 
-        if (PlayerManager.MyPlayerID.ID == update.RequestingPlayerID.ID)
+        if (myRequest)
+        {
             EventBus.Publish(new TerritorySelectionUnitPlacedEvent(remainingBudget));
+            PlayerManager.EndMyTurn();
+        }
     }
 
     bool ValidatePlaceTerritorySelectionUnitUpdate(PlaceTerritorySelectionUnitUpdate update,
         out string failureReason)
     {
+        failureReason = "";
+
         if (!PlayerManager.ThisPlayersTurn(update.RequestingPlayerID))
         {
             failureReason = "not your turn";
@@ -143,15 +151,15 @@ public class TerritorySelectionManager : SimulationBehaviour
             return false;
         }
 
+        if (selectedTile.IsOwnedBy(update.RequestingPlayerID))
+            return true;
+
         // Selected territories must be adjacent to at least one already owned territory
         List<GameTile> neighbors = GameMap.Neighbors(selectedTile);
         foreach (GameTile neighbor in neighbors)
         {
             if (neighbor.IsOwnedBy(update.RequestingPlayerID))
-            {
-                failureReason = "";
                 return true;
-            }
         }
 
         failureReason = "not adjacent to at least one owned tile";

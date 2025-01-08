@@ -94,6 +94,12 @@ public class PlayerManager : SimulationBehaviour
         MyPlayerID = id;
     }
 
+    // Sends a request to end this player's turn
+    public static bool EndMyTurn()
+    {
+        return StateManager.RequestStateUpdate(new EndTurnUpdate(MyPlayerID));
+    }
+
     // Creates a new player, and returns the PlayerID of the new player
     // Modifies game state
     static void AddPlayer(AddPlayerUpdate playerAdded)
