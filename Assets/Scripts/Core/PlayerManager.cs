@@ -48,7 +48,7 @@ public class PlayerManager : SimulationBehaviour
     void Start()
     {
         // No validation needed for AddPlayerUpdate, always return true
-        StateManager.RegisterStateUpdate<AddPlayerUpdate>((update) => true,
+        StateManager.RegisterStateUpdate<AddPlayerUpdate>(StateManager.DefaultValidator,
             AddPlayer,
             StateManagerRPCs.RPC_AddPlayerServer,
             StateManagerRPCs.RPC_AddPlayerClient);
@@ -128,8 +128,16 @@ public class PlayerManager : SimulationBehaviour
     }
 
     // Returns whether the given EndTurnUpdate is valid
-    static bool ValidateEndTurnUpdate(EndTurnUpdate update)
+    static bool ValidateEndTurnUpdate(EndTurnUpdate update, 
+        out string failureReason)
     {
-        return update.EndingPlayerID.ID == ActivePlayer.ID;
+        if (!ThisPlayersTurn(update.EndingPlayerID))
+        {
+            failureReason = "only active player can end their turn";
+            return false;
+        }
+
+        failureReason = "";
+        return true;
     }
 }

@@ -84,13 +84,18 @@ public class UnitManager : SimulationBehaviour
     // Returns whether the given CreateUnitUpdate is valid
     // Throws an ArgumentException if no GameTile exists at the requested
     // location
-    static bool ValidateCreateUnitUpdate(CreateUnitUpdate update)
+    static bool ValidateCreateUnitUpdate(CreateUnitUpdate update, 
+        out string failureReason)
     {
         GameTile initialTile = GameMap.GetTile(update.Location);
 
         if (!initialTile.Available(update.RequestingPlayerID))
+        {
+            failureReason = "tile not available for requesting player";
             return false;
+        }
 
+        failureReason = "";
         return true;
     }
 
@@ -98,7 +103,8 @@ public class UnitManager : SimulationBehaviour
     // Throws an ArgumentException if no unit exists with the given ID, no
     // GameTile exists at the requested location, or the RequestingPlayerID
     // is different from the unit's owner
-    static bool ValidateMoveUnitUpdate(MoveUnitUpdate update)
+    static bool ValidateMoveUnitUpdate(MoveUnitUpdate update, 
+        out string failureReason)
     {
         GameTile requestedTile = GameMap.GetTile(update.NewLocation);
         Unit unit = GetUnit(update.UnitID);
@@ -114,9 +120,11 @@ public class UnitManager : SimulationBehaviour
         }
         catch (RuntimeException)
         {
+            failureReason = "couldn't find a valid path";
             return false;
         }
 
+        failureReason = "";
         return true;
     }
 

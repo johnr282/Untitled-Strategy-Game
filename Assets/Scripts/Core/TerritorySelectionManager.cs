@@ -16,7 +16,7 @@ public class TerritorySelectionManager : SimulationBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        StateManager.RegisterStateUpdate<StartGameUpdate>(gameStarted => true,
+        StateManager.RegisterStateUpdate<StartGameUpdate>(StateManager.DefaultValidator,
             OnGameStarted,
             StateManagerRPCs.RPC_StartGameServer,
             StateManagerRPCs.RPC_StartGameClient);
@@ -120,27 +120,41 @@ public class TerritorySelectionManager : SimulationBehaviour
             EventBus.Publish(new TerritorySelectionUnitPlacedEvent(remainingBudget));
     }
 
-    bool ValidatePlaceTerritorySelectionUnitUpdate(PlaceTerritorySelectionUnitUpdate update)
+    bool ValidatePlaceTerritorySelectionUnitUpdate(PlaceTerritorySelectionUnitUpdate update,
+        out string failureReason)
     {
         if (!PlayerManager.ThisPlayersTurn(update.RequestingPlayerID))
+        {
+            failureReason = "not your turn";
             return false;
+        }
 
         // The player must have a remaning unit budget
         if (_remainingUnitBudgets[update.RequestingPlayerID.ID] <= 0)
+        {
+            failureReason = "out of territory selection units";
             return false;
+        }
 
         GameTile selectedTile = GameMap.GetTile(update.Location);
         if (!selectedTile.Available(update.RequestingPlayerID))
+        {
+            failureReason = "tile is not available";
             return false;
+        }
 
         // Selected territories must be adjacent to at least one already owned territory
         List<GameTile> neighbors = GameMap.Neighbors(selectedTile);
         foreach (GameTile neighbor in neighbors)
         {
             if (neighbor.IsOwnedBy(update.RequestingPlayerID))
+            {
+                failureReason = "";
                 return true;
+            }
         }
 
+        failureReason = "not adjacent to at least one owned tile";
         return false;
     }
 }

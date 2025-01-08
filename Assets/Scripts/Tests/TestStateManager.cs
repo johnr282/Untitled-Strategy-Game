@@ -15,7 +15,7 @@ public class TestStateManager : SimulationBehaviour
 
     void Start()
     {
-        StateManager.RegisterStateUpdate<TestStateUpdate>(Validate,
+        StateManager.RegisterStateUpdate<TestStateUpdate>(StateManager.DefaultValidator,
             PerformUpdate,
             RPC_TestStateUpdateServer,
             RPC_TestStateUpdateClient);
@@ -27,12 +27,6 @@ public class TestStateManager : SimulationBehaviour
         {
             StateManager.RequestStateUpdate(new TestStateUpdate());
         }
-    }
-
-    bool Validate(TestStateUpdate update)
-    {
-        Debug.Log("Validating update");
-        return true;
     }
 
     void PerformUpdate(TestStateUpdate update)

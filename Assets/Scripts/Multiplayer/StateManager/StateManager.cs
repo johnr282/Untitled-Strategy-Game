@@ -17,8 +17,7 @@ public class StateManager : NetworkBehaviour
         public StateUpdateRegistration(Delegate validateUpdateFuncIn,
             Delegate performUpdateFuncIn,
             Delegate serverUpdateRPCIn,
-            Delegate clientUpdateRPCIn,
-            Type stateUpdateTypeIn)
+            Delegate clientUpdateRPCIn)
         {
             _validateUpdateFunc = validateUpdateFuncIn;
             _performUpdateFunc = performUpdateFuncIn;
@@ -26,9 +25,16 @@ public class StateManager : NetworkBehaviour
             _clientUpdateRPC = clientUpdateRPCIn;
         }
 
-        public bool ValidateUpdate(IStateUpdate updateData)
+        public bool ValidateUpdate(IStateUpdate updateData, out string failureReason)
         {
-            return (bool)_validateUpdateFunc.DynamicInvoke(updateData);
+            failureReason = "";
+
+            // Can't just directly pass parameters, need to invoke like this in order
+            // to extract updated out parameter failureReason
+            object[] args = { updateData, failureReason };
+            bool validated = (bool)_validateUpdateFunc.DynamicInvoke(args);
+            failureReason = (string)args[1];
+            return validated;
         }
 
         public void PerformUpdate(IStateUpdate updateData)
@@ -53,6 +59,16 @@ public class StateManager : NetworkBehaviour
             _clientUpdateRPC.DynamicInvoke(runner,
                 updateData);
         }
+    }
+
+    public delegate bool Validator<T>(T obj, out string failureReason);
+
+    // Default validator that always returns true
+    // Can be used for convenience for state updates that don't require validation
+    public static bool DefaultValidator<T>(T obj, out string failureReason)
+    {
+        failureReason = "";
+        return true;
     }
 
     static Dictionary<Type, StateUpdateRegistration> _registeredUpdates = new();
@@ -84,7 +100,7 @@ public class StateManager : NetworkBehaviour
     // Register a new state update with the given validate function, perform function,
     // and RPCs
     // Throws exception if update type is already found in _registeredUpdates
-    public static void RegisterStateUpdate<TStateUpdate>(Predicate<TStateUpdate> validateUpdate,
+    public static void RegisterStateUpdate<TStateUpdate>(Validator<TStateUpdate> validateUpdate,
         Action<TStateUpdate> performUpdate,
         Action<NetworkRunner, PlayerRef, TStateUpdate> serverUpdateRPC,
         Action<NetworkRunner, TStateUpdate> clientUpdateRPC)
@@ -98,8 +114,7 @@ public class StateManager : NetworkBehaviour
         StateUpdateRegistration newRegistration = new(validateUpdate, 
             performUpdate,
             serverUpdateRPC,
-            clientUpdateRPC,
-            updateType);
+            clientUpdateRPC);
         _registeredUpdates[updateType] = newRegistration;
     }
 
@@ -124,9 +139,9 @@ public class StateManager : NetworkBehaviour
         StateUpdateRegistration registration = GetRegistration(updateType);
 
         // Before sending request to server, client checks if update is valid
-        if (!registration.ValidateUpdate(updateData))
+        if (!registration.ValidateUpdate(updateData, out string failureReason))
         {
-            Debug.Log(updateType + " request was not validated by the client");
+            Debug.Log(updateType + " request was not validated by the client; reason: " + failureReason);
             return false;
         }
 
@@ -155,9 +170,9 @@ public class StateManager : NetworkBehaviour
         StateUpdateRegistration registration = GetRegistration(updateType);
 
         // Validate update again on the server, don't trust client
-        if (!registration.ValidateUpdate(updateData))
+        if (!registration.ValidateUpdate(updateData, out string failureReason))
         {
-            Debug.Log(updateType + " request was not validated by the server");
+            Debug.Log(updateType + " request was not validated by the server; reason: " + failureReason);
             return;
         }
 
