@@ -104,10 +104,17 @@ public class StateManager : NetworkBehaviour
     }
 
     // Initiates a state update with the given update data; only called by clients
+    // If the localUpdateOnly flag is set to true, the update will not be sent to
+    // the server and will only be executed on the local client; set this flag when
+    // you are requesting a state update as part of another state update function
+    // 
+    // Returns true if the update was successfully validated and sent to the server
+    // Returns false if the update was not validated
     // Throws exception if called on the server
     // Throws exception if update type was not previously registered
     // with RegisterStateUpdate 
-    public static void RequestStateUpdate<TStateUpdate>(TStateUpdate updateData)
+    public static bool RequestStateUpdate<TStateUpdate>(TStateUpdate updateData, 
+        bool localUpdateOnly = false)
         where TStateUpdate : struct, IStateUpdate
     {
         Type updateType = typeof(TStateUpdate);
@@ -120,11 +127,19 @@ public class StateManager : NetworkBehaviour
         if (!registration.ValidateUpdate(updateData))
         {
             Debug.Log(updateType + " request was not validated by the client");
-            return;
+            return false;
+        }
+
+        if (localUpdateOnly)
+        {
+            Debug.Log("Performing " + updateType + " only on local client");
+            registration.PerformUpdate(updateData);
+            return true;
         }
 
         Debug.Log("Sending " + updateType + " request to server");
         registration.CallServerUpdateRPC(StateManagerRunner, updateData);
+        return true;
     }
 
     // Should be called by the user-created server update RPC to initiate
