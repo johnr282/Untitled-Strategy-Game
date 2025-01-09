@@ -105,4 +105,20 @@ public class StateManagerRPCs: NetworkBehaviour
     {
         StateManager.UpdateClientState(updateData);
     }
+
+    // CreateStructureUpdate RPCs
+    [Rpc]
+    public static void RPC_CreateStructureServer(NetworkRunner runner,
+        [RpcTarget] PlayerRef player,
+        CreateStructureUpdate updateData)
+    {
+        StateManager.UpdateServerState(updateData);
+    }
+
+    [Rpc]
+    public static void RPC_CreateStructureClient(NetworkRunner runner,
+        CreateStructureUpdate updateData)
+    {
+        StateManager.UpdateClientState(updateData);
+    }
 }

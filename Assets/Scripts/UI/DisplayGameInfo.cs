@@ -12,6 +12,7 @@ using UnityEngine.Tilemaps;
 public class DisplayGameInfo : MonoBehaviour
 {
     TextMeshProUGUI _gameInfoDisplay;
+    string _onMyTurnMessage = "";
 
     Subscription<EndTurnUpdate> _nextTurnSub;
 
@@ -22,6 +23,8 @@ public class DisplayGameInfo : MonoBehaviour
 
         EventBus.Subscribe<MyTurnEvent>(OnMyTurn);
         EventBus.Subscribe<StartGameUpdate>(OnGameStarted);
+        EventBus.Subscribe<TerritorySelectionPhaseStartedEvent>(OnTerritorySelection);
+        EventBus.Subscribe<SelectingCapitalLocationsEvent>(OnCapitalLocationSelection);
     }
 
     void OnGameStarted(StartGameUpdate update)
@@ -30,16 +33,21 @@ public class DisplayGameInfo : MonoBehaviour
             SetTurnInfoText("Waiting for other players...");
     }
 
+    void OnTerritorySelection(TerritorySelectionPhaseStartedEvent e)
+    {
+        _onMyTurnMessage = "It's your turn; place 1 unit on an unclaimed tile adjacent to at " +
+            "least one of your current tiles, or reinforce an already claimed tile";
+    }
+
+    void OnCapitalLocationSelection(SelectingCapitalLocationsEvent e)
+    {
+        _onMyTurnMessage = "Now that your initial territory is selected, choose where " +
+            "you want to place your capital";
+    }
+
     void OnMyTurn(MyTurnEvent myTurn)
     {
-        string onMyTurnMessage = "";
-        if (GamePhaseManager.CurrentPhase == GamePhase.TerritorySelection)
-        {
-            onMyTurnMessage = "It's your turn; place 1 unit on an unclaimed tile adjacent to at " +
-                "least one of your current tiles, or reinforce an already claimed tile";
-        }
-
-        SetTurnInfoText(onMyTurnMessage);
+        SetTurnInfoText(_onMyTurnMessage);
         _nextTurnSub = EventBus.Subscribe<EndTurnUpdate>(OnNextTurn);
     }
 

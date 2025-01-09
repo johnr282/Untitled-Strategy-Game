@@ -12,8 +12,9 @@ public class TerritorySelectionManager : SimulationBehaviour
 {
     const UnitType StartingUnitType = UnitType.Infantry;
 
-    int[] _remainingUnitBudgets = null;
     [SerializeField] int _startingUnitBudget; 
+    int[] _remainingUnitBudgets = null;
+    bool selectingTerritory = true;
 
     // Start is called before the first frame update
     void Start()
@@ -93,9 +94,19 @@ public class TerritorySelectionManager : SimulationBehaviour
         if (!PlayerManager.MyTurn)
             return;
 
-        StateManager.RequestStateUpdate(new PlaceTerritorySelectionUnitUpdate(
-            e.Coordinate,
-            PlayerManager.MyPlayerID));
+        if (selectingTerritory)
+        {
+            StateManager.RequestStateUpdate(new PlaceTerritorySelectionUnitUpdate(
+                e.Coordinate,
+                PlayerManager.MyPlayerID));
+        } 
+        else
+        {
+            StateManager.RequestStateUpdate(new CreateStructureUpdate(
+                StructureType.Capital,
+                e.Coordinate,
+                PlayerManager.MyPlayerID));
+        }
     }
 
     void PlaceTerritorySelectionUnit(PlaceTerritorySelectionUnitUpdate update)
@@ -120,6 +131,12 @@ public class TerritorySelectionManager : SimulationBehaviour
 
         _remainingUnitBudgets[update.RequestingPlayerID.ID]--;
         int remainingBudget = _remainingUnitBudgets[update.RequestingPlayerID.ID];
+
+        if (AllPlayersOutOfUnits())
+        {
+            EventBus.Publish(new SelectingCapitalLocationsEvent());
+            selectingTerritory = false;
+        }
 
         if (myRequest)
         {
@@ -166,5 +183,17 @@ public class TerritorySelectionManager : SimulationBehaviour
 
         failureReason = "not adjacent to at least one owned tile";
         return false;
+    }
+
+    // Returns true if all players have placed all their units
+    bool AllPlayersOutOfUnits()
+    {
+        foreach (int remainingUnits in _remainingUnitBudgets)
+        {
+            if (remainingUnits > 0)
+                return false;
+        }
+
+        return true;
     }
 }

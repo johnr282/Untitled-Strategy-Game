@@ -58,8 +58,7 @@ public class UnitManager : SimulationBehaviour
         return attributes;
     }
 
-    // Creates a new unit according to the given update and returns the unit ID
-    // of the new unit
+    // Creates a new unit according to the given update
     // Throws an ArgumentException if no GameTile exists at the update location
     static void CreateUnit(CreateUnitUpdate update)
     {

@@ -54,3 +54,5 @@ public readonly struct TerritorySelectionUnitPlacedEvent
 }
 
 public readonly struct TerritorySelectionPhaseEndedEvent { }
+
+public readonly struct SelectingCapitalLocationsEvent { }

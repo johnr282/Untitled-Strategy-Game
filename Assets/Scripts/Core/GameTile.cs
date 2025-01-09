@@ -26,9 +26,11 @@ public class GameTile
     public PlayerID OwnerID { get; private set; }
     public int TileUnitCapacity { get; private set; }
     public int TileStructureCapacity { get; private set; }
-    public int TotalUnitSize { get; private set; } // Sum of all unit sizes on this tile
+    public int TotalUnitSize { get; private set; } 
+    public int TotalStructureSize { get; private set; } 
 
     List<UnitID> _unitsOnTile = new();
+    List<StructureID> _structuresOnTile = new();
 
     // Pass in -1 for continent ID if tile is not in a continent
     public GameTile(HexCoordinateOffset coordinateIn, 
@@ -77,6 +79,13 @@ public class GameTile
         return TotalUnitSize + attributes.Size > TileUnitCapacity;
     }
 
+    // Returns whether a structure of the given type would exceed capacity if added to this tile
+    public bool ExceedsStructureCapacity(StructureType type)
+    {
+        StructureAttributes attributes = StructureManager.GetStructureAttributes(type);
+        return TotalStructureSize + attributes.Size > TileStructureCapacity;
+    }
+
     // Adds the given unit to this tile
     // Throws an ArgumentException if given a unit that already exists in this tile
     // or if this tile's owner is different from the given unit's owner
@@ -98,6 +107,22 @@ public class GameTile
         Claim(unit.OwnerID);
     }
 
+    public void AddStructure(Structure structure)
+    {
+        if (_structuresOnTile.Contains(structure.StructureID))
+            throw new ArgumentException("Structure " + structure.StructureID + " already exists in this tile");
+
+        if (!IsOwnedBy(structure.OwnerID))
+            throw new ArgumentException("Unit's owner, " + structure.OwnerID +
+                ", is different from tile's owner, " + OwnerID);
+
+        if (ExceedsStructureCapacity(structure.Type))
+            throw new RuntimeException("Structure " + structure.StructureID + " exceeds tile structure capacity");
+
+        _structuresOnTile.Add(structure.StructureID);
+        TotalStructureSize += structure.Attributes.Size;
+    }
+
     // Removes the given unit from this tile
     // Throws an ArgumentException if given unit doesn't exist in this tile
     public void RemoveUnit(Unit unit)
@@ -108,6 +133,16 @@ public class GameTile
         TotalUnitSize -= unit.Attributes.Size;
         if (_unitsOnTile.Count == 0)
             Unclaim();
+    }
+
+    // Removes the given structure from this tile
+    // Throws an ArgumentException if given structure doesn't exist in this tile
+    public void RemoveStructure(Structure structure)
+    {
+        if (!_structuresOnTile.Remove(structure.StructureID))
+            throw new ArgumentException("Structure " + structure.StructureID + " does not exist in this tile");
+
+        TotalStructureSize -= structure.Attributes.Size;
     }
 
     // Returns the number of units on this tile

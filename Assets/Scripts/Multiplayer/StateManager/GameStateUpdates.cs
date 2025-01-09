@@ -95,3 +95,19 @@ public readonly struct PlaceTerritorySelectionUnitUpdate : IStateUpdate
         RequestingPlayerID = requestingPlayerIDIn;
     }
 }
+
+public readonly struct CreateStructureUpdate : IStateUpdate
+{
+    public StructureType Type { get; }
+    public HexCoordinateOffset Location { get; }
+    public PlayerID RequestingPlayerID { get; }
+
+    public CreateStructureUpdate(StructureType typeIn,
+        HexCoordinateOffset locationIn,
+        PlayerID requestingPlayerIDIn)
+    {
+        Type = typeIn;
+        Location = locationIn;
+        RequestingPlayerID = requestingPlayerIDIn;
+    }
+}

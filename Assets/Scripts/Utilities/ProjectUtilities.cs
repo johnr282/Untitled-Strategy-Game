@@ -13,8 +13,10 @@ public static class ProjectUtilities
     public const string MapObjectName = "Map";
     public const string MapGenerationParametersObjectName = "MapGenerationParameters";
     public const string UnitObjectSpawnerObjectName = "UnitObjectSpawner";
+    public const string StructureObjectSpawnerObjectName = "StructureObjectSpawner";
     public const string GameParametersObjectName = "GameParameters";
     public const string NetworkedManagersObjectName = "NetworkedManagers";
+    public const string PlayerColorsObjectName = "PlayerColors";
 
     // Finds and returns component of given type on GameObject of given name 
     // Throws RuntimeException if GameObject or component cannot be found
@@ -52,6 +54,11 @@ public static class ProjectUtilities
         return FindComponent<UnitObjectSpawner>(UnitObjectSpawnerObjectName);
     }
 
+    public static StructureObjectSpawner FindStructureObjectSpawner()
+    {
+        return FindComponent<StructureObjectSpawner>(StructureObjectSpawnerObjectName);
+    }
+
     public static GameParameters FindGameParameters()
     {
         return FindComponent<GameParameters>(GameParametersObjectName);
@@ -60,5 +67,10 @@ public static class ProjectUtilities
     public static NetworkObject FindManagersNetworkObject()
     {
         return FindComponent<NetworkObject>(NetworkedManagersObjectName);
+    }
+
+    public static PlayerColors FindPlayerColors()
+    {
+        return FindComponent<PlayerColors>(PlayerColorsObjectName);
     }
 }

@@ -42,3 +42,15 @@ public readonly struct UnitID : INetworkStruct
 
     public override string ToString() => ID.ToString();
 }
+
+public readonly struct StructureID : INetworkStruct
+{
+    public readonly int ID { get; }
+
+    public StructureID(int idIn)
+    {
+        ID = idIn;
+    }
+
+    public override string ToString() => ID.ToString();
+}
