@@ -31,7 +31,8 @@ public class TerritorySelectionInfantryBudgetDisplay : MonoBehaviour
 
     void OnNewTerritorySelectionInfantryPlaced(TerritorySelectionUnitPlacedEvent e)
     {
-        SetRemainingInfantry(e.NewRemainingInfantryBudget);
+        if (e.PlayerID.ID == PlayerManager.MyPlayerID.ID)
+            SetRemainingInfantry(e.NewRemainingInfantryBudget);
     }
 
     void OnTerritorySelectionPhaseEnded(TerritorySelectionPhaseEndedEvent e)

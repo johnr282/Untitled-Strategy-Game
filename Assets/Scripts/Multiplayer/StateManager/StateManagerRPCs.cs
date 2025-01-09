@@ -46,14 +46,14 @@ public class StateManagerRPCs: NetworkBehaviour
     [Rpc]
     public static void RPC_EndTurnServer(NetworkRunner runner,
         [RpcTarget] PlayerRef player,
-        EndTurnUpdate updateData)
+        EndActivePlayersTurnUpdate updateData)
     {
         StateManager.UpdateServerState(updateData);
     }
 
     [Rpc]
     public static void RPC_EndTurnClient(NetworkRunner runner,
-        EndTurnUpdate updateData)
+        EndActivePlayersTurnUpdate updateData)
     {
         StateManager.UpdateClientState(updateData);
     }
@@ -118,6 +118,22 @@ public class StateManagerRPCs: NetworkBehaviour
     [Rpc]
     public static void RPC_CreateStructureClient(NetworkRunner runner,
         CreateStructureUpdate updateData)
+    {
+        StateManager.UpdateClientState(updateData);
+    }
+
+    // PlaceCapitalUpdate RPCs
+    [Rpc]
+    public static void RPC_PlaceCapitalServer(NetworkRunner runner,
+        [RpcTarget] PlayerRef player,
+        PlaceCapitalUpdate updateData)
+    {
+        StateManager.UpdateServerState(updateData);
+    }
+
+    [Rpc]
+    public static void RPC_PlaceCapitalClient(NetworkRunner runner,
+        PlaceCapitalUpdate updateData)
     {
         StateManager.UpdateClientState(updateData);
     }

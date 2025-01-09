@@ -12,9 +12,11 @@ public class TerritorySelectionManager : SimulationBehaviour
 {
     const UnitType StartingUnitType = UnitType.Infantry;
 
-    [SerializeField] int _startingUnitBudget; 
+    [SerializeField] int _startingUnitBudget;
+    Subscription<TileSelectedEvent> _tileSelectedSubscription;
     int[] _remainingUnitBudgets = null;
-    bool selectingTerritory = true;
+    bool _selectingTerritory = true;
+    bool[] _capitalsSelected = null;
 
     // Start is called before the first frame update
     void Start()
@@ -28,6 +30,11 @@ public class TerritorySelectionManager : SimulationBehaviour
             PlaceTerritorySelectionUnit,
             StateManagerRPCs.RPC_PlaceTerritorySelectionUnitServer,
             StateManagerRPCs.RPC_PlaceTerritorySelectionUnitClient);
+
+        StateManager.RegisterStateUpdate<PlaceCapitalUpdate>(StateManager.DefaultValidator,
+            PlaceCapital,
+            StateManagerRPCs.RPC_PlaceCapitalServer,
+            StateManagerRPCs.RPC_PlaceCapitalClient);
     }
 
     void OnGameStarted(StartGameUpdate startGameUpdate)
@@ -65,9 +72,12 @@ public class TerritorySelectionManager : SimulationBehaviour
 
         int startingUnitBudget = CalculateStartingUnitBudget();
         _remainingUnitBudgets = new int[PlayerManager.NumPlayers];
-        for (int i = 0; i < _remainingUnitBudgets.Length; i++)
+        _capitalsSelected = new bool[PlayerManager.NumPlayers];
+
+        for (int i = 0; i < PlayerManager.NumPlayers; i++)
         {
             _remainingUnitBudgets[i] = startingUnitBudget;
+            _capitalsSelected[i] = false;
         }
 
         // Spawn first unit for this player at their start tile
@@ -77,7 +87,7 @@ public class TerritorySelectionManager : SimulationBehaviour
 
         Debug.Log("Finished initializing Territory Selection Phase");
         EventBus.Publish(new TerritorySelectionPhaseStartedEvent(startingUnitBudget));
-        EventBus.Subscribe<TileSelectedEvent>(OnTileSelected);
+        _tileSelectedSubscription = EventBus.Subscribe<TileSelectedEvent>(OnTileSelected);
         PlayerManager.NotifyActivePlayer();
     }
 
@@ -94,19 +104,24 @@ public class TerritorySelectionManager : SimulationBehaviour
         if (!PlayerManager.MyTurn)
             return;
 
-        if (selectingTerritory)
-        {
-            StateManager.RequestStateUpdate(new PlaceTerritorySelectionUnitUpdate(
-                e.Coordinate,
-                PlayerManager.MyPlayerID));
-        } 
+        if (_selectingTerritory)
+            RequestPlaceTerritorySelectionUnit(e.Coordinate);
         else
-        {
-            StateManager.RequestStateUpdate(new CreateStructureUpdate(
-                StructureType.Capital,
-                e.Coordinate,
-                PlayerManager.MyPlayerID));
-        }
+            RequestPlaceCapital(e.Coordinate);
+    }
+
+    void RequestPlaceTerritorySelectionUnit(HexCoordinateOffset hex)
+    {
+        StateManager.RequestStateUpdate(new PlaceTerritorySelectionUnitUpdate(
+            hex,
+            PlayerManager.MyPlayerID));
+    }
+
+    void RequestPlaceCapital(HexCoordinateOffset hex)
+    {
+        StateManager.RequestStateUpdate(new PlaceCapitalUpdate(
+            hex,
+            PlayerManager.MyPlayerID));
     }
 
     void PlaceTerritorySelectionUnit(PlaceTerritorySelectionUnitUpdate update)
@@ -114,34 +129,28 @@ public class TerritorySelectionManager : SimulationBehaviour
         Debug.Log("Player " + update.RequestingPlayerID + 
             " claimed or reinforced tile " + update.Location);
 
-        bool myRequest = PlayerManager.MyPlayerID.ID == update.RequestingPlayerID.ID;
-        if (myRequest)
-        {
-            bool ok = StateManager.RequestStateUpdate(new CreateUnitUpdate(
-                StartingUnitType,
-                update.Location,
-                update.RequestingPlayerID));
-            if (!ok)
-            {
-                Debug.Log("Player " + update.RequestingPlayerID +
-                    " failed to place territory selection unit on tile " + update.Location);
-                return;
-            }
-        }
+        //bool myRequest = PlayerManager.MyPlayerID.ID == update.RequestingPlayerID.ID;
+        //if (myRequest)
+        //{
+        //    bool ok = StateManager.RequestStateUpdate(new CreateUnitUpdate(
+        //        StartingUnitType,
+        //        update.Location,
+        //        update.RequestingPlayerID));
+        //    if (!ok)
+        //        return;
+        //}
 
         _remainingUnitBudgets[update.RequestingPlayerID.ID]--;
         int remainingBudget = _remainingUnitBudgets[update.RequestingPlayerID.ID];
 
+        EventBus.Publish(new TerritorySelectionUnitPlacedEvent(
+            update.RequestingPlayerID,
+            remainingBudget));
+
         if (AllPlayersOutOfUnits())
         {
             EventBus.Publish(new SelectingCapitalLocationsEvent());
-            selectingTerritory = false;
-        }
-
-        if (myRequest)
-        {
-            EventBus.Publish(new TerritorySelectionUnitPlacedEvent(remainingBudget));
-            PlayerManager.EndMyTurn();
+            _selectingTerritory = false;
         }
     }
 
@@ -152,21 +161,21 @@ public class TerritorySelectionManager : SimulationBehaviour
 
         if (!PlayerManager.ThisPlayersTurn(update.RequestingPlayerID))
         {
-            failureReason = "not your turn";
+            failureReason = "Not your turn";
             return false;
         }
 
         // The player must have a remaning unit budget
         if (_remainingUnitBudgets[update.RequestingPlayerID.ID] <= 0)
         {
-            failureReason = "out of territory selection units";
+            failureReason = "Out of territory selection units";
             return false;
         }
 
         GameTile selectedTile = GameMap.GetTile(update.Location);
         if (!selectedTile.Available(update.RequestingPlayerID))
         {
-            failureReason = "tile is not available";
+            failureReason = "Tile is not available";
             return false;
         }
 
@@ -181,7 +190,7 @@ public class TerritorySelectionManager : SimulationBehaviour
                 return true;
         }
 
-        failureReason = "not adjacent to at least one owned tile";
+        failureReason = "Not adjacent to at least one owned tile";
         return false;
     }
 
@@ -191,6 +200,30 @@ public class TerritorySelectionManager : SimulationBehaviour
         foreach (int remainingUnits in _remainingUnitBudgets)
         {
             if (remainingUnits > 0)
+                return false;
+        }
+
+        return true;
+    }
+
+    void PlaceCapital(PlaceCapitalUpdate update)
+    {
+        Debug.Log($"Player {update.RequestingPlayerID} placed capital at {update.Location}");
+        _capitalsSelected[update.RequestingPlayerID.ID] = true;
+
+        if (AllCapitalsSelected())
+        {
+            Debug.Log("All players have placed their capitals, territory selection is complete");
+            EventBus.Publish(new TerritorySelectionPhaseEndedEvent());
+            EventBus.Unsubscribe(_tileSelectedSubscription);
+        }
+    }
+
+    bool AllCapitalsSelected()
+    {
+        foreach (bool selected in _capitalsSelected)
+        {
+            if (!selected)
                 return false;
         }
 

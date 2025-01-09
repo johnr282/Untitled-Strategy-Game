@@ -45,14 +45,17 @@ public readonly struct TerritorySelectionPhaseStartedEvent
 
 public readonly struct TerritorySelectionUnitPlacedEvent
 {
+    public PlayerID PlayerID { get; }
     public int NewRemainingInfantryBudget { get; }
 
-    public TerritorySelectionUnitPlacedEvent(int newRemainingInfantryBudgetIn)
+    public TerritorySelectionUnitPlacedEvent(PlayerID playerIDIn,
+        int newRemainingInfantryBudgetIn)
     {
+        PlayerID = playerIDIn;
         NewRemainingInfantryBudget = newRemainingInfantryBudgetIn;
     }
 }
 
-public readonly struct TerritorySelectionPhaseEndedEvent { }
-
 public readonly struct SelectingCapitalLocationsEvent { }
+
+public readonly struct TerritorySelectionPhaseEndedEvent { }

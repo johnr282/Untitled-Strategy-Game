@@ -53,7 +53,7 @@ public class PlayerManager : SimulationBehaviour
             StateManagerRPCs.RPC_AddPlayerServer,
             StateManagerRPCs.RPC_AddPlayerClient);
 
-        StateManager.RegisterStateUpdate<EndTurnUpdate>(ValidateEndTurnUpdate,
+        StateManager.RegisterStateUpdate<EndActivePlayersTurnUpdate>(ValidateEndTurnUpdate,
             EndActivePlayerTurn,
             StateManagerRPCs.RPC_EndTurnServer,
             StateManagerRPCs.RPC_EndTurnClient);
@@ -94,10 +94,10 @@ public class PlayerManager : SimulationBehaviour
         MyPlayerID = id;
     }
 
-    // Sends a request to end this player's turn
-    public static bool EndMyTurn()
+    // Sends a request to end the active player's turn
+    public static bool RequestEndActivePlayersTurn()
     {
-        return StateManager.RequestStateUpdate(new EndTurnUpdate(MyPlayerID));
+        return StateManager.RequestStateUpdate(new EndActivePlayersTurnUpdate(MyPlayerID));
     }
 
     // Creates a new player, and returns the PlayerID of the new player
@@ -111,13 +111,13 @@ public class PlayerManager : SimulationBehaviour
     }
 
     // Ends the current active player's turn
-    static void EndActivePlayerTurn(EndTurnUpdate update)
+    static void EndActivePlayerTurn(EndActivePlayersTurnUpdate update)
     {
         EventBus.Publish(update);
         UpdateCurrTurnIndex();
         NotifyActivePlayer();
 
-        Debug.Log("Player " + update.EndingPlayerID + " has ended their turn, " +
+        Debug.Log("Player " + update.RequestingPlayerID + " has ended their turn, " +
             "ActivePlayer is now " + ActivePlayer);
         Debug.Log("My Player ID: " + MyPlayerID + ", MyTurn: " + MyTurn);
     }
@@ -134,10 +134,10 @@ public class PlayerManager : SimulationBehaviour
     }
 
     // Returns whether the given EndTurnUpdate is valid
-    static bool ValidateEndTurnUpdate(EndTurnUpdate update, 
+    static bool ValidateEndTurnUpdate(EndActivePlayersTurnUpdate update, 
         out string failureReason)
     {
-        if (!ThisPlayersTurn(update.EndingPlayerID))
+        if (!ThisPlayersTurn(update.RequestingPlayerID))
         {
             failureReason = "only active player can end their turn";
             return false;

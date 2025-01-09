@@ -7,7 +7,10 @@ using UnityEngine;
 // Simple StateManager test
 // ------------------------------------------------------------------
 
-public readonly struct TestStateUpdate : IStateUpdate { }
+public readonly struct TestStateUpdate : IStateUpdate 
+{
+    public List<IStateUpdate> GetStateUpdatesInOrder() => new List<IStateUpdate> { this };
+}
 
 public class TestStateManager : SimulationBehaviour
 {

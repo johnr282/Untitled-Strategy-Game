@@ -14,7 +14,7 @@ public class DisplayGameInfo : MonoBehaviour
     TextMeshProUGUI _gameInfoDisplay;
     string _onMyTurnMessage = "";
 
-    Subscription<EndTurnUpdate> _nextTurnSub;
+    Subscription<EndActivePlayersTurnUpdate> _nextTurnSub;
 
     void Start()
     {
@@ -48,10 +48,10 @@ public class DisplayGameInfo : MonoBehaviour
     void OnMyTurn(MyTurnEvent myTurn)
     {
         SetTurnInfoText(_onMyTurnMessage);
-        _nextTurnSub = EventBus.Subscribe<EndTurnUpdate>(OnNextTurn);
+        _nextTurnSub = EventBus.Subscribe<EndActivePlayersTurnUpdate>(OnNextTurn);
     }
 
-    void OnNextTurn(EndTurnUpdate update)
+    void OnNextTurn(EndActivePlayersTurnUpdate update)
     {
         SetTurnInfoText("Waiting for other players...");
         EventBus.Unsubscribe(_nextTurnSub);

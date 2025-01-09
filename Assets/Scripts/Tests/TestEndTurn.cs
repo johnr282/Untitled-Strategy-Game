@@ -8,7 +8,7 @@ public class TestEndTurn : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            PlayerManager.EndMyTurn();
+            PlayerManager.RequestEndActivePlayersTurn();
         }
     }
 }
