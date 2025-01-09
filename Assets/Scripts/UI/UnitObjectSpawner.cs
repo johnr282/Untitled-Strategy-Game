@@ -33,18 +33,12 @@ public class UnitObjectSpawner : MonoBehaviour
             throw new RuntimeException(
                 "Failed to get SpawnableObject component from unit prefab");
 
-        Vector3Int tilemapLocation = hex.ConvertToVector3Int();
         float stackYOffset = GameMap.GetTile(hex).GetNumUnits() * _unitStackYDistance;
-        Vector3 spawnLocation = _tilemap.CellToWorld(tilemapLocation) + 
-            spawnable.YOffset + Vector3.up * stackYOffset;
-
-        GameObject newUnitGameObject = Instantiate(_unitPrefab,
-            spawnLocation,
-            Quaternion.identity);
-
-        UnitObject newUnitObject = newUnitGameObject.GetComponent<UnitObject>() ??
-            throw new RuntimeException(
-                "Failed to get UnitObject component from unit prefab");
+        Vector3 spawnLocationModifier = spawnable.YOffset + Vector3.up * stackYOffset;
+        UnitObject newUnitObject = SpawnableObject.SpawnObject<UnitObject>(_unitPrefab,
+            hex,
+            _tilemap,
+            spawnLocationModifier);
 
         newUnitObject.UnitID = unitID;
         newUnitObject.OwnerID = ownerID;
