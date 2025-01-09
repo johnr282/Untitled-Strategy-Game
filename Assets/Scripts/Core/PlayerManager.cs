@@ -147,3 +147,31 @@ public class PlayerManager : SimulationBehaviour
         return true;
     }
 }
+
+// Adds players to the player manager
+public readonly struct AddPlayerUpdate : IStateUpdate
+{
+    public PlayerRef PlayerRef { get; }
+    public PlayerID ID { get; }
+
+    public AddPlayerUpdate(PlayerRef playerRefIn, PlayerID idIn)
+    {
+        PlayerRef = playerRefIn;
+        ID = idIn;
+    }
+
+    public List<IStateUpdate> GetStateUpdatesInOrder() => new List<IStateUpdate> { this };
+}
+
+// Ends the active player's turn
+public readonly struct EndActivePlayersTurnUpdate : IStateUpdate
+{
+    public PlayerID RequestingPlayerID { get; }
+
+    public EndActivePlayersTurnUpdate(PlayerID requestingPlayerIDIn)
+    {
+        RequestingPlayerID = requestingPlayerIDIn;
+    }
+
+    public List<IStateUpdate> GetStateUpdatesInOrder() => new List<IStateUpdate> { this };
+}

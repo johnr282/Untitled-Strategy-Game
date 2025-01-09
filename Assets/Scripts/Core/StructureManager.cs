@@ -102,3 +102,22 @@ public class StructureManager : SimulationBehaviour
         return nextID;
     }
 }
+
+// Creates a structure
+public readonly struct CreateStructureUpdate : IStateUpdate
+{
+    public StructureType Type { get; }
+    public HexCoordinateOffset Location { get; }
+    public PlayerID RequestingPlayerID { get; }
+
+    public CreateStructureUpdate(StructureType typeIn,
+        HexCoordinateOffset locationIn,
+        PlayerID requestingPlayerIDIn)
+    {
+        Type = typeIn;
+        Location = locationIn;
+        RequestingPlayerID = requestingPlayerIDIn;
+    }
+
+    public List<IStateUpdate> GetStateUpdatesInOrder() => new List<IStateUpdate> { this };
+}

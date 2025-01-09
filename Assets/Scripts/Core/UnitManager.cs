@@ -159,3 +159,41 @@ public class UnitManager : SimulationBehaviour
         return nextID;
     }
 }
+
+// Creates a unit
+public readonly struct CreateUnitUpdate : IStateUpdate
+{
+    public UnitType Type { get; }
+    public HexCoordinateOffset Location { get; }
+    public PlayerID RequestingPlayerID { get; }
+
+    public CreateUnitUpdate(UnitType typeIn,
+        HexCoordinateOffset locationIn,
+        PlayerID requestingPlayerIDIn)
+    {
+        Type = typeIn;
+        Location = locationIn;
+        RequestingPlayerID = requestingPlayerIDIn;
+    }
+
+    public List<IStateUpdate> GetStateUpdatesInOrder() => new List<IStateUpdate> { this };
+}
+
+// Moves a unit
+public readonly struct MoveUnitUpdate : IStateUpdate
+{
+    public UnitID UnitID { get; }
+    public HexCoordinateOffset NewLocation { get; }
+    public PlayerID RequestingPlayerID { get; }
+
+    public MoveUnitUpdate(UnitID unitIDIn,
+        HexCoordinateOffset newLocationIn,
+        PlayerID requestingPlayerIDIn)
+    {
+        UnitID = unitIDIn;
+        NewLocation = newLocationIn;
+        RequestingPlayerID = requestingPlayerIDIn;
+    }
+
+    public List<IStateUpdate> GetStateUpdatesInOrder() => new List<IStateUpdate> { this };
+}

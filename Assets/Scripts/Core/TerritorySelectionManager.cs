@@ -230,3 +230,65 @@ public class TerritorySelectionManager : SimulationBehaviour
         return true;
     }
 }
+
+// Places a player's capital, the final step in the territory selection phase
+public readonly struct PlaceCapitalUpdate : IStateUpdate
+{
+    public HexCoordinateOffset Location { get; }
+    public PlayerID RequestingPlayerID { get; }
+
+    public PlaceCapitalUpdate(HexCoordinateOffset locationIn,
+        PlayerID requestingPlayerIDIn)
+    {
+        Location = locationIn;
+        RequestingPlayerID = requestingPlayerIDIn;
+    }
+
+    public List<IStateUpdate> GetStateUpdatesInOrder()
+    {
+        return new List<IStateUpdate>
+        {
+            new CreateStructureUpdate(StructureType.Capital, Location, RequestingPlayerID),
+            this,
+            new EndActivePlayersTurnUpdate(RequestingPlayerID)
+        };
+    }
+}
+
+// Starts the game after all players have joined
+public readonly struct StartGameUpdate : IStateUpdate
+{
+    public int MapSeed { get; }
+
+    public StartGameUpdate(int mapSeedIn)
+    {
+        MapSeed = mapSeedIn;
+    }
+
+    public List<IStateUpdate> GetStateUpdatesInOrder() => new List<IStateUpdate> { this };
+}
+
+// Places a territory selection unit to either claim a new tile or
+// reinforce an already claimed tile
+public readonly struct PlaceTerritorySelectionUnitUpdate : IStateUpdate
+{
+    public HexCoordinateOffset Location { get; }
+    public PlayerID RequestingPlayerID { get; }
+
+    public PlaceTerritorySelectionUnitUpdate(HexCoordinateOffset locationIn,
+        PlayerID requestingPlayerIDIn)
+    {
+        Location = locationIn;
+        RequestingPlayerID = requestingPlayerIDIn;
+    }
+
+    public List<IStateUpdate> GetStateUpdatesInOrder()
+    {
+        return new List<IStateUpdate>
+        {
+            new CreateUnitUpdate(UnitType.Infantry, Location, RequestingPlayerID),
+            this,
+            new EndActivePlayersTurnUpdate(RequestingPlayerID)
+        };
+    }
+}
