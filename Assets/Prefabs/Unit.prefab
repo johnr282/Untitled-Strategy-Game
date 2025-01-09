@@ -98,7 +98,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 320007bec4dc5704d96d30df963013ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _heightAboveTilemap: 0.5
+  _heightAboveTilemap: 0.25
 --- !u!1 &5679430433154791774
 GameObject:
   m_ObjectHideFlags: 0

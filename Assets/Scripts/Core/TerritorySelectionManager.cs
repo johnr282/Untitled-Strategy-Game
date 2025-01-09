@@ -10,6 +10,8 @@ using Fusion;
 
 public class TerritorySelectionManager : SimulationBehaviour
 {
+    const UnitType StartingUnitType = UnitType.Infantry;
+
     int[] _remainingUnitBudgets = null;
     [SerializeField] int _startingUnitBudget; 
 
@@ -68,8 +70,7 @@ public class TerritorySelectionManager : SimulationBehaviour
         }
 
         // Spawn first unit for this player at their start tile
-        UnitType startingUnitType = UnitType.land;
-        StateManager.RequestStateUpdate(new CreateUnitUpdate(startingUnitType,
+        StateManager.RequestStateUpdate(new CreateUnitUpdate(StartingUnitType,
             thisPlayerStartTile.Hex,
             PlayerManager.MyPlayerID));
 
@@ -105,9 +106,10 @@ public class TerritorySelectionManager : SimulationBehaviour
         bool myRequest = PlayerManager.MyPlayerID.ID == update.RequestingPlayerID.ID;
         if (myRequest)
         {
-            bool ok = StateManager.RequestStateUpdate(new CreateUnitUpdate(UnitType.land,
-            update.Location,
-            update.RequestingPlayerID));
+            bool ok = StateManager.RequestStateUpdate(new CreateUnitUpdate(
+                StartingUnitType,
+                update.Location,
+                update.RequestingPlayerID));
             if (!ok)
             {
                 Debug.Log("Player " + update.RequestingPlayerID +

@@ -11,6 +11,12 @@ using UnityEngine;
 
 public class UnitManager : SimulationBehaviour
 {
+    // Will eventually be loaded in from data files
+    static Dictionary<UnitType, UnitAttributes> _unitTypeAttributes = new()
+    {
+        { UnitType.Infantry, new UnitAttributes(1, 1, 1, 1, 1, UnitCategory.Land) }
+    };
+
     static Dictionary<UnitID, Unit> _units = new();
 
     static UnitObjectSpawner _unitObjectSpawner = null;
@@ -42,6 +48,16 @@ public class UnitManager : SimulationBehaviour
         return unit;
     }
 
+    // Returns the unit attributes corresponding to the given unit type
+    // Throws an ArgumentException if given type has no corresponding attributes
+    public static UnitAttributes GetUnitAttributes(UnitType type)
+    {
+        if (!_unitTypeAttributes.TryGetValue(type, out UnitAttributes attributes))
+            throw new ArgumentException("No attributes exist for the given unit type");
+
+        return attributes;
+    }
+
     // Creates a new unit according to the given update and returns the unit ID
     // of the new unit
     // Throws an ArgumentException if no GameTile exists at the update location
@@ -50,8 +66,8 @@ public class UnitManager : SimulationBehaviour
         GameTile initialTile = GameMap.GetTile(update.Location);
 
         Unit newUnit = new(update.Type,
-            initialTile,
             GetNextUnitID(),
+            initialTile,
             update.RequestingPlayerID);
         _units.Add(newUnit.UnitID, newUnit);
         
@@ -91,7 +107,13 @@ public class UnitManager : SimulationBehaviour
 
         if (!initialTile.Available(update.RequestingPlayerID))
         {
-            failureReason = "tile not available for requesting player";
+            failureReason = "Tile not available for requesting player";
+            return false;
+        }
+
+        if (initialTile.ExceedsUnitCapacity(update.Type))
+        {
+            failureReason = "Unit would exceed tile unit capacity";
             return false;
         }
 
@@ -120,7 +142,7 @@ public class UnitManager : SimulationBehaviour
         }
         catch (RuntimeException)
         {
-            failureReason = "couldn't find a valid path";
+            failureReason = "Couldn't find a valid path";
             return false;
         }
 

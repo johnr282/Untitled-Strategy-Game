@@ -27,43 +27,65 @@ using Fusion;
 
 public enum UnitCategory
 { 
-
+    Land, 
+    Naval, 
+    Air
 }
 
-// TODO: make these the categories instead
 public enum UnitType
 {
-    land, 
-    naval, 
-    air
+    Infantry
 }
 
-public class Unit
+public struct UnitAttributes
 {
     public int OffensiveStrength { get; }
     public int DefensiveStrength { get; }
     public int Size { get; }
     public int MovementActionPoints { get; }
     public int CombatActionPoints { get; }
-    public int MovementActionPointsRemaining { get; set; }
-    public int CombatActionPointsRemaining { get; set; }
+    public UnitCategory Category { get; }
+
+    public UnitAttributes(int offensiveStrengthIn,
+        int defensiveStrengthIn,
+        int sizeIn,
+        int movementActionPointsIn,
+        int combatActionPointsIn,
+        UnitCategory categoryIn)
+    {
+        OffensiveStrength = offensiveStrengthIn;
+        DefensiveStrength = defensiveStrengthIn;
+        Size = sizeIn;
+        MovementActionPoints = movementActionPointsIn;
+        CombatActionPoints = combatActionPointsIn;
+        Category = categoryIn;
+    }
+}
+
+public class Unit
+{
     public UnitType Type { get; }
+    public UnitAttributes Attributes { get; }
     public UnitID UnitID { get; }
     public GameTile CurrentLocation { get; set; }
     public PlayerID OwnerID { get; set; }
-    public List<Terrain> TraversableTerrains { get; } = new();
+    public int MovementActionPointsRemaining { get; set; }
+    public int CombatActionPointsRemaining { get; set; }
 
     // UnitObject will only be set on the server, clients should not access it
     public UnitObject UnitObject { get; set; } = null;
 
     public Unit(UnitType typeIn, 
-        GameTile currentLocationIn,
         UnitID unitIDIn,
+        GameTile currentLocationIn,
         PlayerID ownerIDIn)
     {
-        UnitID = unitIDIn;
         Type = typeIn;
+        Attributes = UnitManager.GetUnitAttributes(Type);
+        UnitID = unitIDIn;
         CurrentLocation = currentLocationIn;
         OwnerID = ownerIDIn;
+        MovementActionPointsRemaining = Attributes.MovementActionPoints;
+        CombatActionPointsRemaining = Attributes.CombatActionPoints;
     }
 }

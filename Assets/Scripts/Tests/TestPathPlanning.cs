@@ -96,8 +96,8 @@ public class TestPathPlanning : MonoBehaviour
     Unit CreateDummyUnit()
     {
         return new(_unitType,
-            GameMap.GetTile(_start),
             new UnitID(0),
+            GameMap.GetTile(_start),
             new PlayerID(0));
     }
 }

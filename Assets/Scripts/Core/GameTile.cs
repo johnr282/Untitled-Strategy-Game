@@ -19,13 +19,15 @@ public class GameTile
 {
     // Update this constant to match the number of Terrain types
     public const int TerrainTypeCount = 2;
-    public const int MaxTileUnitCapacity = 12;
 
     public HexCoordinateOffset Hex { get; }
     public Terrain TileTerrain { get; set; }
     public ContinentID ContinentID { get; set; }
     public PlayerID OwnerID { get; private set; }
-    public int Capacity { get; private set; }
+    public int TileUnitCapacity { get; private set; }
+    public int TileStructureCapacity { get; private set; }
+    public int TotalUnitSize { get; private set; } // Sum of all unit sizes on this tile
+
     List<UnitID> _unitsOnTile = new();
 
     // Pass in -1 for continent ID if tile is not in a continent
@@ -37,7 +39,10 @@ public class GameTile
         TileTerrain = terrainIn;
         ContinentID = contintentIDIn;
         OwnerID = new(-1);
-        Capacity = 0;
+
+        GameParameters gameParameters = ProjectUtilities.FindGameParameters();
+        TileUnitCapacity = gameParameters.TileUnitCapacity;
+        TileStructureCapacity = gameParameters.TileStructureCapacity;
     }
 
     // Returns true if this tile is in a continent, false otherwise
@@ -65,21 +70,17 @@ public class GameTile
         return OwnerID.ID != -1;
     }
 
-    // Sets the owner of this tile to the given player ID
-    void Claim(PlayerID playerID)
+    // Returns whether a unit of the given type would exceed capacity if added to this tile
+    public bool ExceedsUnitCapacity(UnitType type)
     {
-        OwnerID = playerID;
-    }
-
-    // Sets this tile to be unclaimed
-    void Unclaim()
-    {
-        OwnerID = new(-1);
+        UnitAttributes attributes = UnitManager.GetUnitAttributes(type);
+        return TotalUnitSize + attributes.Size > TileUnitCapacity;
     }
 
     // Adds the given unit to this tile
     // Throws an ArgumentException if given a unit that already exists in this tile
     // or if this tile's owner is different from the given unit's owner
+    // Throws a RuntimeException if the given unit's size exceeds this tile's capacity
     public void AddUnit(Unit unit)
     {
         if (_unitsOnTile.Contains(unit.UnitID))
@@ -89,7 +90,11 @@ public class GameTile
             throw new ArgumentException("Unit's owner, " + unit.OwnerID + 
                 ", is different from tile's owner, " + OwnerID);
 
+        if (ExceedsUnitCapacity(unit.Type))
+            throw new RuntimeException("Unit " + unit.UnitID + " exceeds tile unit capacity");
+
         _unitsOnTile.Add(unit.UnitID);
+        TotalUnitSize += unit.Attributes.Size;
         Claim(unit.OwnerID);
     }
 
@@ -100,6 +105,7 @@ public class GameTile
         if (!_unitsOnTile.Remove(unit.UnitID))
             throw new ArgumentException("Unit " + unit.UnitID + " does not exist in this tile");
 
+        TotalUnitSize -= unit.Attributes.Size;
         if (_unitsOnTile.Count == 0)
             Unclaim();
     }
@@ -123,9 +129,9 @@ public class GameTile
 
         string invalidTerrainMsg = "TileTerrain of GameTile not valid";
 
-        switch (unit.Type)
+        switch (unit.Attributes.Category)
         {
-            case UnitType.land:
+            case UnitCategory.Land:
                 switch (TileTerrain)
                 {
                     case Terrain.sea:
@@ -138,7 +144,7 @@ public class GameTile
                         throw new RuntimeException(invalidTerrainMsg);
                 }
 
-            case UnitType.naval:
+            case UnitCategory.Naval:
                 switch (TileTerrain)
                 {
                     case Terrain.sea:
@@ -151,7 +157,7 @@ public class GameTile
                         throw new RuntimeException(invalidTerrainMsg);
                 }
 
-            case UnitType.air:
+            case UnitCategory.Air:
                 switch (TileTerrain)
                 {
                     case Terrain.sea:
@@ -167,5 +173,17 @@ public class GameTile
             default:
                 throw new ArgumentException("Invalid unit type");
         }
+    }
+
+    // Sets the owner of this tile to the given player ID
+    void Claim(PlayerID playerID)
+    {
+        OwnerID = playerID;
+    }
+
+    // Sets this tile to be unclaimed
+    void Unclaim()
+    {
+        OwnerID = new(-1);
     }
 }
