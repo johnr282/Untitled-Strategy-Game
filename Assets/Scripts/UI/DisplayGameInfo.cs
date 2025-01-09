@@ -25,6 +25,7 @@ public class DisplayGameInfo : MonoBehaviour
         EventBus.Subscribe<StartGameUpdate>(OnGameStarted);
         EventBus.Subscribe<TerritorySelectionPhaseStartedEvent>(OnTerritorySelection);
         EventBus.Subscribe<SelectingCapitalLocationsEvent>(OnCapitalLocationSelection);
+        EventBus.Subscribe<TerritorySelectionPhaseEndedEvent>(OnTerritorySelectionEnded);
     }
 
     void OnGameStarted(StartGameUpdate update)
@@ -43,6 +44,11 @@ public class DisplayGameInfo : MonoBehaviour
     {
         _onMyTurnMessage = "Now that your initial territory is selected, choose where " +
             "you want to place your capital";
+    }
+
+    void OnTerritorySelectionEnded(TerritorySelectionPhaseEndedEvent e)
+    {
+        _onMyTurnMessage = "Territory selection complete";
     }
 
     void OnMyTurn(MyTurnEvent myTurn)
