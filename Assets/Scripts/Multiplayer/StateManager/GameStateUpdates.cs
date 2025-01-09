@@ -11,9 +11,17 @@ using UnityEngine;
 // ------------------------------------------------------------------
 
 // Base interface for all game state updates
-public interface IStateUpdate : INetworkStruct { }
+public interface IStateUpdate : INetworkStruct 
+{
+    // Returns a list of updates composing this update; must include this
+    // or this update won't be applied
+    // Allows state updates to be composed of multiple updates, each
+    // of which are validated and applied by the StateManager, and defines the
+    // order in which each update is applied
+    public List<IStateUpdate> GetStateUpdatesInOrder();
+}
 
-// Sent to clients once for each player to update the PlayerManager
+// Adds players to the player manager
 public readonly struct AddPlayerUpdate : IStateUpdate
 {
     public PlayerRef PlayerRef { get; }
@@ -24,9 +32,11 @@ public readonly struct AddPlayerUpdate : IStateUpdate
         PlayerRef = playerRefIn;
         ID = idIn;
     }
+
+    public List<IStateUpdate> GetStateUpdatesInOrder() => new List<IStateUpdate>{ this };
 }
 
-// Sent to clients when all players have joined and the game is starting
+// Starts the game after all players have joined
 public readonly struct StartGameUpdate : IStateUpdate
 {
     public int MapSeed { get; }
@@ -35,21 +45,25 @@ public readonly struct StartGameUpdate : IStateUpdate
     {
         MapSeed = mapSeedIn;
     }
+
+    public List<IStateUpdate> GetStateUpdatesInOrder() => new List<IStateUpdate> { this };
 }
 
-// Sent to clients when a player ends their turn
-public readonly struct EndTurnUpdate : IStateUpdate 
+// Ends the active player's turn
+public readonly struct EndActivePlayersTurnUpdate : IStateUpdate 
 { 
-    public PlayerID EndingPlayerID { get; }
+    public PlayerID RequestingPlayerID { get; }
 
-    public EndTurnUpdate(PlayerID endingPlayerIDIn)
+    public EndActivePlayersTurnUpdate(PlayerID requestingPlayerIDIn)
     {
-        EndingPlayerID = endingPlayerIDIn;
+        RequestingPlayerID = requestingPlayerIDIn;
     }
+
+    public List<IStateUpdate> GetStateUpdatesInOrder() => new List<IStateUpdate>{ this };
 }
 
 
-// Sent to clients when a new unit is created
+// Creates a unit
 public readonly struct CreateUnitUpdate : IStateUpdate
 {
     public UnitType Type { get; }
@@ -64,9 +78,11 @@ public readonly struct CreateUnitUpdate : IStateUpdate
         Location = locationIn;
         RequestingPlayerID = requestingPlayerIDIn;
     }
+
+    public List<IStateUpdate> GetStateUpdatesInOrder() => new List<IStateUpdate>{ this };
 }
 
-// Sent to clients when a unit is moved
+// Moves a unit
 public readonly struct MoveUnitUpdate : IStateUpdate
 {
     public UnitID UnitID { get; }
@@ -81,8 +97,12 @@ public readonly struct MoveUnitUpdate : IStateUpdate
         NewLocation = newLocationIn;
         RequestingPlayerID = requestingPlayerIDIn;
     }
+
+    public List<IStateUpdate> GetStateUpdatesInOrder() => new List<IStateUpdate>{ this };
 }
 
+// Places a territory selection unit to either claim a new tile or
+// reinforce an already claimed tile
 public readonly struct PlaceTerritorySelectionUnitUpdate : IStateUpdate
 {
     public HexCoordinateOffset Location { get; }
@@ -94,8 +114,19 @@ public readonly struct PlaceTerritorySelectionUnitUpdate : IStateUpdate
         Location = locationIn;
         RequestingPlayerID = requestingPlayerIDIn;
     }
+
+    public List<IStateUpdate> GetStateUpdatesInOrder()
+    {
+        return new List<IStateUpdate>
+        {
+            new CreateUnitUpdate(UnitType.Infantry, Location, RequestingPlayerID),
+            this,
+            new EndActivePlayersTurnUpdate(RequestingPlayerID)
+        };
+    }
 }
 
+// Creates a structure
 public readonly struct CreateStructureUpdate : IStateUpdate
 {
     public StructureType Type { get; }
@@ -109,5 +140,31 @@ public readonly struct CreateStructureUpdate : IStateUpdate
         Type = typeIn;
         Location = locationIn;
         RequestingPlayerID = requestingPlayerIDIn;
+    }
+
+    public List<IStateUpdate> GetStateUpdatesInOrder() => new List<IStateUpdate>{ this };
+}
+
+// Places a player's capital, the final step in the territory selection phase
+public readonly struct PlaceCapitalUpdate : IStateUpdate
+{
+    public HexCoordinateOffset Location { get; }
+    public PlayerID RequestingPlayerID { get; }
+
+    public PlaceCapitalUpdate(HexCoordinateOffset locationIn,
+        PlayerID requestingPlayerIDIn)
+    {
+        Location = locationIn;
+        RequestingPlayerID = requestingPlayerIDIn;
+    }
+
+    public List<IStateUpdate> GetStateUpdatesInOrder()
+    {
+        return new List<IStateUpdate>
+        {
+            new CreateStructureUpdate(StructureType.Capital, Location, RequestingPlayerID),
+            this,
+            new EndActivePlayersTurnUpdate(RequestingPlayerID)
+        };
     }
 }

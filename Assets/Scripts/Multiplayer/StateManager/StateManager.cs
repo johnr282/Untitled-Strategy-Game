@@ -25,39 +25,39 @@ public class StateManager : NetworkBehaviour
             _clientUpdateRPC = clientUpdateRPCIn;
         }
 
-        public bool ValidateUpdate(IStateUpdate updateData, out string failureReason)
+        public bool ValidateUpdate(IStateUpdate update, out string failureReason)
         {
             failureReason = "";
 
             // Can't just directly pass parameters, need to invoke like this in order
             // to extract updated out parameter failureReason
-            object[] args = { updateData, failureReason };
+            object[] args = { update, failureReason };
             bool validated = (bool)_validateUpdateFunc.DynamicInvoke(args);
             failureReason = (string)args[1];
             return validated;
         }
 
-        public void PerformUpdate(IStateUpdate updateData)
+        public void PerformUpdate(IStateUpdate update)
         {
-            _performUpdateFunc.DynamicInvoke(updateData);
+            _performUpdateFunc.DynamicInvoke(update);
         }
 
         // Server update RPC is called on the client, so we need to go through
         // the ClientRPCManager
         public void CallServerUpdateRPC(NetworkRunner runner,
-            IStateUpdate updateData)
+            IStateUpdate update)
         {
             ClientRPCManager.QueueClientRPC(_serverUpdateRPC,
                 runner,
                 PlayerRef.None,
-                updateData);
+                update);
         }
 
         public void CallClientUpdateRPC(NetworkRunner runner,
-            IStateUpdate updateData)
+            IStateUpdate update)
         {
             _clientUpdateRPC.DynamicInvoke(runner,
-                updateData);
+                update);
         }
     }
 
@@ -119,41 +119,25 @@ public class StateManager : NetworkBehaviour
     }
 
     // Initiates a state update with the given update data; only called by clients
-    // If the localUpdateOnly flag is set to true, the update will not be sent to
-    // the server and will only be executed on the local client; set this flag when
-    // you are requesting a state update as part of another state update function
-    // 
     // Returns true if the update was successfully validated and sent to the server
     // Returns false if the update was not validated
-    // Throws exception if called on the server
-    // Throws exception if update type was not previously registered
+    // Throws RuntimeException if called on the server
+    // Throws RuntimeException if update type was not previously registered
     // with RegisterStateUpdate 
-    public static bool RequestStateUpdate<TStateUpdate>(TStateUpdate updateData, 
-        bool localUpdateOnly = false)
+    public static bool RequestStateUpdate<TStateUpdate>(TStateUpdate update)
         where TStateUpdate : struct, IStateUpdate
     {
         Type updateType = typeof(TStateUpdate);
         if (StateManagerRunner.GameMode == GameMode.Server)
             throw new RuntimeException("RequestStateUpdate for " + updateType + " called on server");
 
-        StateUpdateRegistration registration = GetRegistration(updateType);
-
         // Before sending request to server, client checks if update is valid
-        if (!registration.ValidateUpdate(updateData, out string failureReason))
-        {
-            Debug.Log(updateType + " request was not validated by the client; reason: " + failureReason);
+        if (!ValidateUpdate(update))
             return false;
-        }
-
-        if (localUpdateOnly)
-        {
-            Debug.Log("Performing " + updateType + " only on local client");
-            registration.PerformUpdate(updateData);
-            return true;
-        }
 
         Debug.Log("Sending " + updateType + " request to server");
-        registration.CallServerUpdateRPC(StateManagerRunner, updateData);
+        StateUpdateRegistration registration = GetRegistration(updateType);
+        registration.CallServerUpdateRPC(StateManagerRunner, update);
         return true;
     }
 
@@ -163,43 +147,37 @@ public class StateManager : NetworkBehaviour
     // with RegisterStateUpdate; this should never happen as the update type
     // is checked on the client before this, and the registrations 
     // should be identical on the server
-    public static void UpdateServerState<TStateUpdate>(TStateUpdate updateData)
+    public static void UpdateServerState<TStateUpdate>(TStateUpdate update)
         where TStateUpdate : struct, IStateUpdate
     {
-        Type updateType = typeof(TStateUpdate);
-        StateUpdateRegistration registration = GetRegistration(updateType);
-
         // Validate update again on the server, don't trust client
-        if (!registration.ValidateUpdate(updateData, out string failureReason))
-        {
-            Debug.Log(updateType + " request was not validated by the server; reason: " + failureReason);
+        if (!ValidateUpdate(update))
             return;
-        }
 
         // Updates state on the server, only needed if this is a dedicated server
         // with no local player
+        Type updateType = typeof(TStateUpdate);
         if (StateManagerRunner.GameMode == GameMode.Server)
         {
             Debug.Log("Performing " + updateType + " on dedicated server");
-            registration.PerformUpdate(updateData);
+            PerformUpdate(update);
         }
 
         // Updates state on all clients
         Debug.Log("Sending " + updateType + " to clients");
-        registration.CallClientUpdateRPC(StateManagerRunner, updateData);
+        StateUpdateRegistration registration = GetRegistration(updateType);
+        registration.CallClientUpdateRPC(StateManagerRunner, update);
     }
 
     // Should be called by the user-created client update RPC to initiate state
     // update on this client
-    public static void UpdateClientState<TStateUpdate>(TStateUpdate updateData)
+    public static void UpdateClientState<TStateUpdate>(TStateUpdate update)
         where TStateUpdate : struct, IStateUpdate
     {
-        Type updateType = typeof(TStateUpdate);
-        StateUpdateRegistration registration = GetRegistration(updateType);
-
         // Server must've already validated update, so no need to validate again
+        Type updateType = typeof(TStateUpdate);
         Debug.Log("Performing " + updateType + " on client");
-        registration.PerformUpdate(updateData);
+        PerformUpdate(update);
     }
 
     // Returns the registration corresponding to given update type
@@ -210,5 +188,61 @@ public class StateManager : NetworkBehaviour
             throw new RuntimeException(updateType + " is not registered");
 
         return _registeredUpdates[updateType];
+    }
+
+    // Validates the given update and all of its child updates
+    static bool ValidateUpdate<TStateUpdate>(TStateUpdate update)
+        where TStateUpdate : struct, IStateUpdate
+    {
+        List<IStateUpdate> childUpdates = update.GetStateUpdatesInOrder();
+        foreach (IStateUpdate childUpdate in childUpdates)
+        {
+            if (!ValidateUpdateHelper(childUpdate))
+                return false;
+        }
+
+        return true;
+    }
+
+    // Validates only the given update
+    static bool ValidateUpdateHelper(IStateUpdate update)
+    {
+        Type updateType = update.GetType();
+        StateUpdateRegistration registration = GetRegistration(updateType);
+        if (!registration.ValidateUpdate(update, out string failureReason))
+        {
+            Debug.Log(updateType + " request was not validated; reason: " + failureReason);
+            return false;
+        }
+
+        return true;
+    }
+
+    // Performs the given update and all of its child updates
+    static void PerformUpdate<TStateUpdate>(TStateUpdate update)
+        where TStateUpdate : struct, IStateUpdate
+    {
+        Type updateType = typeof(TStateUpdate);
+        List<IStateUpdate> childUpdates = update.GetStateUpdatesInOrder();
+        foreach (IStateUpdate childUpdate in childUpdates)
+        {
+            Type childUpdateType = childUpdate.GetType();
+            // Need to validate again in case previous update invalidated this one
+            if (!ValidateUpdateHelper(childUpdate))
+            {
+                Debug.Log($"{childUpdateType} as part of {updateType} was invalidated by previous update");
+                return;
+            }
+            Debug.Log($"Performing {childUpdateType} as part of {updateType}");
+            PerformUpdateHelper(childUpdate);
+        }
+    }
+
+    // Performs only the given update, not its children
+    static void PerformUpdateHelper(IStateUpdate update)
+    {
+        Type updateType = update.GetType();
+        StateUpdateRegistration registration = GetRegistration(updateType);
+        registration.PerformUpdate(update);
     }
 }
