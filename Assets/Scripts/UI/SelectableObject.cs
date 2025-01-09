@@ -30,7 +30,7 @@ public abstract class SelectableObject : MonoBehaviour
 
     PlayerID _ownerID = new(-1);
 
-    public virtual void Start()
+    protected virtual void Start()
     {
     }
 
@@ -60,5 +60,5 @@ public abstract class SelectableObject : MonoBehaviour
     }
 
     // Called when this object is selected by its owner
-    public abstract void OnSelectedByOwner();
+    protected abstract void OnSelectedByOwner();
 }

@@ -37,7 +37,7 @@ public class UnitObject : SelectableObject
 
     UnitID _unitID = new(-1);
 
-    public override void Start()
+    protected override void Start()
     {
         base.Start();
 
@@ -64,7 +64,7 @@ public class UnitObject : SelectableObject
         _renderer.material.color = unitColor;
     }
 
-    public override void OnSelectedByOwner()
+    protected override void OnSelectedByOwner()
     {
         Debug.Log("Unit " + UnitID.ToString() + " selected");
 

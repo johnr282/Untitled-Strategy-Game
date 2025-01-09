@@ -52,7 +52,9 @@ public class MouseSelection : MonoBehaviour
     // if successful, false if no selectable object was found
     bool TrySelection()
     {
-        if (MouseRaycast(out GameObject collidedObject))
+        // No selectable objects active during territory selection phase
+        if (GamePhaseManager.CurrentPhase != GamePhase.TerritorySelection &&
+            MouseRaycast(out GameObject collidedObject))
         {
             if (collidedObject.TryGetComponent(out SelectableObject selectedObject))
             {
