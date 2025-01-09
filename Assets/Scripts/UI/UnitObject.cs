@@ -15,7 +15,7 @@ public class UnitObject : SelectableObject
         get
         {
             if (_unitID.ID == -1)
-                throw new RuntimeException("OwnerID not set");
+                throw new RuntimeException("UnitID not set");
             return _unitID;
         }
         set
@@ -26,11 +26,8 @@ public class UnitObject : SelectableObject
 
     public Unit Unit { get => UnitManager.GetUnit(UnitID); }
 
-    [SerializeField] List<Color> _unitColors = new();
-
     MoveableObject _moveable;
     MapVisuals _mapVisuals;
-    Renderer _renderer;
 
     Subscription<TileSelectedEvent> _tileSelectedSub;
     Subscription<NewTileHoveredOverEvent> _tileHoveredSub;
@@ -43,25 +40,7 @@ public class UnitObject : SelectableObject
 
         _moveable = GetComponent<MoveableObject>();
         _mapVisuals = ProjectUtilities.FindMapVisuals();
-        SetColor(); 
-    }
-
-    // Initializes _renderer and sets the color of this UnitObject based on its
-    // OwnerID
-    void SetColor()
-    {
-        GameObject visualsChild =
-            UnityUtilities.GetFirstChildGameObject(gameObject);
-
-        _renderer = visualsChild.GetComponent<Renderer>() ??
-            throw new RuntimeException(
-                "Failed to get Renderer component from child");
-
-        if (OwnerID.ID >= _unitColors.Count)
-            throw new RuntimeException("More players than unit colors");
-
-        Color unitColor = _unitColors[OwnerID.ID];
-        _renderer.material.color = unitColor;
+        PlayerColors.SetObjectColor(gameObject, OwnerID);
     }
 
     protected override void OnSelectedByOwner()
