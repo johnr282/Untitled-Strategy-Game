@@ -30,7 +30,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.94, y: 0.69, z: 2.19}
-  m_LocalScale: {x: 0.6, y: 0.3, z: 0.6}
+  m_LocalScale: {x: 0.25, y: 0.15, z: 0.25}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 757707303438530437}
@@ -69,10 +69,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73f31d83761b2ef4bb7769cada443561, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _unitColors:
-  - {r: 1, g: 0, b: 0, a: 1}
-  - {r: 1, g: 0.99777603, b: 0, a: 1}
-  - {r: 0, g: 0.6509434, b: 0.091233954, a: 1}
 --- !u!114 &7776170410906669446
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -98,7 +94,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 320007bec4dc5704d96d30df963013ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _heightAboveTilemap: 0.25
+  _spawnConfigurations:
+  - _offsetsFromTileCenter:
+    - {x: 0.2, y: 0.05, z: 0}
+  - _offsetsFromTileCenter:
+    - {x: 0.15, y: 0.05, z: -0.2}
+    - {x: 0.15, y: 0.05, z: 0.2}
+  - _offsetsFromTileCenter:
+    - {x: 0.1, y: 0.05, z: -0.25}
+    - {x: 0.3, y: 0.05, z: 0}
+    - {x: 0.1, y: 0.05, z: 0.25}
 --- !u!1 &5679430433154791774
 GameObject:
   m_ObjectHideFlags: 0

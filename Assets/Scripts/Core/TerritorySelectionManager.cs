@@ -50,14 +50,14 @@ public class TerritorySelectionManager : SimulationBehaviour
         Debug.Log("Initializaing map");
 
         MapGenerationParameters parameters = 
-            ProjectUtilities.FindMapGenerationParameters();
+            ObjectFinder.FindMapGenerationParameters();
         if (parameters.RandomlyGenerateSeed)
             parameters.Seed = mapSeed;
 
         MapGenerator mapGenerator = new(parameters);
         mapGenerator.GenerateMap();
 
-        MapVisuals mapVisuals = ProjectUtilities.FindMapVisuals();
+        MapVisuals mapVisuals = ObjectFinder.FindMapVisuals();
         mapVisuals.GenerateVisuals(parameters.MapHeight,
             parameters.MapWidth);
 

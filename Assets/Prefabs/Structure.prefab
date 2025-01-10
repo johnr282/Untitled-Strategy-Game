@@ -163,4 +163,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 320007bec4dc5704d96d30df963013ac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _heightAboveTilemap: 0.5
+  _offsetFromTileCenter: {x: 0, y: 0.2, z: 0}

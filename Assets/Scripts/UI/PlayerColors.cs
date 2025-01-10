@@ -26,7 +26,7 @@ public class PlayerColors : MonoBehaviour
             throw new RuntimeException(
                 "Failed to get Renderer component from child");
 
-        PlayerColors colors = ProjectUtilities.FindPlayerColors();
+        PlayerColors colors = ObjectFinder.FindPlayerColors();
         renderer.material.color = colors.GetPlayerColor(ownerID);
     }
 }

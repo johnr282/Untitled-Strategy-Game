@@ -15,7 +15,7 @@ public class StructureObjectSpawner : MonoBehaviour
 
     void Start()
     {
-        _tilemap = ProjectUtilities.FindTilemap();
+        _tilemap = ObjectFinder.FindTilemap();
     }
 
     // Spawns a StructureObject onto the tilemap at the given hex
@@ -31,7 +31,7 @@ public class StructureObjectSpawner : MonoBehaviour
         StructureObject newStructureObject = SpawnableObject.SpawnObject<StructureObject>(_structurePrefab,
             hex,
             _tilemap,
-            spawnable.YOffset);
+            Vector3.zero); // TODO
 
         newStructureObject.StructureID = structureID;
         newStructureObject.OwnerID = ownerID;

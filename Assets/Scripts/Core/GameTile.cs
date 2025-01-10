@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
+using System.Collections.ObjectModel;
 
 // ------------------------------------------------------------------
 // Class representing a single hexagonal tile in the game map; not
@@ -29,7 +30,9 @@ public class GameTile
     public int TotalUnitSize { get; private set; } 
     public int TotalStructureSize { get; private set; } 
 
+    public ReadOnlyCollection<UnitID> UnitsOnTile => _unitsOnTile.AsReadOnly();
     List<UnitID> _unitsOnTile = new();
+    public ReadOnlyCollection<StructureID> StructuresOnTile => _structuresOnTile.AsReadOnly();
     List<StructureID> _structuresOnTile = new();
 
     // Pass in -1 for continent ID if tile is not in a continent
@@ -42,7 +45,7 @@ public class GameTile
         ContinentID = contintentIDIn;
         OwnerID = new(-1);
 
-        GameParameters gameParameters = ProjectUtilities.FindGameParameters();
+        GameParameters gameParameters = ObjectFinder.FindGameParameters();
         TileUnitCapacity = gameParameters.TileUnitCapacity;
         TileStructureCapacity = gameParameters.TileStructureCapacity;
     }

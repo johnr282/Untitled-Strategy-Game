@@ -13,8 +13,8 @@ public class TestMapGeneration : MonoBehaviour
 
     void Start()
     {
-        _parameters = ProjectUtilities.FindMapGenerationParameters();
-        _mapVisuals = ProjectUtilities.FindMapVisuals();
+        _parameters = ObjectFinder.FindMapGenerationParameters();
+        _mapVisuals = ObjectFinder.FindMapVisuals();
     }
 
     void Update()

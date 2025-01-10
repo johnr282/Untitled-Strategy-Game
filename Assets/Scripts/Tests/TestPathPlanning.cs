@@ -22,7 +22,7 @@ public class TestPathPlanning : MonoBehaviour
 
     void Start()
     {
-        _mapVisuals = ProjectUtilities.FindComponent<MapVisuals>("GameMap");
+        _mapVisuals = ObjectFinder.FindComponent<MapVisuals>("GameMap");
 
         _tileSelectedSub = EventBus.Subscribe<TileSelectedEvent>(OnTileSelected);
     }

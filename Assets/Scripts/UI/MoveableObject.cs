@@ -22,7 +22,7 @@ public class MoveableObject : MonoBehaviour
     void Start()
     {
         _spawnable = GetComponent<SpawnableObject>();
-        _tilemap = ProjectUtilities.FindTilemap();    
+        _tilemap = ObjectFinder.FindTilemap();    
     }
 
     // Moves this object to given hex 
@@ -54,6 +54,6 @@ public class MoveableObject : MonoBehaviour
     Vector3 HexToWorld(HexCoordinateOffset hex)
     {
         return _tilemap.CellToWorld(hex.ConvertToVector3Int()) + 
-            _spawnable.YOffset;
+            Vector3.zero; // TODO
     }
 }

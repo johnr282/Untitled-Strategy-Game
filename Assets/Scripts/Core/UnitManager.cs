@@ -25,7 +25,7 @@ public class UnitManager : SimulationBehaviour
 
     void Start()
     {
-        _unitObjectSpawner = ProjectUtilities.FindUnitObjectSpawner();
+        _unitObjectSpawner = ObjectFinder.FindUnitObjectSpawner();
 
         StateManager.RegisterStateUpdate<CreateUnitUpdate>(ValidateCreateUnitUpdate,
             CreateUnit,

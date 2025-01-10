@@ -39,7 +39,7 @@ public class UnitObject : SelectableObject
         base.Start();
 
         _moveable = GetComponent<MoveableObject>();
-        _mapVisuals = ProjectUtilities.FindMapVisuals();
+        _mapVisuals = ObjectFinder.FindMapVisuals();
         PlayerColors.SetObjectColor(gameObject, OwnerID);
     }
 

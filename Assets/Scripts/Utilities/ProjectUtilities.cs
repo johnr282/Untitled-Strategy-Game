@@ -5,10 +5,10 @@ using UnityEngine;
 using UnityEngine.Tilemaps;
 
 // ------------------------------------------------------------------
-// Utility functions used throughout this project
+// Utility functions for finding various game objects in the scene
 // ------------------------------------------------------------------
 
-public static class ProjectUtilities
+public static class ObjectFinder
 {
     public const string MapObjectName = "Map";
     public const string MapGenerationParametersObjectName = "MapGenerationParameters";

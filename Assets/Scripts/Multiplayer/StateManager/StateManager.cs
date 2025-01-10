@@ -94,7 +94,7 @@ public class StateManager : NetworkBehaviour
     {
         // Finding network object first prevents strange bug where StateManager object 
         // couldn't be found on a random client
-        _stateManagerNetworkObject = ProjectUtilities.FindManagersNetworkObject();
+        _stateManagerNetworkObject = ObjectFinder.FindManagersNetworkObject();
     }
 
     // Register a new state update with the given validate function, perform function,

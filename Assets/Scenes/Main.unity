@@ -153,7 +153,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _unitPrefab: {fileID: 2584624186207267819, guid: 12abc5c6891ff1249881aa4587a92b7d, type: 3}
-  _unitStackYDistance: 0.1
+  _unitStackYDistance: 0.075
 --- !u!4 &302775582
 Transform:
   m_ObjectHideFlags: 0
@@ -770,7 +770,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c34e041eaea2e641a999bb50b1f110a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _TileUnitCapacity: 5
+  _TileUnitCapacity: 12
   _tileStructureCapacity: 3
 --- !u!4 &1185272136
 Transform:
@@ -1155,7 +1155,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea86c467347b3e74e9a0fa2ecaa93996, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _startingUnitBudget: 1
+  _startingUnitBudget: 100
 --- !u!114 &1692920155
 MonoBehaviour:
   m_ObjectHideFlags: 0

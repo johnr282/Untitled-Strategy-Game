@@ -19,7 +19,7 @@ public class StructureManager : SimulationBehaviour
 
     void Start()
     {
-        _structureObjectSpawner = ProjectUtilities.FindStructureObjectSpawner();
+        _structureObjectSpawner = ObjectFinder.FindStructureObjectSpawner();
 
         StateManager.RegisterStateUpdate<CreateStructureUpdate>(ValidateCreateStructureUpdate,
             CreateStructure,
